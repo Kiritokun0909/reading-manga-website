@@ -1,0 +1,183 @@
+-- Table: Genres
+CREATE TABLE Genres (
+    GenreId INT PRIMARY KEY AUTO_INCREMENT,
+    GenreName VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Table: Authors
+CREATE TABLE Authors (
+    AuthorId INT PRIMARY KEY AUTO_INCREMENT,
+    AuthorName VARCHAR(255) NOT NULL,
+    Biography TEXT
+);
+
+-- Table: Mangas
+CREATE TABLE Mangas (
+    MangaId INT PRIMARY KEY AUTO_INCREMENT,
+    MangaName VARCHAR(255) NOT NULL,
+    OtherName TEXT,
+    CoverImageUrl VARCHAR(255),
+    PublishedYear YEAR,
+    Description TEXT,
+    AgeLimit TINYINT DEFAULT 0,
+    IsManga TINYINT,
+    NumChapters INT,
+    NewestChapterNumber INT,
+    LastedUpdateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    NumViews INT DEFAULT 0,
+    NumLikes INT DEFAULT 0,
+    NumFollows INT DEFAULT 0,
+    IsHide TINYINT DEFAULT 0,
+    AuthorId INT,
+    FOREIGN KEY (AuthorId) REFERENCES Authors(AuthorId)
+);
+
+-- Table: MangaGenres
+CREATE TABLE MangaGenres (
+    MangaId INT,
+    GenreId INT,
+    PRIMARY KEY (MangaId, GenreId),
+    FOREIGN KEY (MangaId) REFERENCES Mangas(MangaId),
+    FOREIGN KEY (GenreId) REFERENCES Genres(GenreId)
+);
+
+-- Table: Chapters
+CREATE TABLE Chapters (
+    ChapterId INT PRIMARY KEY AUTO_INCREMENT,
+    VolumeNumber INT,
+    ChapterNumber INT,
+    ChapterName VARCHAR(255),
+    PublishedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    NovelContext TEXT,
+    IsFree TINYINT DEFAULT 0,
+    MangaId INT,
+    FOREIGN KEY (MangaId) REFERENCES Chapters(MangaId)
+);
+
+-- Table: Images
+CREATE TABLE Images (
+    ChapterId INT,
+    OrderedNumber INT,
+    ImageUrl VARCHAR(255),
+    PRIMARY KEY (ChapterId, OrderedNumber),
+    FOREIGN KEY (ChapterId) REFERENCES Chapters(ChapterId)
+);
+
+-- Table: Role
+CREATE TABLE Role (
+    RoleId INT PRIMARY KEY AUTO_INCREMENT,
+    RoleName VARCHAR(255) NOT NULL
+);
+
+-- Table: Users
+CREATE TABLE Users (
+    UserId INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    Phone VARCHAR(13) UNIQUE,
+    Password VARCHAR(255) NOT NULL,
+    Avatar VARCHAR(255),
+    Birthday TIMESTAMP,
+    Gender TINYINT,
+    IsBanned TINYINT DEFAULT 0,
+    Coins INT DEFAULT 0,
+    RoleId INT,
+    FOREIGN KEY (RoleId) REFERENCES Role(RoleId)
+);
+
+-- Table: Likes
+CREATE TABLE Likes (
+    UserId INT,
+    MangaId INT,
+    PRIMARY KEY (UserId, MangaId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (MangaId) REFERENCES Mangas(MangaId)
+);
+
+-- Table: Follows
+CREATE TABLE Follows (
+    UserId INT,
+    MangaId INT,
+    IsChecked TINYINT DEFAULT 0,
+    PRIMARY KEY (UserId, MangaId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (MangaId) REFERENCES Mangas(MangaId)
+);
+
+-- Table: CommentMangas
+CREATE TABLE CommentMangas (
+    UserId INT,
+    MangaId INT,
+    CommentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Context TEXT,
+    IsHide TINYINT DEFAULT 0,
+    PRIMARY KEY (UserId, MangaId, CommentDate),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (MangaId) REFERENCES Mangas(MangaId)
+);
+
+-- Table: CommentChapters
+CREATE TABLE CommentChapters (
+    UserId INT,
+    ChapterId INT,
+    CommentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Context TEXT,
+    IsHide TINYINT DEFAULT 0,
+    PRIMARY KEY (UserId, ChapterId, CommentDate),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (ChapterId) REFERENCES Mangas(ChapterId)
+);
+
+-- Table: ChapterPlans
+CREATE TABLE ChapterPlans (
+    ChapterPlanId INT PRIMARY KEY AUTO_INCREMENT,
+    CoinPrice INT NOT NULL,
+    StartDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    EndDate TIMESTAMP
+);
+
+-- Table: ChapterPlanDetails
+CREATE TABLE ChapterPlanDetails (
+    ChapterPlanId INT,
+    ChapterId INT,
+    PRIMARY KEY (ChapterPlanId, ChapterId),
+    FOREIGN KEY (ChapterPlanId) REFERENCES ChapterPlans(ChapterPlanId),
+    FOREIGN KEY (ChapterId) REFERENCES Chapters(ChapterId)
+);
+
+-- Table: CoinPlans
+CREATE TABLE CoinPlans (
+    CoinPlanId INT PRIMARY KEY AUTO_INCREMENT,
+    Price INT NOT NULL,
+    StartDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    EndDate TIMESTAMP
+);
+
+-- Table: RechargeHistories
+CREATE TABLE RechargeHistories (
+    UserId INT,
+    CoinPlanId INT,
+    PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (UserId, CoinPlanId, PaymentDate),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (CoinPlanId) REFERENCES CoinPlans(CoinPlanId)
+);
+
+-- Table: Carts
+CREATE TABLE Carts (
+    UserId INT,
+    ChapterPlanId INT,
+    PRIMARY KEY (UserId, ChapterPlanId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (ChapterPlanId) REFERENCES ChapterPlans(ChapterPlanId)
+);
+
+-- Table: PurchasedPlans
+CREATE TABLE PurchasedPlans (
+    UserId INT,
+    ChapterPlanId INT,
+	PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (UserId, ChapterPlanId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+    FOREIGN KEY (ChapterPlanId) REFERENCES ChapterPlans(ChapterPlanId)
+);
