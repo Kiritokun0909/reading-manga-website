@@ -1,4 +1,4 @@
-// src/index.js
+// index.js
 const express = require('express');
 const app = express();
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -6,15 +6,16 @@ const swaggerUi = require('swagger-ui-express');
 
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const route = require('./routes/index.js');
+const route = require('./src/routes/index.js');
 
 require('dotenv').config(); // Load environment variables
 
 // Middleware for parsing JSON
 app.use(bodyParser.json());
 app.use(morgan('combined'));
+route(app);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 // Swagger definition
 const swaggerOptions = {
   definition: {
@@ -38,9 +39,6 @@ const swaggerSpecs = swaggerJsdoc(swaggerOptions);
 
 // Set up the Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-
-// Routes init
-route(app);
 
 // Start the server
 app.listen(PORT, () => {

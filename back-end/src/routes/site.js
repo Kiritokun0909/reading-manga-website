@@ -6,6 +6,7 @@ const controller = require("../app/controllers/SiteController.js");
  * @swagger
  * /site/test:
  *   get:
+ *     tags: [Site]
  *     summary: Retrieve the home page
  *     description: Returns the homepage content
  *     responses:
@@ -20,12 +21,13 @@ router.get("/test", (req, res) => {
  * @swagger
  * /site/home:
  *   get:
+ *     tags: [Site]
  *     summary: Retrieve the home page
  *     description: Returns the homepage content
  *     responses:
  *       200:
  *         description: Successful response
  */
-router.use("/", controller.index);
+router.get("/", controller.index);
 
 module.exports = router;
