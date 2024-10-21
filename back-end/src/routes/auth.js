@@ -12,7 +12,7 @@ const userController = require("../app/controllers/UserController.js");
  * @swagger
  * /auth/register:
  *   post:
- *     tags: [Auth]
+ *     tags: [Authentication]
  *     summary: Register new user
  *     description: Register new user account
  *     requestBody:
@@ -45,7 +45,7 @@ router.post("/register", upload.none(), userController.registerUser);
  * @swagger
  * /auth/login:
  *   post:
- *     tags: [Auth]
+ *     tags: [Authentication]
  *     summary: Login user
  *     description: Login user account
  *     requestBody:
@@ -75,7 +75,7 @@ router.post("/login", upload.none(), authController.login);
  * @swagger
  * /auth/logout:
  *   get:
- *     tags: [Auth]
+ *     tags: [Authentication]
  *     summary: Logout user
  *     description: Logout user account
  *     responses:

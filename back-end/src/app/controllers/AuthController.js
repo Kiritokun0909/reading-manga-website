@@ -1,22 +1,26 @@
 // src/app/controllers/AuthController.js
 const authService = require('../services/AuthService.js');
 const { generateToken } = require('../../middlewares/jwtMiddleware.js');
+const HandleCode = require('../../utilities/HandleCode.js');
 
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
         const result = await authService.login(email, password);
 
-        if(result && result.code == authService.LOGIN_FAILED_CODE) {
-            res.status(401).json({ message: result.message });
+        if(result && result.code == HandleCode.LOGIN_FAILED) {
+            res.status(401).json({ message: "Invalid email or password.", });
             return;
         }
 
-        if(result && result.code == authService.LOGIN_SUCCESS_CODE) {
-            const token = generateToken(result.userId, result.roleId);
-            res.status(200).json({ message: result.message, token: token, roleId: result.roleId });
+        if(result && result.code == HandleCode.ACCOUNT_BANNED) {
+            res.status(401).json({ message: 
+                "Your account has been banned. Please send email to our website for support.", });
             return;
         }
+
+        const token = generateToken(result.userId, result.roleId);
+        res.status(200).json({ token: token, userInfo: result.userInfo });
 
     } catch (err) {
         console.log('Failed to login account:', err);
