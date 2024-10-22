@@ -1,12 +1,18 @@
 // src/app/controllers/AdminController.js
 
 const roleService = require("../services/RoleService.js");
+const userService = require("../services/UserService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 
 class AdminController {
   // [GET] /roles
   async getListRole(req, res) {
     return await getRoles(req, res);
+  }
+
+  // [PUT] /ban/{userId}
+  async banUser(req, res) {
+    return await banUser(req, res);
   }
 }
 
@@ -21,6 +27,27 @@ const getRoles = async (req, res) => {
       .json({ message: "Failed to get list roles. Please try again later." });
   }
 };
+
+const banUser = async (req, res) => {
+  const { userId } = req.params;
+
+  if (isNaN(userId) || userId < 1) {
+    return res.status(400).json({ error: "Invalid user id." });
+  }
+
+  try {
+    const result = await userService.banUser(userId);
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    res.status(200).json({ message: "Ban user successfully." });
+  } catch (err) {
+    console.log("Failed to ban user:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to ban user. Please try again later." });
+  }
+}
 
 
 

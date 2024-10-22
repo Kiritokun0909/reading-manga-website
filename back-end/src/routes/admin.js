@@ -56,6 +56,31 @@ router.post("/register", upload.none(), userController.registerAdmin);
  */
 router.get("/roles", adminController.getListRole);
 
-
+/**
+ * @swagger
+ * /admin/ban/{userId}:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Ban user
+ *     description: Ban user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user
+ *         example: "6"
+ *     responses:
+ *       200:
+ *         description: Ban user successfully
+ *       400:
+ *         description: Invalid user id
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put("/ban/:userId", adminController.banUser);
 
 module.exports = router;

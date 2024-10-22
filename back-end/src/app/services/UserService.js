@@ -188,3 +188,24 @@ module.exports.updateUserPassword = async (
     throw err;
   }
 };
+
+module.exports.banUser = async (userId) => {
+  try {
+    const [rows] = await db.query(
+      `
+            UPDATE users
+            SET
+                IsBanned = 1
+            WHERE UserId = ?`,
+      [userId]
+    );
+
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+
+  } catch (err) {
+    throw err;
+  }
+}
+
