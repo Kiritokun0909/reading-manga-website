@@ -4,7 +4,7 @@ const db = require("../../configs/DatabaseConfig.js");
 module.exports.getRoles = async () => {
   try {
     const [rows] = await db.query(`
-            SELECT RoleId, RoleName FROM roles
+            SELECT roleId, roleName FROM roles
         `);
     return {
       roles: rows,

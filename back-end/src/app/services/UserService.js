@@ -28,7 +28,6 @@ module.exports.register = async (username = "user", email, password, role) => {
       [username, email, hashedPassword, role]
     );
 
-    return { code: HandleCode.REGISTER_SUCCESS };
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
       return { code: HandleCode.EMAIL_EXIST };
@@ -38,19 +37,40 @@ module.exports.register = async (username = "user", email, password, role) => {
   }
 };
 
-module.exports.getUserInfo = async (userId) => {
+module.exports.getUserRole = async (userId) => {
   try {
     const [rows] = await db.query(
       `
-            SELECT Username, Email, Avatar, Birthday, Gender, IsBanned FROM users WHERE UserId = ?`,
+            SELECT roleId 
+            FROM users WHERE userId = ?`,
       [userId]
     );
 
     if (rows.length === 0) {
-      return { code: HandleCode.USER_NOT_FOUNDED };
+      return { code: HandleCode.NOT_FOUND };
     }
 
-    return { code: HandleCode.GET_USER_INFO_SUCCESS, userInfo: rows[0] };
+    const roleId = rows[0].roleId;
+    return { roleId: roleId };
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.getUserInfo = async (userId) => {
+  try {
+    const [rows] = await db.query(
+      `
+            SELECT username, email, avatar, birthday, gender, isBanned 
+            FROM users WHERE userId = ?`,
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+
+    return { userInfo: rows[0] };
   } catch (err) {
     throw err;
   }
@@ -58,29 +78,51 @@ module.exports.getUserInfo = async (userId) => {
 
 module.exports.updateUserInfo = async (
   userId,
-  username,
-  avatar,
-  birthday,
-  gender
+  username="",
+  avatar="",
+  birthday="",
+  gender=null
 ) => {
   try {
-    const [rows] = await db.query(
-      `
-            UPDATE users
-            SET
-                Username = ?,
-                Avatar = ?,
-                Birthday = ?,
-                Gender = ?
-            WHERE UserId = ?`,
-      [username, avatar, birthday, gender, userId]
-    );
+    // Initialize arrays to hold the fields to update and the values
+    const fields = [];
+    const values = [];
 
-    if (rows.affectedRows === 0) {
-      return { code: HandleCode.USER_NOT_FOUNDED };
+    // Dynamically add fields that are not null or empty
+    if (username && username.trim().length > 0) {
+      fields.push("Username = ?");
+      values.push(username);
+    }
+    if (avatar && avatar.trim().length > 0) {
+      fields.push("Avatar = ?");
+      values.push(avatar);
+    }
+    if (birthday) {
+      fields.push("Birthday = ?");
+      values.push(birthday);
+    }
+    if (gender !== null) { // Allow for possible falsy values like 0
+      fields.push("Gender = ?");
+      values.push(gender);
     }
 
-    return { code: HandleCode.UPDATE_USER_SUCCESS };
+    // If there are no fields to update, return an appropriate response
+    if (fields.length === 0) {
+      return { code: HandleCode.NO_FIELDS_TO_UPDATE };
+    }
+
+    // Add userId to the values array
+    values.push(userId);
+
+    // Construct the dynamic query
+    const query = `UPDATE users SET ${fields.join(", ")} WHERE UserId = ?`;
+
+    const [rows] = await db.query(query, values);
+
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+
   } catch (err) {
     throw err;
   }
@@ -98,10 +140,9 @@ module.exports.updateUserEmail = async (userId, email) => {
     );
 
     if (rows.affectedRows === 0) {
-      return { code: HandleCode.USER_NOT_FOUNDED };
+      return { code: HandleCode.NOT_FOUND };
     }
 
-    return { code: HandleCode.UPDATE_USER_SUCCESS };
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
       return { code: HandleCode.EMAIL_EXIST };
@@ -111,7 +152,11 @@ module.exports.updateUserEmail = async (userId, email) => {
   }
 };
 
-module.exports.updateUserPassword = async (userId, oldPassword, newPassword) => {
+module.exports.updateUserPassword = async (
+  userId,
+  oldPassword,
+  newPassword
+) => {
   try {
     const [row] = await db.query(
       `SELECT Password FROM users WHERE UserId = ?`,
@@ -119,7 +164,7 @@ module.exports.updateUserPassword = async (userId, oldPassword, newPassword) => 
     );
 
     if (row.length === 0) {
-      return { code: HandleCode.USER_NOT_FOUNDED };
+      return { code: HandleCode.NOT_FOUND };
     }
 
     const storedPassword = row[0].Password;
@@ -139,7 +184,6 @@ module.exports.updateUserPassword = async (userId, oldPassword, newPassword) => 
       [hashedPassword, userId]
     );
 
-    return { code: HandleCode.UPDATE_USER_SUCCESS };
   } catch (err) {
     throw err;
   }

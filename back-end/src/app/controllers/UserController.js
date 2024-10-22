@@ -13,24 +13,24 @@ class UserController {
     return await registerAccount(req, res, userService.RoleEnum.ADMIN);
   }
 
-  // [GET] /account/get-info/{userId}
+  // [GET] /account/{userId}
   async getUserInfo(req, res) {
     return await getInfo(req, res);
   }
 
-  // [GET] /account/update-info
+  // [PUT] /account
   async updateUserInfo(req, res) {
     return await updateInfo(req, res);
   }
 
-  // [GET] /account/update-email
-  async changeEmail(req, res) {
-    return await updateEmail(req, res);
+  // [PUT] /account/change-email
+  async changeUserEmail(req, res) {
+    return await changeEmail(req, res);
   }
 
-  // [GET] /account/update-password
-  async changePassword(req, res) {
-    return await updatePassword(req, res);
+  // [PUT] /account/change-password
+  async changeUserPassword(req, res) {
+    return await changePassword(req, res);
   }
 }
 
@@ -66,8 +66,8 @@ const getInfo = async (req, res) => {
   try {
     const result = await userService.getUserInfo(userId);
 
-    if (result.code == HandleCode.USER_NOT_FOUNDED) {
-      res.status(404).json({ message: "User not found" });
+    if (result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({ message: "User not found." });
       return;
     }
 
@@ -83,6 +83,8 @@ const getInfo = async (req, res) => {
 const updateInfo = async (req, res) => {
   const { userId, username, avatar, birthday, gender } = req.body;
 
+  console.log(userId, username, avatar, birthday, gender);
+
   if (isNaN(userId) || userId < 1) {
     res.status(400).json({ error: "Invalid user id." });
     return;
@@ -91,21 +93,21 @@ const updateInfo = async (req, res) => {
   try {
     const result = await userService.updateUserInfo(userId, username, avatar, birthday, gender);
 
-    if (result.code == HandleCode.USER_NOT_FOUNDED) {
-      res.status(404).json({ message: "User not found" });  
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({ message: "User not found." });  
       return; 
     } 
 
-    res.status(200).json({ message: "Update user info successfully." });
+    res.status(200).json({ message: "Update info successfully." });
   } catch (err) {
     console.log("Failed to update user info:", err);
     res
       .status(500)
-      .json({ message: "Failed to update user info. Please try again later." });
+      .json({ message: "Failed to update info. Please try again later." });
   }
 }
 
-const updateEmail = async (req, res) => {
+const changeEmail = async (req, res) => {
   const { userId, email } = req.body;
 
   if (isNaN(userId) || userId < 1) {
@@ -116,8 +118,8 @@ const updateEmail = async (req, res) => {
   try {
     const result = await userService.updateUserEmail(userId, email);
 
-    if (result.code == HandleCode.USER_NOT_FOUNDED) {
-      res.status(404).json({ message: "User not found" });
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({ message: "User not found." });
       return;
     }
 
@@ -128,16 +130,16 @@ const updateEmail = async (req, res) => {
       return;
     }
 
-    res.status(200).json({ message: "Update user email successfully." });
+    res.status(200).json({ message: "Change email successfully." });
   } catch (err) {
-    console.log("Failed to update user email:", err);
+    console.log("Failed to change user email:", err);
     res
       .status(500)
-      .json({ message: "Failed to update user email. Please try again later." });
+      .json({ message: "Failed to change email. Please try again later." });
   }
 }
 
-const updatePassword = async (req, res) => {
+const changePassword = async (req, res) => {
   const { userId, oldPassword, newPassword } = req.body;
 
   if (isNaN(userId) || userId < 1) {
@@ -148,8 +150,8 @@ const updatePassword = async (req, res) => {
   try {
     const result = await userService.updateUserPassword(userId, oldPassword, newPassword);
 
-    if (result.code == HandleCode.USER_NOT_FOUNDED) {
-      res.status(404).json({ message: "User not found" });
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({ message: "User not found." });
       return;
     }
 
@@ -158,12 +160,12 @@ const updatePassword = async (req, res) => {
       return;
     }
 
-    res.status(200).json({ message: "Update user password successfully." });
+    res.status(200).json({ message: "Change password successfully." });
   } catch (err) {
-    console.log("Failed to update user password:", err);
+    console.log("Failed to change user password:", err);
     res
       .status(500)
-      .json({ message: "Failed to update user password. Please try again later." });
+      .json({ message: "Failed to change password. Please try again later." });
   }
 }
 

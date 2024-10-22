@@ -3,6 +3,18 @@ const authService = require('../services/AuthService.js');
 const { generateToken } = require('../../middlewares/jwtMiddleware.js');
 const HandleCode = require('../../utilities/HandleCode.js');
 
+class AuthController {
+    // [POST] /auth/login
+    async login(req, res) {
+        return await loginUser(req, res);
+    }
+
+    // [GET] /auth/logout
+    async logout(req, res) {
+        res.status(200).json({ message: 'Logout successfully.' });
+    }
+}
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -19,24 +31,12 @@ const loginUser = async (req, res) => {
             return;
         }
 
-        const token = generateToken(result.userId, result.roleId);
+        const token = generateToken(result.userId);
         res.status(200).json({ token: token, userInfo: result.userInfo });
 
     } catch (err) {
         console.log('Failed to login account:', err);
         res.status(500).json({ message: 'Failed to login account. Please try again later.' });
-    }
-}
-
-class AuthController {
-    // [POST] /auth/login
-    async login(req, res) {
-        return await loginUser(req, res);
-    }
-
-    // [GET] /auth/logout
-    async logout(req, res) {
-        res.status(200).json({ message: 'Logout successfully.' });
     }
 }
 

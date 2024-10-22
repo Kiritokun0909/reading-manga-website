@@ -1,9 +1,10 @@
 require('dotenv').config(); // Load environment variables
 
 const jwt = require('jsonwebtoken');
+const userService = require('../app/services/UserService.js');
 
-const generateToken = (userId, roleId) => {
-  return jwt.sign({ id: userId, role: roleId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 };
 
 const verifyToken = (req, res, next) => {
@@ -14,7 +15,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = decoded;
     next();
   } catch (error) {
@@ -24,7 +25,8 @@ const verifyToken = (req, res, next) => {
 
 const authorizeRole = (requiredRole) => {
   return (req, res, next) => {
-    if (req.user.role !== requiredRole) {
+    const userRole = userService.getUserRole(req.user.id);
+    if (userRole !== requiredRole) {
       return res.status(403).send('Access denied. Insufficient permissions.');
     }
     next();

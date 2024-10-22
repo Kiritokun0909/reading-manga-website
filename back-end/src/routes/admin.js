@@ -51,8 +51,10 @@ router.post("/register", upload.none(), userController.registerAdmin);
  *     responses:
  *       200:
  *         description: Get list roles successfully
+ *       500:
+ *         description: Internal server error
  */
-router.get("/roles", adminController.getRoles);
+router.get("/roles", adminController.getListRole);
 
 
 

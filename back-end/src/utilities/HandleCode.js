@@ -1,18 +1,39 @@
 // src/utilities/HandleCode.js
 
 module.exports = {
-    // Error code for auth service
+    CREATE_SUCCESS: 900,
+    CREATE_FAILED: 901,
+
+    NO_FIELDS_TO_UPDATE: 902,
+    UPDATE_SUCCESS: 903,
+    UPDATE_FAILED: 904,
+
+    DELETE_SUCCESS: 905,
+    DELETE_FAILED: 906,
+
+    GET_SUCCESS: 907,
+    GET_FAILED: 908,
+
+    NOT_FOUND: 909,
+
+    // Handle code for auth service
     LOGIN_FAILED: 1000,
     ACCOUNT_BANNED: 1001,
     LOGIN_SUCCESS: 1002,
 
-    // Error code for user service
-    REGISTER_SUCCESS: 2000,
-    USER_NOT_FOUNDED: 2001,
+    // Handle code for user service
     EMAIL_EXIST: 2002,
-    GET_USER_INFO_SUCCESS: 2003,
-    UPDATE_USER_SUCCESS: 2004,
-    UPDATE_USER_FAILED: 2005,
     PASSWORD_NOT_MATCH: 2006,
+
+    // Handle code for genre service
+
+
+
+    //Handle code for author service
+    FILTER_BY_AUTHOR_UPDATE_DATE_DESC: 4000,
+    FILTER_BY_AUTHOR_UPDATE_DATE_ASC: 4001,
+    FILTER_BY_AUTHOR_NAME_ASC: 4002,
+    FILTER_BY_AUTHOR_NAME_DESC: 4003,
+
 
 }
