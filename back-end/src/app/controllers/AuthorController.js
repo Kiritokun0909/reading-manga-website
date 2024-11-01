@@ -1,7 +1,7 @@
 // src/app/controllers/AuthorController.js
-
 const authorService = require("../services/AuthorService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
+const { uploadFile } = require("../../utilities/UploadFile.js");
 
 class AuthorController {
   // [GET] /author/list?pageNumber={pageNumber}&itemsPerPage={itemsPerPage}&filter={filter}
@@ -30,19 +30,9 @@ class AuthorController {
   }
 }
 
+
 const getListAuthor = async (req, res) => {
   const { pageNumber, itemsPerPage, filter } = req.query;
-  
-  if (isNaN(pageNumber) || pageNumber < 0) {
-    res.status(400).json({ error: "Invalid page number." });
-    return;
-  }
-
-  if (isNaN(itemsPerPage) || itemsPerPage < 0) {
-    res.status(400).json({ error: "Invalid items per page." });
-    return;
-  }
-
   try{
     const result = await authorService.getListAuthor(parseInt(pageNumber), parseInt(itemsPerPage), filter);
     res.status(200).json(result);
@@ -52,19 +42,13 @@ const getListAuthor = async (req, res) => {
       .status(500)
       .json({ message: "Failed to get list authors. Please try again later." });
   }
-  
 }
+
 
 const getAuthor = async (req, res) => {
   const { authorId } = req.params;
-
-  if (isNaN(authorId) || authorId < 1) {
-    res.status(400).json({ error: "Invalid author id." });
-    return;
-  }
-
   try {
-    const result = await authorService.getAuthorInfo(authorId);
+    const result = await authorService.getAuthorById(authorId);
 
     if (result.code == HandleCode.NOT_FOUND) {
       res.status(404).json({ message: "Author not found." });
@@ -80,10 +64,15 @@ const getAuthor = async (req, res) => {
   }
 };
 
+
 const addAuthor = async (req, res) => {
-  const { avatar, authorName, biography } = req.body;
+  const { authorName, biography } = req.body;
   try {
-    const result = await authorService.addAuthor(avatar, authorName, biography);
+    let imageUrl = "";
+    if(req.file) {
+      imageUrl = await uploadFile(req.file, HandleCode.FB_AUTHOR_AVATAR_FOLDER_PATH);
+    }
+    const result = await authorService.addAuthor(imageUrl, authorName, biography);
     res.status(200).json({ message: "Add new author successfully." });
   } catch (err) {
     console.log("Failed to add new author:", err);
@@ -95,17 +84,15 @@ const addAuthor = async (req, res) => {
 
 const updateAuthor = async (req, res) => {
   const { authorId } = req.params;
-
-  if (isNaN(authorId) || authorId < 1) {
-    res.status(400).json({ error: "Invalid author id." });
-    return;
-  }
-
-  const { avatar, authorName, biography } = req.body;
+  const { authorName, biography } = req.body;
   try {
-    const result = await authorService.updateAuthor(authorId, avatar, authorName, biography);
+    let imageUrl = ""; 
+    if (req.file) {
+      imageUrl = await uploadFile(req.file, HandleCode.FB_AUTHOR_AVATAR_FOLDER_PATH);
+    }
+    const result = await authorService.updateAuthor(authorId, imageUrl, authorName, biography);
 
-    if (result && result.code == HandleCode.NOT_FOUND) {
+    if(result && result.code == HandleCode.NOT_FOUND) {
       res.status(404).json({ message: "Author not found." });
       return;
     }
@@ -121,12 +108,6 @@ const updateAuthor = async (req, res) => {
 
 const removeAuthor = async (req, res) => {
   const { authorId } = req.params;
-
-  if (isNaN(authorId) || authorId < 1) {
-    res.status(400).json({ error: "Invalid author id." });
-    return;
-  }
-
   try {
     const result = await authorService.removeAuthor(authorId);
 

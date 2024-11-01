@@ -4,6 +4,8 @@ const HandleCode = require("../../utilities/HandleCode.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+const mangaService = require("./MangaService.js");
+
 const RoleEnum = {
   ADMIN: 1,
   USER: 2,
@@ -41,23 +43,21 @@ module.exports.getUserRole = async (userId) => {
   try {
     const [rows] = await db.query(
       `
-            SELECT roleId 
-            FROM users WHERE userId = ?`,
+            SELECT RoleId 
+            FROM users WHERE UserId = ?`,
       [userId]
     );
-
     if (rows.length === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
-    const roleId = rows[0].roleId;
-    return { roleId: roleId };
+    const roleId = rows[0].RoleId;
+    return roleId;
   } catch (err) {
     throw err;
   }
 };
 
-module.exports.getUserInfo = async (userId) => {
+module.exports.getUserById = async (userId) => {
   try {
     const [rows] = await db.query(
       `
@@ -101,7 +101,7 @@ module.exports.updateUserInfo = async (
       fields.push("Birthday = ?");
       values.push(birthday);
     }
-    if (gender !== null) { // Allow for possible falsy values like 0
+    if (gender !== null && gender.trim().length > 0) { // Allow for possible falsy values like 0
       fields.push("Gender = ?");
       values.push(gender);
     }
@@ -209,3 +209,176 @@ module.exports.banUser = async (userId) => {
   }
 }
 
+//#region like-unlike-manga
+module.exports.likeManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "INSERT INTO likes (mangaId, userId) VALUES (?, ?)",
+      [mangaId, userId]
+    );
+    await mangaService.updateMangaLikes(mangaId);
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return { code: HandleCode.USER_ALREADY_LIKE };
+    }
+    if (err.code === "ER_NO_REFERENCED_ROW_2") {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    throw err;
+  }
+}
+
+module.exports.unlikeManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "DELETE FROM likes WHERE mangaId = ? AND userId = ?",
+      [mangaId, userId]
+    );
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    await mangaService.updateMangaLikes(mangaId, false);
+  } catch (err) {
+    throw err;
+  }
+}
+//#endregion
+
+//#region follow-unfollow-manga
+module.exports.followManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "INSERT INTO follows (mangaId, userId) VALUES (?, ?)",
+      [mangaId, userId]
+    );
+    await mangaService.updateMangaFollows(mangaId);
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return { code: HandleCode.USER_ALREADY_FOLLOW };
+    }
+    if (err.code === "ER_NO_REFERENCED_ROW_2") {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    throw err;
+  }
+}
+
+module.exports.unfollowManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "DELETE FROM follows WHERE mangaId = ? AND userId = ?",
+      [mangaId, userId]
+    );
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    await mangaService.updateMangaFollows(mangaId, false);
+  } catch (err) {
+    throw err;
+  }
+}
+//#endregion
+
+//#region check user like-follow-manga
+module.exports.isLikeManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM likes WHERE mangaId = ? AND userId = ?",
+      [mangaId, userId]
+    );
+    if (rows.length === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
+module.exports.isFollowManga = async (mangaId, userId) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM follows WHERE mangaId = ? AND userId = ?",
+      [mangaId, userId]
+    );
+    if (rows.length === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+//#endregion
+
+//#region implement get-list-like-follow
+module.exports.getListLikeManga = async (userId, pageNumber, itemsPerPage) => {
+  try {
+    const [totalRows] = await db.query(
+      "SELECT COUNT(UserId) as total FROM likes"
+    );
+    const totalMangas = totalRows[0].total;
+
+    const totalPages = Math.ceil(totalMangas / itemsPerPage);
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        mangas: [],
+      };
+    }
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
+        FROM likes l
+          JOIN mangas m ON l.mangaId = m.mangaId 
+        WHERE userId = ?
+        LIMIT ? OFFSET ?`,
+      [userId,itemsPerPage, offset]
+    );
+
+    return {
+      pageNumber,
+      totalPages,
+      mangas: rows,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+module.exports.getListFollowManga = async (userId, pageNumber, itemsPerPage) => {
+  try {
+    const [totalRows] = await db.query(
+      "SELECT COUNT(UserId) as total FROM likes"
+    );
+    const totalMangas = totalRows[0].total;
+
+    const totalPages = Math.ceil(totalMangas / itemsPerPage);
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        mangas: [],
+      };
+    }
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
+        FROM follows f
+          JOIN mangas m ON f.mangaId = m.mangaId 
+        WHERE userId = ?
+        LIMIT ? OFFSET ?`,
+      [userId,itemsPerPage, offset]
+    );
+
+    return {
+      pageNumber,
+      totalPages,
+      mangas: rows,
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+//#endregion

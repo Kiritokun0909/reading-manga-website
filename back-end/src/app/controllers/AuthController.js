@@ -31,7 +31,7 @@ const loginUser = async (req, res) => {
             return;
         }
 
-        const token = generateToken(result.userId);
+        const token = generateToken(result.userInfo.userId);
         res.status(200).json({ token: token, userInfo: result.userInfo });
 
     } catch (err) {

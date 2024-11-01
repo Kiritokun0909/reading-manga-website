@@ -15,7 +15,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -24,8 +24,8 @@ const verifyToken = (req, res, next) => {
 };
 
 const authorizeRole = (requiredRole) => {
-  return (req, res, next) => {
-    const userRole = userService.getUserRole(req.user.id);
+  return async (req, res, next) => {
+    const userRole = await userService.getUserRole(req.user.id);
     if (userRole !== requiredRole) {
       return res.status(403).send('Access denied. Insufficient permissions.');
     }

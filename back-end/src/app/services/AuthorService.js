@@ -21,16 +21,13 @@ module.exports.getListAuthor = async (
       };
     }
 
-    const offset = (pageNumber - 1) * itemsPerPage;
-
-    // Map filter value to corresponding SQL ORDER BY clause
     let orderByClause;
     switch (filter) {
       case HandleCode.FILTER_BY_AUTHOR_NAME_ASC:
-        orderByClause = "authorName ASC";
+        orderByClause = "AuthorName ASC";
         break;
       case HandleCode.FILTER_BY_AUTHOR_NAME_DESC:
-        orderByClause = "authorName DESC";
+        orderByClause = "AuthorName DESC";
         break;
       case HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_ASC:
         orderByClause = "UpdateDate ASC";
@@ -41,6 +38,7 @@ module.exports.getListAuthor = async (
         break;
     }
 
+    const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
       `SELECT authorId, avatar, authorName
         FROM authors 
@@ -52,14 +50,14 @@ module.exports.getListAuthor = async (
     return {
       pageNumber,
       totalPages,
-      authors: rows, // Fixed the typo from 'mangas' to 'authors'
+      authors: rows,
     };
   } catch (err) {
     throw err;
   }
 };
 
-module.exports.getAuthorInfo = async (authorId) => {
+module.exports.getAuthorById = async (authorId) => {
   try {
     const [rows] = await db.query(
       "SELECT authorId, avatar, authorName, biography, updateDate FROM authors WHERE authorId = ?",
@@ -89,11 +87,9 @@ module.exports.addAuthor = async (avatar, authorName, biography) => {
 
 module.exports.updateAuthor = async (authorId, avatar, authorName, biography) => {
   try {
-    // Initialize an array to hold the fields to be updated
     const fields = [];
     const values = [];
 
-    // Dynamically add fields that are not null or empty
     if (avatar && avatar.trim().length > 0) {
       fields.push("avatar = ?");
       values.push(avatar);
@@ -102,22 +98,19 @@ module.exports.updateAuthor = async (authorId, avatar, authorName, biography) =>
       fields.push("authorName = ?");
       values.push(authorName);
     }
-    if (biography !== null) { // You might want to allow empty biography
+    if (biography !== null) { // Allow empty biography
       fields.push("biography = ?");
       values.push(biography);
     }
 
-    // If there are no fields to update, return an appropriate response
     if (fields.length === 0) {
       return { code: HandleCode.NO_FIELDS_TO_UPDATE };
     }
 
-    // Add authorId to the values array
+    fields.push("updateDate = CURRENT_TIMESTAMP()");
     values.push(authorId);
 
-    // Construct the dynamic query
     const query = `UPDATE authors SET ${fields.join(", ")} WHERE authorId = ?`;
-
     const [rows] = await db.query(query, values);
 
     if (rows.affectedRows === 0) {
@@ -136,6 +129,7 @@ module.exports.removeAuthor = async (authorId) => {
       "DELETE FROM authors WHERE authorId = ?",
       [authorId]
     );
+    
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }

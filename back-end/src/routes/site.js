@@ -6,8 +6,8 @@ const router = express.Router();
  * /site/test:
  *   get:
  *     tags: [Site]
- *     summary: Retrieve the home page
- *     description: Returns the homepage content
+ *     summary: Test api call
+ *     description: Test api call
  *     responses:
  *       200:
  *         description: Successful response

@@ -1,9 +1,17 @@
 //src/routes/author.js
 const express = require("express");
 const multer = require("multer");
-
 const router = express.Router();
-const upload = multer();
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads');  // Temporary folder for storage
+    },
+    filename: function (req, file, cb) {
+      cb(null,  Date.now() + file.originalname);  // Unique filename
+    }
+})
+const upload = multer({ storage: storage });
 
 const authorController = require("../app/controllers/AuthorController.js");
 
@@ -50,6 +58,37 @@ router.get("/list", authorController.getListAuthor);
 
 /**
  * @swagger
+ * /author:
+ *   post:
+ *     tags: [Author]
+ *     summary: Add new author with image
+ *     description: Add a new author with an avatar image
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               authorName:
+ *                 type: string
+ *                 example: "Author name"
+ *               avatar:
+ *                 type: file
+ *                 description: Upload the author's avatar image
+ *               biography:
+ *                 type: string
+ *                 example: "Biography"
+ *     responses:
+ *       200:
+ *         description: Add new author successfully              
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/", upload.single('avatar'), authorController.addAuthor);
+
+/**
+ * @swagger
  * /author/{authorId}:
  *   get:
  *     tags: [Author]
@@ -77,37 +116,6 @@ router.get("/:authorId", authorController.getAuthorInfo);
 
 /**
  * @swagger
- * /author:
- *   post:
- *     tags: [Author]
- *     summary: Add new author
- *     description: Add new author
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:  
- *               authorName:
- *                 type: string
- *                 example: "Author name"
- *               avatar:
- *                 type: string
- *                 example: "Avatar"
- *               biography:
- *                 type: string
- *                 example: "Biography"
- *     responses:
- *       200:
- *         description: Add new author successfully              
- *       500:
- *         description: Internal server error
- */
-router.post("/", authorController.addAuthor);
-
-/**
- * @swagger
  * /author/{authorId}:
  *   put:
  *     tags: [Author]
@@ -124,16 +132,21 @@ router.post("/", authorController.addAuthor);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:  
  *               authorName:
  *                 type: string
  *                 example: "New author name"
+ *                 description: Keep old value if send empty value
+ *               avatar:
+ *                 type: file
+ *                 description: Upload the author's avatar image, keep old value if send empty value
  *               biography:
  *                 type: string
  *                 example: "Update Biography"
+ *                 description: Still update if send empty value
  *     responses:
  *       200:
  *         description: Update author successfully
@@ -144,7 +157,7 @@ router.post("/", authorController.addAuthor);
  *       500:
  *         description: Internal server error
  */
-router.put("/:authorId", authorController.updateAuthor);
+router.put("/:authorId", upload.single('avatar'), authorController.updateAuthor);
 
 /**
  * @swagger
