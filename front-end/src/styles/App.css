@@ -1,0 +1,30 @@
+.content {
+  background-color: #ebebeb;
+  min-height: 80vh;
+
+  display: flex;
+}
+
+.column-item__sidebar-one,
+.column-item__sidebar-two {
+  flex: 1;
+  display: block;
+}
+
+.column-item__main-column {
+  flex: 4;
+  background-color: white;
+  padding: 12px 12px;
+  border-radius: 4px;
+}
+
+@media (max-width: 1024px) {
+  .column-item__sidebar-one,
+  .column-item__sidebar-two {
+    display: none;
+  }
+
+  .column-item__main-column {
+    border-radius: 0px;
+  }
+}

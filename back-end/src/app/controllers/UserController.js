@@ -1,34 +1,118 @@
 // src/app/controllers/AuthController.js
 const HandleCode = require("../../utilities/HandleCode");
 const userService = require("../services/UserService");
-const { uploadFile } = require("../../utilities/UploadFile.js");
+const { uploadFile } = require("../../utilities/UploadFile");
 
 class UserController {
-  //#region register-account
-  async registerUser(req, res) {
-    return await registerAccount(req, res, userService.RoleEnum.USER);
-  }
+  //#region manage-account
+  async getUserInfo(req, res) {
+    let userId = req.params.userId;
+    if (userId == 0) userId = req.user.id;
+    try {
+      const result = await userService.getUserInfoById(userId);
+      if (result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "User not found." });
+        return;
+      }
 
-  async registerAdmin(req, res) {
-    return await registerAccount(req, res, userService.RoleEnum.ADMIN);
+      res.status(200).json(result.userInfo);
+    } catch (err) {
+      console.log("Failed to get user info:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to get user info. Please try again later." });
+    }
   }
   //#endregion
 
-  //#region manage-account
-  async getUserInfo(req, res) {
-    return await getInfo(req, res);
-  }
-
+  //#region update-account
   async updateUserInfo(req, res) {
-    return await updateInfo(req, res);
+    const { username } = req.body;
+    const userId = req.user.id;
+    try {
+      let imageUrl = ""; // Default to existing avatar
+      if (req.file) {
+        imageUrl = await uploadFile(
+          req.file,
+          HandleCode.FB_USER_AVATAR_FOLDER_PATH
+        );
+      }
+
+      const result = await userService.updateUserInfo(
+        userId,
+        username,
+        imageUrl
+      );
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "User not found." });
+        return;
+      }
+
+      res.status(200).json({ message: "Update info successfully." });
+    } catch (err) {
+      console.log("Failed to update user info:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to update info. Please try again later." });
+    }
   }
 
   async changeUserEmail(req, res) {
-    return await changeEmail(req, res);
+    const { email } = req.body;
+    const userId = req.user.id;
+    try {
+      const result = await userService.updateUserEmail(userId, email);
+
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "User not found." });
+        return;
+      }
+
+      if (result && result.code == HandleCode.EMAIL_EXIST) {
+        res
+          .status(409)
+          .json({ message: "Email is already existed. Try another email." });
+        return;
+      }
+
+      res.status(200).json({ message: "Change email successfully." });
+    } catch (err) {
+      console.log("Failed to change user email:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to change email. Please try again later." });
+    }
   }
 
   async changeUserPassword(req, res) {
-    return await changePassword(req, res);
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    try {
+      const result = await userService.updateUserPassword(
+        userId,
+        oldPassword,
+        newPassword
+      );
+
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "User not found." });
+        return;
+      }
+
+      if (result && result.code == HandleCode.PASSWORD_NOT_MATCH) {
+        res.status(400).json({ message: "Old password is not correct." });
+        return;
+      }
+
+      res.status(200).json({ message: "Change password successfully." });
+    } catch (err) {
+      console.log("Failed to change user password:", err);
+      res
+        .status(500)
+        .json({
+          message: "Failed to change password. Please try again later.",
+        });
+    }
   }
   //#endregion
 
@@ -75,163 +159,6 @@ class UserController {
 
 module.exports = new UserController();
 
-//#region implement register-account
-const registerAccount = async (req, res, role) => {
-  const { username, email, password } = req.body;
-  try {
-    const result = await userService.register(username, email, password, role);
-
-    if (result && result.code == HandleCode.EMAIL_EXIST) {
-      res
-        .status(409)
-        .json({ message: "Email is already existed. Try another email." });
-      return;
-    }
-
-    res.status(201).json({ message: "Register account successfully." });
-  } catch (err) {
-    console.log("Failed to register account:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to register account. Please try again later." });
-  }
-};
-//#endregion
-
-//#region implement manage-account
-const getInfo = async (req, res) => {
-  const userId = req.params.userId;
-
-  if (isNaN(userId) || userId < 1) {
-    res.status(400).json({ error: "Invalid user id." });
-    return;
-  }
-
-  try {
-    const result = await userService.getUserById(userId);
-
-    if (result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "User not found." });
-      return;
-    }
-
-    res.status(200).json(result.userInfo);
-  } catch (err) {
-    console.log("Failed to get user info:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to get user info. Please try again later." });
-  }
-};
-
-const updateInfo = async (req, res) => {
-  const { userId, username, avatar, birthday, gender } = req.body;
-
-  if (isNaN(userId) || userId < 1) {
-    res.status(400).json({ error: "Invalid user id." });
-    return;
-  }
-
-  try {
-    const currentUser = await userService.getUserById(userId);
-    if (!currentUser) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    let imageUrl = currentUser.avatar; // Default to existing avatar
-
-    // If a new avatar file is uploaded, handle it
-    if (req.file) {
-      imageUrl = await uploadFile(
-        req.file,
-        HandleCode.FB_USER_AVATAR_FOLDER_PATH
-      );
-    }
-
-    const result = await userService.updateUserInfo(
-      userId,
-      username,
-      imageUrl,
-      birthday,
-      gender
-    );
-
-    res.status(200).json({ message: "Update info successfully." });
-  } catch (err) {
-    console.log("Failed to update user info:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to update info. Please try again later." });
-  }
-};
-
-const changeEmail = async (req, res) => {
-  const { userId, email } = req.body;
-
-  if (isNaN(userId) || userId < 1) {
-    res.status(400).json({ error: "Invalid user id." });
-    return;
-  }
-
-  try {
-    const result = await userService.updateUserEmail(userId, email);
-
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "User not found." });
-      return;
-    }
-
-    if (result && result.code == HandleCode.EMAIL_EXIST) {
-      res
-        .status(409)
-        .json({ message: "Email is already existed. Try another email." });
-      return;
-    }
-
-    res.status(200).json({ message: "Change email successfully." });
-  } catch (err) {
-    console.log("Failed to change user email:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to change email. Please try again later." });
-  }
-};
-
-const changePassword = async (req, res) => {
-  const { userId, oldPassword, newPassword } = req.body;
-
-  if (isNaN(userId) || userId < 1) {
-    res.status(400).json({ error: "Invalid user id." });
-    return;
-  }
-
-  try {
-    const result = await userService.updateUserPassword(
-      userId,
-      oldPassword,
-      newPassword
-    );
-
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "User not found." });
-      return;
-    }
-
-    if (result && result.code == HandleCode.PASSWORD_NOT_MATCH) {
-      res.status(400).json({ message: "Old password is not correct." });
-      return;
-    }
-
-    res.status(200).json({ message: "Change password successfully." });
-  } catch (err) {
-    console.log("Failed to change user password:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to change password. Please try again later." });
-  }
-};
-//#endregion
-
 //#region implement like-unlike-manga
 const likeManga = async (req, res) => {
   const { mangaId } = req.params;
@@ -263,7 +190,9 @@ const unlikeManga = async (req, res) => {
   try {
     const result = await userService.unlikeManga(mangaId, userId);
     if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found or user already unlike this manga." });
+      res.status(404).json({
+        message: "Manga not found or user already unlike this manga.",
+      });
       return;
     }
     res.status(200).json(result);
@@ -307,7 +236,9 @@ const unfollowManga = async (req, res) => {
   try {
     const result = await userService.unfollowManga(mangaId, userId);
     if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found or user already unlike this manga." });
+      res.status(404).json({
+        message: "Manga not found or user already unlike this manga.",
+      });
       return;
     }
     res.status(200).json(result);
@@ -326,17 +257,19 @@ const isLike = async (req, res) => {
   const userId = req.user.id;
   try {
     const result = await userService.isLikeManga(mangaId, userId);
-    if(result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found or user already unlike this manga." });
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({
+        message: "Manga not found or user already unlike this manga.",
+      });
       return;
     }
 
     res.status(200).json(result);
   } catch (err) {
     console.log("Failed to check user like manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to check user like manga. Please try again later." });
+    res.status(500).json({
+      message: "Failed to check user like manga. Please try again later.",
+    });
   }
 };
 
@@ -345,34 +278,39 @@ const isFollow = async (req, res) => {
   const userId = req.user.id;
   try {
     const result = await userService.isFollowManga(mangaId, userId);
-    if(result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found or user already unfollow this manga." });
+    if (result && result.code == HandleCode.NOT_FOUND) {
+      res.status(404).json({
+        message: "Manga not found or user already unfollow this manga.",
+      });
       return;
     }
 
     res.status(200).json(result);
   } catch (err) {
     console.log("Failed to check user follow manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to check user follow manga. Please try again later." });
+    res.status(500).json({
+      message: "Failed to check user follow manga. Please try again later.",
+    });
   }
 };
 //#endregion
 
-//#region implement get-list-like-follow
+//#region get-list-like-follow
 const getListLike = async (req, res) => {
   const { pageNumber, itemsPerPage } = req.query;
   const userId = req.user.id;
-
   try {
-    const result = await userService.getListLikeManga(userId, parseInt(pageNumber), parseInt(itemsPerPage));
+    const result = await userService.getListMangaUserLike(
+      userId,
+      parseInt(pageNumber),
+      parseInt(itemsPerPage)
+    );
     res.status(200).json(result);
   } catch (err) {
     console.log("Failed to get list like manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to get list like manga. Please try again later." });
+    res.status(500).json({
+      message: "Failed to get list like manga. Please try again later.",
+    });
   }
 };
 
@@ -380,14 +318,17 @@ const getListFollow = async (req, res) => {
   const { pageNumber, itemsPerPage } = req.query;
   const userId = req.user.id;
   try {
-    const result = await userService.getListFollowManga(userId, parseInt(pageNumber), parseInt(itemsPerPage));
+    const result = await userService.getListMangaUserFollow(
+      userId,
+      parseInt(pageNumber),
+      parseInt(itemsPerPage)
+    );
     res.status(200).json(result);
   } catch (err) {
     console.log("Failed to get list follow manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to get list follow manga. Please try again later." });
+    res.status(500).json({
+      message: "Failed to get list follow manga. Please try again later.",
+    });
   }
 };
 //#endregion
-

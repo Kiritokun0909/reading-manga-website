@@ -1,87 +1,17 @@
-// src/routes/auth.js
-const multer = require("multer");
 const express = require("express");
-
 const router = express.Router();
-const upload = multer();
 
 const authController = require("../app/controllers/AuthController.js");
-const userController = require("../app/controllers/UserController.js");
+const { verifyRefreshToken } = require("../middlewares/jwt.js");
 
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     tags: [Authentication]
- *     summary: Register new user
- *     description: Register new user account
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: "tester@gmail.com"
- *               password:
- *                 type: string
- *                 example: "123456"
- *               username:
- *                 type: string
- *                 example: "Tester"
- *     responses:
- *       200:
- *         description: Register account successfully
- *       409:
- *         description: Email is already existed
- *       500:
- *         description: Internal server error
- */
-router.post("/register", upload.none(), userController.registerUser);
+router.post("/register", authController.register);
 
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     tags: [Authentication]
- *     summary: Login user
- *     description: Login user account
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: "admin@gmail.com"
- *               password:
- *                 type: string
- *                 example: "123456"
- *     responses:
- *       200:
- *         description: Login successfully
- *       401:
- *         description: Invalid email or password
- *       500:
- *         description: Internal server error
- */
-router.post("/login", upload.none(), authController.login);
+router.post("/login", authController.login);
 
-/**
- * @swagger
- * /auth/logout:
- *   get:
- *     tags: [Authentication]
- *     summary: Logout user
- *     description: Logout user account
- *     responses:
- *       200:
- *         description: Logout successfully
- */
-router.get("/logout", authController.logout);
+router.post("/refresh-token", verifyRefreshToken, authController.refreshToken);
+
+router.post("/forgot-password", authController.forgotPassword);
+
+router.post("/reset-password", authController.resetPassword);
 
 module.exports = router;

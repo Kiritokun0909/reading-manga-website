@@ -1,10 +1,7 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 
 const app = express();
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
 
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -16,53 +13,16 @@ require("dotenv").config(); // Load environment variables
 app.use(bodyParser.json());
 app.use(morgan("combined"));
 
-// Allow requests from http://localhost:3000
+// Allow all requests from anywhere
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "*",
   })
 );
 
 route(app);
 
-const PORT = process.env.PORT || 4000;
-// Swagger definition
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "WebTruyen API Documentation",
-      version: "1.0.0",
-      description: "A simple CRUD API application",
-    },
-    servers: [
-      {
-        url: `http://localhost:${PORT}`, // Change this to your server URL
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-  },
-  apis: ["./src/routes/*.js"], // Path to your route files (modify as needed)
-};
-
-// Initialize Swagger docs
-const swaggerSpecs = swaggerJsdoc(swaggerOptions);
-
-// Set up the Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+const PORT = process.env.PORT || 3000;
 
 // Start the server
 app.listen(PORT, () => {

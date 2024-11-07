@@ -24,8 +24,10 @@ module.exports.addGenre = async (genreName) => {
         `,
       [genreName]
     );
-
   } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return { code: HandleCode.GENRE_EXIST };
+    }
     throw err;
   }
 };
@@ -44,11 +46,13 @@ module.exports.updateGenre = async (genreId, genreName) => {
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
+    if (err.code === "ER_DUP_ENTRY") {
+      return { code: HandleCode.GENRE_EXIST };
+    }
     throw err;
   }
-}
+};
 
 module.exports.removeGenre = async (genreId) => {
   try {
@@ -62,8 +66,7 @@ module.exports.removeGenre = async (genreId) => {
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     throw err;
   }
-}
+};

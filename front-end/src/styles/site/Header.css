@@ -1,0 +1,138 @@
+header {
+  width: 100%;
+  background-color: #f8f9fa;
+}
+
+.top-header {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 12px;
+  background-color: #343a40;
+  color: white;
+}
+
+.logo {
+  margin: auto;
+}
+
+.logo a {
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.logo a:hover {
+  color: orange;
+}
+
+.search-bar {
+  display: flex;
+  flex: 1;
+  margin-left: 12px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  color: black;
+}
+
+.auth-buttons button {
+  margin-left: 12px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.auth-buttons button:hover {
+  filter: brightness(80%);
+}
+
+.nav-bar {
+  background-color: #495057;
+}
+
+.nav-bar ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0px;
+  margin: auto;
+}
+
+.nav-bar ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.nav-bar ul li a:hover,
+.nav-bar ul li:hover > a {
+  background-color: #343a40;
+}
+
+.sub-menu {
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  background-color: #343a40;
+  z-index: 1000;
+  left: 0;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.sub-menu li {
+  text-align: center;
+}
+
+.sub-menu li a {
+  display: block;
+  padding: 10px 20px;
+  color: white;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.sub-menu li a:hover {
+  color: orange;
+}
+
+.account-sub-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #343a40;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.account-sub-menu li {
+  text-align: center;
+  margin-top: 4px;
+  padding: 6px 0px;
+  cursor: pointer;
+  border-top: 1px solid grey;
+}
+
+.account-sub-menu li a {
+  color: white;
+  text-decoration: none;
+  padding: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.account-sub-menu li a:hover {
+  color: orange;
+}

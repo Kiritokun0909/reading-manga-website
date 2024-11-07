@@ -1,0 +1,15 @@
+.genre-info {
+  display: flex;
+  text-align: left;
+  padding: 12px 20px 0px 20px;
+}
+
+.genre-info a {
+  margin-left: 24px;
+  text-decoration: none;
+  color: black;
+}
+
+.genre-info a:hover {
+  color: #f18121;
+}

@@ -39,7 +39,7 @@ const adminController = require("../app/controllers/AdminController.js");
  *       500:
  *         description: Internal server error
  */
-router.post("/register", upload.none(), userController.registerAdmin);
+// router.post("/register", upload.none(), userController.registerAdmin);
 
 /**
  * @swagger

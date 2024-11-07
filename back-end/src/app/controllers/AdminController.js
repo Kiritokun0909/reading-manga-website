@@ -30,13 +30,9 @@ const getRoles = async (req, res) => {
 
 const banUser = async (req, res) => {
   const { userId } = req.params;
-
-  if (isNaN(userId) || userId < 1) {
-    return res.status(400).json({ error: "Invalid user id." });
-  }
-
+  const { isBanned } = req.query;
   try {
-    const result = await userService.banUser(userId);
+    const result = await userService.setUserBanStatus(userId, isBanned);
     if (result && result.code == HandleCode.NOT_FOUND) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -47,8 +43,6 @@ const banUser = async (req, res) => {
       .status(500)
       .json({ message: "Failed to ban user. Please try again later." });
   }
-}
-
-
+};
 
 module.exports = new AdminController();

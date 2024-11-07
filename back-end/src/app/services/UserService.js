@@ -6,63 +6,12 @@ const saltRounds = 10;
 
 const mangaService = require("./MangaService.js");
 
-const RoleEnum = {
-  ADMIN: 1,
-  USER: 2,
-};
-
-module.exports = {
-  RoleEnum,
-};
-
-module.exports.register = async (username = "user", email, password, role) => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const [] = await db.query(
-      `
-            INSERT INTO users (
-                \`Username\`,
-                \`Email\`,
-                \`Password\`,
-                \`RoleID\`
-            ) VALUES (?, ?, ?, ?)
-        `,
-      [username, email, hashedPassword, role]
-    );
-
-  } catch (err) {
-    if (err.code === "ER_DUP_ENTRY") {
-      return { code: HandleCode.EMAIL_EXIST };
-    }
-
-    throw err;
-  }
-};
-
-module.exports.getUserRole = async (userId) => {
+module.exports.getUserInfoById = async (userId) => {
   try {
     const [rows] = await db.query(
       `
-            SELECT RoleId 
-            FROM users WHERE UserId = ?`,
-      [userId]
-    );
-    if (rows.length === 0) {
-      return { code: HandleCode.NOT_FOUND };
-    }
-    const roleId = rows[0].RoleId;
-    return roleId;
-  } catch (err) {
-    throw err;
-  }
-};
-
-module.exports.getUserById = async (userId) => {
-  try {
-    const [rows] = await db.query(
-      `
-            SELECT username, email, avatar, birthday, gender, isBanned 
-            FROM users WHERE userId = ?`,
+      SELECT username, email, avatar, status
+      FROM users WHERE userId = ?`,
       [userId]
     );
 
@@ -76,13 +25,7 @@ module.exports.getUserById = async (userId) => {
   }
 };
 
-module.exports.updateUserInfo = async (
-  userId,
-  username="",
-  avatar="",
-  birthday="",
-  gender=null
-) => {
+module.exports.updateUserInfo = async (userId, username = "", avatar = "") => {
   try {
     // Initialize arrays to hold the fields to update and the values
     const fields = [];
@@ -96,14 +39,6 @@ module.exports.updateUserInfo = async (
     if (avatar && avatar.trim().length > 0) {
       fields.push("Avatar = ?");
       values.push(avatar);
-    }
-    if (birthday) {
-      fields.push("Birthday = ?");
-      values.push(birthday);
-    }
-    if (gender !== null && gender.trim().length > 0) { // Allow for possible falsy values like 0
-      fields.push("Gender = ?");
-      values.push(gender);
     }
 
     // If there are no fields to update, return an appropriate response
@@ -122,7 +57,6 @@ module.exports.updateUserInfo = async (
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     throw err;
   }
@@ -142,7 +76,6 @@ module.exports.updateUserEmail = async (userId, email) => {
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") {
       return { code: HandleCode.EMAIL_EXIST };
@@ -183,31 +116,30 @@ module.exports.updateUserPassword = async (
             WHERE UserId = ?`,
       [hashedPassword, userId]
     );
-
   } catch (err) {
     throw err;
   }
 };
 
-module.exports.banUser = async (userId) => {
+module.exports.setUserBanStatus = async (userId, isBanned = true) => {
   try {
+    const banStatus = isBanned ? 1 : 0;
     const [rows] = await db.query(
       `
             UPDATE users
             SET
-                IsBanned = 1
+                IsBanned = ?
             WHERE UserId = ?`,
-      [userId]
+      [banStatus, userId]
     );
 
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     throw err;
   }
-}
+};
 
 //#region like-unlike-manga
 module.exports.likeManga = async (mangaId, userId) => {
@@ -226,7 +158,7 @@ module.exports.likeManga = async (mangaId, userId) => {
     }
     throw err;
   }
-}
+};
 
 module.exports.unlikeManga = async (mangaId, userId) => {
   try {
@@ -241,7 +173,7 @@ module.exports.unlikeManga = async (mangaId, userId) => {
   } catch (err) {
     throw err;
   }
-}
+};
 //#endregion
 
 //#region follow-unfollow-manga
@@ -261,7 +193,7 @@ module.exports.followManga = async (mangaId, userId) => {
     }
     throw err;
   }
-}
+};
 
 module.exports.unfollowManga = async (mangaId, userId) => {
   try {
@@ -276,7 +208,7 @@ module.exports.unfollowManga = async (mangaId, userId) => {
   } catch (err) {
     throw err;
   }
-}
+};
 //#endregion
 
 //#region check user like-follow-manga
@@ -292,7 +224,7 @@ module.exports.isLikeManga = async (mangaId, userId) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 module.exports.isFollowManga = async (mangaId, userId) => {
   try {
@@ -306,11 +238,15 @@ module.exports.isFollowManga = async (mangaId, userId) => {
   } catch (err) {
     throw err;
   }
-}
+};
 //#endregion
 
-//#region implement get-list-like-follow
-module.exports.getListLikeManga = async (userId, pageNumber, itemsPerPage) => {
+//#region get-list-like-follow
+module.exports.getListMangaUserLike = async (
+  userId,
+  pageNumber,
+  itemsPerPage
+) => {
   try {
     const [totalRows] = await db.query(
       "SELECT COUNT(UserId) as total FROM likes"
@@ -333,7 +269,7 @@ module.exports.getListLikeManga = async (userId, pageNumber, itemsPerPage) => {
           JOIN mangas m ON l.mangaId = m.mangaId 
         WHERE userId = ?
         LIMIT ? OFFSET ?`,
-      [userId,itemsPerPage, offset]
+      [userId, itemsPerPage, offset]
     );
 
     return {
@@ -344,12 +280,16 @@ module.exports.getListLikeManga = async (userId, pageNumber, itemsPerPage) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
-module.exports.getListFollowManga = async (userId, pageNumber, itemsPerPage) => {
+module.exports.getListMangaUserFollow = async (
+  userId,
+  pageNumber,
+  itemsPerPage
+) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(UserId) as total FROM likes"
+      "SELECT COUNT(UserId) as total FROM follows"
     );
     const totalMangas = totalRows[0].total;
 
@@ -368,8 +308,9 @@ module.exports.getListFollowManga = async (userId, pageNumber, itemsPerPage) => 
         FROM follows f
           JOIN mangas m ON f.mangaId = m.mangaId 
         WHERE userId = ?
+        ORDER BY f.createDate DESC
         LIMIT ? OFFSET ?`,
-      [userId,itemsPerPage, offset]
+      [userId, itemsPerPage, offset]
     );
 
     return {
@@ -380,5 +321,5 @@ module.exports.getListFollowManga = async (userId, pageNumber, itemsPerPage) => 
   } catch (err) {
     throw err;
   }
-}
+};
 //#endregion

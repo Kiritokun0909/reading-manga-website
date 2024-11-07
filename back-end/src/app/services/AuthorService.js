@@ -4,11 +4,13 @@ const HandleCode = require("../../utilities/HandleCode.js");
 module.exports.getListAuthor = async (
   pageNumber = 1,
   itemsPerPage = 5,
-  filter = HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_DESC
+  filter = HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_DESC,
+  keyword = ""
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(AuthorId) as total FROM authors"
+      `SELECT COUNT(authorId) as total FROM authors WHERE authorName LIKE ?`,
+      [`%${keyword}%`]
     );
     const totalAuthors = totalRows[0].total;
 
@@ -22,29 +24,24 @@ module.exports.getListAuthor = async (
     }
 
     let orderByClause;
-    switch (filter) {
-      case HandleCode.FILTER_BY_AUTHOR_NAME_ASC:
-        orderByClause = "AuthorName ASC";
-        break;
-      case HandleCode.FILTER_BY_AUTHOR_NAME_DESC:
-        orderByClause = "AuthorName DESC";
-        break;
-      case HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_ASC:
-        orderByClause = "UpdateDate ASC";
-        break;
-      case HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_DESC:
-      default:
-        orderByClause = "UpdateDate DESC";
-        break;
+    if (filter == HandleCode.FILTER_BY_AUTHOR_NAME_ASC) {
+      orderByClause = "AuthorName ASC";
+    } else if (filter == HandleCode.FILTER_BY_AUTHOR_NAME_DESC) {
+      orderByClause = "AuthorName DESC";
+    } else if (filter == HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_ASC) {
+      orderByClause = "UpdateDate ASC";
+    } else {
+      orderByClause = "UpdateDate DESC";
     }
 
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-      `SELECT authorId, avatar, authorName
-        FROM authors 
+      `SELECT authorId, avatar, authorName, biography
+        FROM authors
+        WHERE authorName LIKE ?
         ORDER BY ${orderByClause} 
         LIMIT ? OFFSET ?`,
-      [itemsPerPage, offset]
+      [`%${keyword}%`, itemsPerPage, offset]
     );
 
     return {
@@ -79,13 +76,17 @@ module.exports.addAuthor = async (avatar, authorName, biography) => {
       "INSERT INTO authors (avatar, authorName, biography) VALUES (?, ?, ?)",
       [avatar, authorName, biography]
     );
-
   } catch (err) {
     throw err;
   }
 };
 
-module.exports.updateAuthor = async (authorId, avatar, authorName, biography) => {
+module.exports.updateAuthor = async (
+  authorId,
+  avatar,
+  authorName,
+  biography
+) => {
   try {
     const fields = [];
     const values = [];
@@ -98,7 +99,8 @@ module.exports.updateAuthor = async (authorId, avatar, authorName, biography) =>
       fields.push("authorName = ?");
       values.push(authorName);
     }
-    if (biography !== null) { // Allow empty biography
+    if (biography !== null) {
+      // Allow empty biography
       fields.push("biography = ?");
       values.push(biography);
     }
@@ -116,24 +118,20 @@ module.exports.updateAuthor = async (authorId, avatar, authorName, biography) =>
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     throw err;
   }
 };
 
-
 module.exports.removeAuthor = async (authorId) => {
   try {
-    const [rows] = await db.query(
-      "DELETE FROM authors WHERE authorId = ?",
-      [authorId]
-    );
-    
+    const [rows] = await db.query("DELETE FROM authors WHERE authorId = ?", [
+      authorId,
+    ]);
+
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-
   } catch (err) {
     throw err;
   }

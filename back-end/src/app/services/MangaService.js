@@ -1,14 +1,17 @@
 const db = require("../../configs/DatabaseConfig.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 
+//#region get-list-manga
 module.exports.getListManga = async (
   pageNumber = 1,
   itemsPerPage = 5,
-  filter = HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC
+  filter = HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC,
+  keyword = ""
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(MangaId) as total FROM mangas"
+      "SELECT COUNT(MangaId) as total FROM mangas WHERE mangaName LIKE ? OR otherName LIKE ?",
+      [`%${keyword}%`, `%${keyword}%`]
     );
     const totalMangas = totalRows[0].total;
 
@@ -21,58 +24,33 @@ module.exports.getListManga = async (
       };
     }
 
-    let orderByClause, filterColName;
-    switch (filter) {
-      case HandleCode.FILTER_BY_MANGA_NAME_ASC:
-        filterColName = "mangaName";
-        orderByClause = "mangaName ASC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_NAME_DESC:
-        filterColName = "mangaName";
-        orderByClause = "mangaName DESC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_VIEW_ASC:
-        filterColName = "NumViews";
-        orderByClause = "NumViews ASC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_VIEW_DESC:
-        filterColName = "NumViews";
-        orderByClause = "NumViews DESC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_LIKE_ASC:
-        filterColName = "NumLikes";
-        orderByClause = "NumLikes ASC";
-        break;
-        case HandleCode.FILTER_BY_MANGA_LIKE_DESC:
-        filterColName = "NumLikes";
-        orderByClause = "NumLikes DESC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_CREATE_DATE_ASC:
-        filterColName = "CreateDate";
-        orderByClause = "CreateDate ASC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_CREATE_DATE_DESC:
-        filterColName = "CreateDate";
-        orderByClause = "CreateDate DESC";
-        break;
-        case HandleCode.FILTER_BY_MANGA_UPDATE_DATE_ASC:
-        filterColName = "UpdateDate";
-        orderByClause = "UpdateDate ASC";
-        break;
-      case HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC:
-        default:
-          filterColName = "UpdateDate";
-          orderByClause = "UpdateDate DESC";
-          break;
-        }
-        
+    let orderByClause;
+    if (filter == HandleCode.FILTER_BY_MANGA_CREATE_DATE_ASC) {
+      orderByClause = "CreateAt ASC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_CREATE_DATE_DESC) {
+      orderByClause = "CreateAt DESC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_VIEW_ASC) {
+      orderByClause = "NumViews ASC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_VIEW_DESC) {
+      orderByClause = "NumViews DESC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_LIKE_ASC) {
+      orderByClause = "NumLikes ASC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_LIKE_DESC) {
+      orderByClause = "NumLikes DESC";
+    } else if (filter == HandleCode.FILTER_BY_MANGA_UPDATE_DATE_ASC) {
+      orderByClause = "UpdateAt ASC";
+    } else {
+      orderByClause = "UpdateAt DESC";
+    }
+
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-      `SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber, ${filterColName}
+      `SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber
         FROM mangas 
+        WHERE mangaName LIKE ? OR otherName LIKE ?
         ORDER BY ${orderByClause} 
         LIMIT ? OFFSET ?`,
-      [itemsPerPage, offset]
+      [`%${keyword}%`, `%${keyword}%`, itemsPerPage, offset]
     );
 
     return {
@@ -84,33 +62,75 @@ module.exports.getListManga = async (
     throw err;
   }
 };
+//#endregion
 
+// Utility function to format the date
+function formatISODate(isoDate) {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+//#region get-by-id
 module.exports.getMangaById = async (mangaId) => {
   try {
     const [rows] = await db.query(
-      `SELECT mangaId, mangaName, otherName, coverImageUrl, 
-              publishedYear, description, ageLimit, isManga, 
-              numChapters, numViews, numLikes, numFollows,
-              createDate, m.updateDate, m.authorId, a.authorName
-      FROM mangas m
-        JOIN authors a ON m.authorId = a.authorId
-      WHERE mangaId = ?`,
+      `SELECT m.mangaId, m.mangaName, m.otherName, m.coverImageUrl, 
+              m.publishedYear, m.description, m.ageLimit, m.isManga, 
+              m.numChapters, m.numViews, m.numLikes, m.numFollows,
+              m.createAt, m.updateAt, m.authorId, a.authorName
+       FROM mangas m
+       LEFT JOIN authors a ON m.authorId = a.authorId
+       WHERE m.mangaId = ?`,
       [mangaId]
     );
+
     if (rows.length === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
 
-    return { authorInfo: rows[0] };
+    const [genreRows] = await db.query(
+      `
+      SELECT mg.genreId, g.genreName
+      FROM manga_genres mg
+      JOIN genres g ON mg.genreId = g.genreId
+      WHERE mangaId = ?
+    `,
+      [mangaId]
+    );
+
+    // Formatting the date fields and handling null authorName if necessary
+    const mangaInfo = {
+      ...rows[0],
+      createAt: formatISODate(rows[0].createAt),
+      updateAt: formatISODate(rows[0].updateAt),
+      authorName: rows[0].authorName || "", // Default value if null
+      genres: genreRows,
+    };
+
+    return { mangaInfo };
   } catch (err) {
     throw err;
   }
 };
+//#endregion
 
+//#region add-manga
 module.exports.addManga = async (
-  mangaName, otherName, coverImageUrl,
-  publishedYear, description, ageLimit,
-  isManga=true, authorId=null
+  coverImageUrl,
+  mangaName,
+  otherName = "",
+  isManga = true,
+  publishedYear,
+  ageLimit,
+  description = "",
+  authorId = null
 ) => {
   try {
     const fields = [];
@@ -147,10 +167,11 @@ module.exports.addManga = async (
       placeholders.push("?");
       values.push(ageLimit);
     }
-    fields.push("isManga");
-    placeholders.push("?");
-    values.push(isManga === true ? 1 : 0);
-
+    if (isManga) {
+      fields.push("isManga");
+      placeholders.push("?");
+      values.push(isManga);
+    }
     if (authorId && authorId.trim().length > 0) {
       fields.push("authorId");
       placeholders.push("?");
@@ -163,12 +184,14 @@ module.exports.addManga = async (
     }
 
     // Construct the dynamic SQL query
-    const query = `INSERT INTO mangas (${fields.join(", ")}) VALUES (${placeholders.join(", ")})`;
+    const query = `INSERT INTO mangas (${fields.join(
+      ", "
+    )}) VALUES (${placeholders.join(", ")})`;
     const [rows] = await db.query(query, values);
 
     return {
       mangaId: rows.insertId,
-    }
+    };
   } catch (err) {
     throw err;
   }
@@ -193,7 +216,7 @@ module.exports.updateMangaInfo = async (
       fields.push("mangaName = ?");
       values.push(mangaName);
     }
-    if (otherName && otherName.trim().length > 0) {
+    if (otherName) {
       fields.push("otherName = ?");
       values.push(otherName);
     }
@@ -214,7 +237,6 @@ module.exports.updateMangaInfo = async (
       values.push(ageLimit);
     }
     if (isManga) {
-      isManga = isManga ? 1 : 0;
       fields.push("isManga = ?");
       values.push(isManga);
     }
@@ -315,10 +337,12 @@ module.exports.updateMangaFollows = async (mangaId, isFollow = true) => {
 
 module.exports.updateMangaGenres = async (mangaId, genreIds) => {
   try {
+    await db.query(`DELETE FROM manga_genres WHERE MangaId = ?`, [mangaId]);
+
     if (genreIds && genreIds.length > 0) {
       for (const genreId of genreIds) {
         await db.query(
-          `INSERT INTO mangagenres(MangaId, GenreId) VALUES (?, ?)`,
+          `INSERT INTO manga_genres(MangaId, GenreId) VALUES (?, ?)`,
           [mangaId, genreId]
         );
       }
@@ -328,77 +352,101 @@ module.exports.updateMangaGenres = async (mangaId, genreIds) => {
   }
 };
 
-module.exports.getListMangaByGenreId = async (genreId, pageNumber=1, itemsPerPage=5) => {
+module.exports.getListMangaByGenreId = async (
+  genreId,
+  pageNumber = 1,
+  itemsPerPage = 5
+) => {
   try {
     const [totalRows] = await db.query(
-        `SELECT COUNT(MangaId) as total 
+      `SELECT COUNT(MangaId) as total 
         FROM mangagenres
-        WHERE GenreId= ?;`
-        , [genreId]
+        WHERE GenreId= ?;`,
+      [genreId]
     );
     const totalMangas = totalRows[0].total;
     const totalPages = Math.ceil(totalMangas / itemsPerPage);
     if (pageNumber > totalPages) {
-        return { 
-            pageNumber,
-            totalPages, 
-            mangas: []
-        };
+      return {
+        pageNumber,
+        totalPages,
+        mangas: [],
+      };
     }
+
+    const [genreRow] = await db.query(
+      `SELECT genreName FROM genres WHERE GenreId = ?;`,
+      [genreId]
+    );
+    const genreName = genreRow[0].genreName;
 
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-        `SELECT m.mangaId, m.mangaName, m.coverImageUrl, m.newestChapterNumber
+      `SELECT m.mangaId, m.mangaName, m.coverImageUrl, m.newestChapterNumber
         FROM mangagenres mg
             JOIN (SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber FROM mangas) as m ON mg.mangaId = m.mangaId
         WHERE genreId = ?
         LIMIT ? OFFSET ?;`,
-        [genreId, itemsPerPage, offset]
+      [genreId, itemsPerPage, offset]
     );
 
     return {
+      genreId,
+      genreName,
       pageNumber,
       totalPages,
-      mangas: rows
+      mangas: rows,
     };
   } catch (err) {
     throw err;
   }
-}
+};
 
-module.exports.getListMangaByAuthorId = async (authorId, pageNumber=1, itemsPerPage=5) => {
+module.exports.getListMangaByAuthorId = async (
+  authorId,
+  pageNumber = 1,
+  itemsPerPage = 5
+) => {
   try {
     const [totalRows] = await db.query(
-        `SELECT COUNT(MangaId) as total 
+      `SELECT COUNT(MangaId) as total 
         FROM mangas
-        WHERE authorId= ?;`
-        , [authorId]
+        WHERE authorId= ?;`,
+      [authorId]
     );
     const totalMangas = totalRows[0].total;
     const totalPages = Math.ceil(totalMangas / itemsPerPage);
     if (pageNumber > totalPages) {
-      return { 
+      return {
         pageNumber,
-        totalPages, 
-        mangas: []
+        totalPages,
+        mangas: [],
       };
     }
 
+    const [authorRow] = await db.query(
+      `SELECT authorName FROM authors WHERE AuthorId = ?;`,
+      [authorId]
+    );
+    const authorName = authorRow[0].authorName;
+
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-        `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
+      `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
         FROM mangas m
         WHERE authorId = ?
         LIMIT ? OFFSET ?;`,
-        [authorId, itemsPerPage, offset]
+      [authorId, itemsPerPage, offset]
     );
 
     return {
+      authorId,
+      authorName,
       pageNumber,
       totalPages,
-      mangas: rows
+      mangas: rows,
     };
   } catch (err) {
     throw err;
   }
-}
+};

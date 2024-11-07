@@ -1,0 +1,38 @@
+footer {
+  width: 100%;
+  background-color: #343a40;
+  color: white;
+  padding: 20px 0;
+  border-top: 1px solid grey;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-content a:hover {
+  color: #cccccc;
+}
+
+.social-links {
+  margin-bottom: 4px;
+}
+
+.social-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.personal-info {
+  text-align: right;
+}
+
+.personal-info p {
+  margin: 5px 0;
+}
