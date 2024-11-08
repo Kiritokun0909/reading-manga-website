@@ -125,7 +125,7 @@ export default function ManageAuthorPage() {
 
       <div className="flex flex-row justify-end pb-4">
         <div className="flex">
-          <label className="pt-3 mr-1">Nhập tên tác giả:</label>
+          <label className="pt-2 mr-1">Nhập tên tác giả:</label>
           <input
             type="text"
             placeholder="Nhập tên tác giả..."
@@ -136,7 +136,7 @@ export default function ManageAuthorPage() {
         </div>
 
         <div className="flex ml-4">
-          <label className="pt-1 mr-1">Sắp xếp:</label>
+          <label className="w-24 pt-2 mr-1">Sắp xếp:</label>
           <select
             defaultValue={filterParam}
             onChange={(e) => setFilterParam(e.target.value)}

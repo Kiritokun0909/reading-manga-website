@@ -75,12 +75,14 @@ export default function Header() {
     <header>
       <div className="top-header">
         <div className="logo">
-          {roleId !== HandleCode.ROLE_ADMIN && <Link to="/">MLReader</Link>}
-          {roleId === HandleCode.ROLE_ADMIN && (
+          {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
+            <Link to="/">MLReader</Link>
+          )}
+          {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
             <Link to="/admin/dashboard">AdminDashboard</Link>
           )}
         </div>
-        {roleId !== HandleCode.ROLE_ADMIN && (
+        {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
           <div className="search-bar">
             <input
               type="text"
@@ -97,7 +99,7 @@ export default function Header() {
       <div className="nav-bar">
         <ul>
           {/* User Header */}
-          {roleId !== HandleCode.ROLE_ADMIN && (
+          {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
             <>
               <li
                 onMouseEnter={genresDropdown.show}
@@ -145,7 +147,7 @@ export default function Header() {
           )}
 
           {/* Admin Header */}
-          {roleId === HandleCode.ROLE_ADMIN && (
+          {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
             <>
               <li>
                 <Link to="/admin/manage-genre">Thể loại</Link>
@@ -182,7 +184,7 @@ export default function Header() {
                   ref={accountDropdown.subMenuRef}
                 >
                   {/* User Manager  */}
-                  {roleId === HandleCode.ROLE_USER && (
+                  {parseInt(roleId) === HandleCode.ROLE_USER && (
                     <>
                       <li>
                         <Link to="#">Thông báo</Link>
@@ -197,7 +199,7 @@ export default function Header() {
                   )}
 
                   {/* Admin Manager  */}
-                  {roleId === HandleCode.ROLE_ADMIN && (
+                  {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
                     <>
                       <li>
                         <Link to="/admin/manage-user">

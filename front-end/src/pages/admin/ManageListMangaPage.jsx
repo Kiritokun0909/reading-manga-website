@@ -53,7 +53,7 @@ export default function ManageListMangaPage() {
 
       <div className="flex flex-row justify-end pb-4">
         <div className="flex">
-          <label className="pt-3 mr-1">Nhập tên truyện:</label>
+          <label className="pt-2 mr-1">Nhập tên truyện:</label>
           <input
             type="text"
             placeholder="Tên truyện hoặc tên khác..."
@@ -64,7 +64,7 @@ export default function ManageListMangaPage() {
         </div>
 
         <div className="flex ml-4">
-          <label className="pt-1 mr-1">Sắp xếp</label>
+          <label className="w-24 pt-2">Sắp xếp:</label>
           <select
             defaultValue={filter}
             onChange={(e) => setFilter(e.target.value)}

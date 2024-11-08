@@ -10,7 +10,7 @@ import UpdateMangaPage from "../pages/admin/UpdateMangaPage";
 export default function AdminRoute() {
   return (
     <Routes>
-      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/*" element={<ManageListMangaPage />} />
       <Route path="/manage-genre" element={<ManageGenrePage />} />
       <Route path="/manage-author" element={<ManageAuthorPage />} />
       <Route path="/manage-manga" element={<ManageListMangaPage />} />

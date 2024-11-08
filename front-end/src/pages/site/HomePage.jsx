@@ -27,7 +27,7 @@ export default function HomePage() {
       HandleCode.FILTER_BY_MANGA_VIEW_DESC
     );
     // console.log(data);
-    // setMostViewed(data.mangas);
+    setMostViewed(data.mangas);
   };
   const getRecentUploads = async () => {
     const data = await getListManga(
@@ -35,7 +35,7 @@ export default function HomePage() {
       ITEMS_PER_PAGE * 2,
       HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC
     );
-    // setRecentUploads(data.mangas);
+    setRecentUploads(data.mangas);
   };
 
   return (

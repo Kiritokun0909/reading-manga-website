@@ -1,0 +1,214 @@
+.manga-info {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .manga-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .manga-cover {
+    margin: auto;
+    padding-top: 0px;
+  }
+}
+
+.manga-info-detail {
+  margin-left: 12px;
+}
+
+.list-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.list-info p {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.btn-like-follow button {
+  margin: 8px 4px;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 24px;
+  font-size: medium;
+  transition: filter 0.3s ease; /* Add transition for smooth effect */
+}
+
+#btn-like {
+  background-color: #ff3860;
+  color: white;
+}
+
+#btn-follow {
+  background-color: #bd10e0;
+  color: white;
+}
+
+#btn-like:hover,
+#btn-follow:hover {
+  filter: brightness(85%); /* Adjust brightness for blur effect */
+}
+
+.admin {
+  margin-top: 0px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.admin a {
+  color: black;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  background-color: greenyellow;
+  color: black;
+  padding: 6px 8px;
+  font-size: medium;
+  font-weight: 600;
+  flex-wrap: wrap;
+  margin: 4px 4px;
+}
+
+.admin a:hover {
+  filter: brightness(85%); /* Adjust brightness for blur effect */
+}
+
+.manga-description {
+  text-align: left;
+}
+
+.genre-list {
+  margin-top: 0px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.genre-list a {
+  color: black;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  background-color: orange;
+  color: black;
+  padding: 2px 8px;
+  font-size: medium;
+  font-weight: 600;
+  flex-wrap: wrap;
+  margin: 4px 4px;
+}
+
+.genre-list a:hover {
+  filter: brightness(85%); /* Adjust brightness for blur effect */
+}
+
+.list-chapter {
+  margin-top: 12px;
+  text-align: left;
+}
+
+.manga-chapter {
+  padding: 8px 12px;
+  max-height: 200px;
+  overflow: auto;
+  min-height: 100px;
+}
+
+.chapter-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  margin-top: 8px;
+}
+
+.chapter-row a {
+  color: black;
+  text-decoration: none;
+}
+
+.chapter-row a:hover {
+  color: orange;
+}
+
+.comment-section {
+  margin-top: 12px;
+  text-align: left;
+}
+
+.comment-form {
+  margin-bottom: 12px;
+}
+
+.comment-area textarea {
+  padding: 8px;
+  width: 100%;
+  resize: none;
+  height: 80px;
+  /* overflow: hidden;     Hide the scrollbar */
+  /* box-sizing: border-box; */
+  border-radius: 6px;
+}
+
+.comment-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comment-button button {
+  background-color: #209cee;
+  color: white;
+  border: 1px;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+.list-comment {
+  max-width: 600px; /* Set a max width for the comment list container */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 0.5rem; /* Add some padding */
+  border: 1px solid #ddd; /* Add a border around the container */
+  border-radius: 8px; /* Round the corners */
+  background-color: #f9f9f9; /* Light background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+.list-comment ul {
+  list-style: none; /* Remove default list bullets */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+.list-comment li {
+  padding: 0.5rem; /* Add padding around each comment */
+  border-bottom: 1px solid #ddd; /* Add a bottom border between comments */
+}
+
+.list-comment li:last-child {
+  border-bottom: none; /* Remove the bottom border from the last comment */
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between; /* Space out the username and date */
+  margin-bottom: 0.5rem; /* Add some space between header and content */
+}
+
+.username {
+  font-weight: bold; /* Make the username bold */
+  color: #333; /* Dark text color for better readability */
+}
+
+.comment-date {
+  font-size: 0.875rem; /* Slightly smaller font size for the date */
+  color: #666; /* Lighter color for the date */
+}
+
+.comment-content {
+  margin: 0; /* Remove default margin */
+  line-height: 1.5; /* Increase line height for better readability */
+}

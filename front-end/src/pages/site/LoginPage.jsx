@@ -35,7 +35,7 @@ export default function LoginPage() {
         login(response.accessToken, response.refreshToken, response.roleId);
         toast.success("Đăng nhập thành công");
         if (response.roleId === HandleCode.ROLE_ADMIN) {
-          navigate("/admin/dashboard");
+          navigate("/admin/manage-manga");
         } else {
           navigate("/");
         }

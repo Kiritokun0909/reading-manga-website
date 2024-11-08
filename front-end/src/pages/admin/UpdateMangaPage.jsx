@@ -116,11 +116,6 @@ export default function UpdateMangaPage() {
       setAgeLimit(manga.ageLimit);
       setDescription(manga.description === null ? "" : manga.description);
 
-      setNumChapters(manga.numChapters);
-      setNumViews(manga.numViews);
-      setNumLikes(manga.numLikes);
-      setNumFollows(manga.numFollows);
-
       if (manga.authorId != null) {
         setSelectedAuthorId(manga.authorId);
         setSearchAuthorName(manga.authorName);
@@ -166,6 +161,16 @@ export default function UpdateMangaPage() {
     e.preventDefault();
     if (mangaName.trim().length === 0) {
       toast.error("Tên truyện không được để trống");
+      return;
+    }
+
+    if (otherName.trim().length === 0) {
+      toast.error("Tên khác không được để trống");
+      return;
+    }
+
+    if (description.trim().length === 0) {
+      toast.error("Mô tả không được để trống");
       return;
     }
 
@@ -299,26 +304,6 @@ export default function UpdateMangaPage() {
               placeholder="Nhập mô tả..."
               onChange={(e) => setDescription(e.target.value)}
             />
-          </div>
-
-          <div className="flex flex-row justify-start pt-2">
-            <label className="w-32 font-bold text-lg">Số chương:</label>
-            <label className="font-bold text-lg">{numChapters}</label>
-          </div>
-
-          <div className="flex flex-row justify-start pt-2">
-            <label className="w-32 font-bold text-lg">Lượt xem:</label>
-            <label className="font-bold text-lg">{numViews}</label>
-          </div>
-
-          <div className="flex flex-row justify-start pt-2">
-            <label className="w-32 font-bold text-lg">Lượt thích:</label>
-            <label className="font-bold text-lg">{numLikes}</label>
-          </div>
-
-          <div className="flex flex-row justify-start pt-2">
-            <label className="w-32 font-bold text-lg">Lượt theo dõi:</label>
-            <label className="font-bold text-lg">{numFollows}</label>
           </div>
         </div>
 
