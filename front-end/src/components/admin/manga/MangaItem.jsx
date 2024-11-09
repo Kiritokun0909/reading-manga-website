@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 
 const MangaItem = ({ manga }) => (
   <div className="manga-item">
-    <Link to={`/admin/manga/${manga.mangaId}`} title={manga.mangaName}>
+    <Link to={`/manga/${manga.mangaId}`} title={manga.mangaName}>
       <img
         src={
           manga.coverImageUrl
@@ -16,12 +16,12 @@ const MangaItem = ({ manga }) => (
       />
     </Link>
     <nav id="manga-name">
-      <NavLink to={`/admin/manga/${manga.mangaId}`} title={manga.mangaName}>
+      <NavLink to={`/manga/${manga.mangaId}`} title={manga.mangaName}>
         {manga.mangaName}
       </NavLink>
     </nav>
     <nav id="chapter">
-      <NavLink to={`/admin/manga/${manga.mangaId}`}>
+      <NavLink to={`/manga/${manga.mangaId}`}>
         Chapter {manga.newestChapterNumber}
       </NavLink>
     </nav>

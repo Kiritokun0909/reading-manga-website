@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactPaginate from "react-paginate";
 
 import "../../styles/site/Manga.css";
 
-import { getDetailManga } from "../../api/SiteService";
+import { getDetailManga, getListChapter } from "../../api/SiteService";
+import { deleteManga } from "../../api/AdminService";
 import HandleCode from "../../utilities/HandleCode";
 
 export default function MangaPage() {
@@ -24,6 +25,11 @@ export default function MangaPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const maxLength = 100; // Maximum characters to show when collapsed
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchManga = async () => {
       try {
@@ -31,7 +37,9 @@ export default function MangaPage() {
         const data = response.mangaInfo;
         setManga(data);
         setMangaGenres(data.genres);
-        setChapters(data.chapters);
+
+        const responseChapter = await getListChapter(mangaId);
+        setChapters(responseChapter.chapters);
       } catch (error) {
         toast.error(error.message);
       }
@@ -46,6 +54,20 @@ export default function MangaPage() {
 
   const handleFollowClick = () => {
     setIsFollow(!isFollow);
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      await deleteManga(mangaId);
+      toast.success("Xoá thành công truyện");
+      navigate("/admin/manage-manga");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handlePageClick = (event) => {
@@ -76,7 +98,7 @@ export default function MangaPage() {
         </div>
 
         <div className="flex flex-col">
-          {/* Manga info  */}
+          {/* Information  */}
           <div>
             <div className="flex justify-center mt-2">
               <h3>{manga.mangaName}</h3>
@@ -122,7 +144,7 @@ export default function MangaPage() {
           </div>
 
           {/* User button like, follow */}
-          {parseInt(roleId) === HandleCode.ROLE_USER && (
+          {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
             <div className="flex flex-row justify-center mt-2">
               <button
                 className="bg-red-500 rounded-lg px-3 py-1.5 mr-1.5 text-white font-semibold hover:bg-red-600"
@@ -145,11 +167,14 @@ export default function MangaPage() {
       <div className="admin">
         {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
           <div className="flex flex-row mt-1.5">
-            <Link to="/admin/manage-manga">Đăng chương mới</Link>
+            <Link to={`/admin/chapter/upload/${mangaId}`}>Đăng chương mới</Link>
             <Link to={`/admin/manga/${mangaId}`}>
               Cập nhật thông tin truyện
             </Link>
-            <button className="bg-red-500 rounded-lg my-1 px-2 text-white font-semibold hover:bg-red-600">
+            <button
+              className="bg-red-500 rounded-lg my-1 px-2 text-white font-semibold hover:bg-red-600"
+              onClick={handleDeleteClick}
+            >
               Xoá truyện
             </button>
           </div>
@@ -173,9 +198,22 @@ export default function MangaPage() {
 
       {/* Manga description */}
       <div className="manga-description">
-        <div className="flex justify-start">
-          <strong className="font-bold text-base mr-2">Mô tả:</strong>
-          {!manga.description ? "Đang cập nhật" : manga.description}
+        <div className="">
+          <strong className="font-bold text-base mr-1">Mô tả:</strong>
+          {!manga.description ? (
+            "Đang cập nhật"
+          ) : (
+            <span>
+              {isExpanded
+                ? manga.description
+                : `${manga.description.slice(0, maxLength)}...`}
+              {manga.description.length > maxLength && (
+                <button onClick={toggleExpand} className="text-blue-500 ml-2">
+                  {isExpanded ? "Ẩn bớt" : "Mở rộng"}
+                </button>
+              )}
+            </span>
+          )}
         </div>
       </div>
 
@@ -186,12 +224,25 @@ export default function MangaPage() {
           {chapters &&
             chapters.map((chapter) => (
               <div key={chapter.chapterId} className="chapter-row">
-                <div className="chapter-name">
-                  <Link to={`/chapter/${chapter.chapterId}`}>
-                    {chapter.chapterName}
-                  </Link>
+                <div className="chapter-name overflow-hidden text-clip w-2/4">
+                  {parseInt(roleId) === HandleCode.ROLE_ADMIN ? (
+                    <Link to={`/admin/chapter/${chapter.chapterId}`}>
+                      Vol {chapter.volumeNumber} - Chapter{" "}
+                      {chapter.chapterNumber}
+                    </Link>
+                  ) : (
+                    <Link to={`/chapter/${chapter.chapterId}`}>
+                      Vol {chapter.volumeNumber} - Chapter{" "}
+                      {chapter.chapterNumber}
+                    </Link>
+                  )}
                 </div>
-                <div className="publish-date">{chapter.publishedDate}</div>
+                <div className="flex">
+                  <div className="mr-4">
+                    {chapter.isFree === 1 ? "Miễn phí" : "Trả phí"}
+                  </div>
+                  <i>{chapter.updateAt}</i>
+                </div>
               </div>
             ))}
         </div>

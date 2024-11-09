@@ -150,7 +150,16 @@ class AuthorController {
 
   //#region remove-manga
   async removeManga(req, res) {
-    return await removeManga(req, res);
+    const { mangaId } = req.params;
+    try {
+      const result = await mangaService.removeManga(mangaId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to remove manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to remove manga. Please try again later." });
+    }
   }
   //#endregion
 }
@@ -188,25 +197,6 @@ const getListMangaByAuthor = async (req, res) => {
     res.status(500).json({
       message: "Failed to get list manga by author. Please try again later.",
     });
-  }
-};
-
-const removeManga = async (req, res) => {
-  const { mangaId } = req.params;
-
-  if (isNaN(mangaId) || mangaId < 1) {
-    res.status(400).json({ error: "Invalid manga id." });
-    return;
-  }
-
-  try {
-    const result = await mangaService.removeManga(mangaId);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to remove manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to remove manga. Please try again later." });
   }
 };
 

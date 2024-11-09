@@ -5,7 +5,9 @@ const multer = require("multer");
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
+const authService = require("../app/services/AuthService.js");
 const mangaController = require("../app/controllers/MangaController.js");
+const { verifyAccessToken, authorizeRole } = require("../middlewares/jwt.js");
 
 router.get("/list", mangaController.getListManga);
 
@@ -13,18 +15,36 @@ router.get("/genre/:genreId", mangaController.getListMangaByGenre);
 
 router.get("/author/:authorId", mangaController.getListMangaByAuthor);
 
-router.post("/", upload.single("coverImage"), mangaController.addManga);
+router.post(
+  "/",
+  upload.single("coverImage"),
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.ADMIN]),
+  mangaController.addManga
+);
 
-router.put("/update-genres/:mangaId", mangaController.updateMangaGenres);
+router.put(
+  "/update-genres/:mangaId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.ADMIN]),
+  mangaController.updateMangaGenres
+);
 
 router.get("/:mangaId", mangaController.getMangaInfo);
 
 router.put(
   "/:mangaId",
   upload.single("coverImage"),
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.ADMIN]),
   mangaController.updateMangaInfo
 );
 
-router.delete("/:mangaId", mangaController.removeManga);
+router.delete(
+  "/:mangaId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.ADMIN]),
+  mangaController.removeManga
+);
 
 module.exports = router;

@@ -232,7 +232,7 @@ export default function AddMangaPage() {
           <div className="flex flex-row justify-start pt-2">
             <label className="w-32 font-bold text-lg">Mô tả:</label>
             <textarea
-              className="w-10/12 py-1 border-1 border-slate-600 rounded-lg px-3 focus:outline-none focus:border-slate-800 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+              className="w-10/12 h-32 py-1 border-1 border-slate-600 rounded-lg px-3 focus:outline-none focus:border-slate-800 hover:shadow dark:bg-gray-600 dark:text-gray-100"
               value={description}
               placeholder="Nhập mô tả..."
               onChange={(e) => setDescription(e.target.value)}

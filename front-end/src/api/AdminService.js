@@ -4,6 +4,7 @@ import HandleCode from "../utilities/HandleCode";
 const GENRE_URL = "/genre";
 const AUTHOR_URL = "/author";
 const MANGA_URL = "/manga";
+const CHAPTER_URL = "/chapter";
 
 //#region Genre
 export const addGenre = async (genreName) => {
@@ -321,3 +322,139 @@ export const updateMangaGenres = async (genreIds, mangaId) => {
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
+
+export const deleteManga = async (mangaId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.delete(`${MANGA_URL}/${mangaId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+
+    // const response = await axiosInstance.delete(`${MANGA_URL}/${mangaId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region Chapter
+export const addChapter = async (
+  mangaId,
+  volumeNumber,
+  chapterNumber,
+  chapterName,
+  isFree,
+  isManga,
+  chapterImages,
+  novelContext
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const formData = new FormData();
+    formData.append("volumeNumber", volumeNumber);
+    formData.append("chapterNumber", chapterNumber);
+    formData.append("chapterName", chapterName);
+    formData.append("isFree", isFree ? 1 : 0);
+    if (isManga) {
+      chapterImages.forEach((image) => {
+        if (!image) {
+          return;
+        }
+        formData.append("chapterImages", image.file);
+      });
+    } else {
+      formData.append("novelContext", novelContext);
+    }
+    const response = await axios.post(`${CHAPTER_URL}/${mangaId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+
+    // const response = await axiosInstance.post(`${CHAPTER_URL}/`, formData,);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const updateChapter = async (
+  chapterId,
+  volumeNumber,
+  chapterNumber,
+  chapterName,
+  isFree,
+  isManga,
+  chapterImages,
+  novelContext
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const formData = new FormData();
+    formData.append("volumeNumber", volumeNumber);
+    formData.append("chapterNumber", chapterNumber);
+    formData.append("chapterName", chapterName);
+    console.log(isFree ? 1 : 0);
+    formData.append("isFree", isFree ? 1 : 0);
+    if (isManga) {
+      chapterImages.forEach((image) => {
+        if (!image) {
+          return;
+        }
+        formData.append("chapterImages", image.file);
+      });
+    } else {
+      formData.append("novelContext", novelContext);
+    }
+    const response = await axios.put(`${CHAPTER_URL}/${chapterId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+
+    // const response = await axiosInstance.post(`${CHAPTER_URL}/`, formData,);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const deleteChapter = async (chapterId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.delete(`${CHAPTER_URL}/${chapterId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+
+    // const response = await axiosInstance.delete(`${CHAPTER_URL}/${chapterId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw new Error("Không tìm thấy chương. Vui lòng thử lại.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

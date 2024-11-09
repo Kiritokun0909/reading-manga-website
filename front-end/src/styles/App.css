@@ -12,10 +12,17 @@
 }
 
 .column-item__main-column {
-  flex: 4;
+  flex: 2;
   background-color: white;
   padding: 12px 12px;
   border-radius: 4px;
+}
+
+@media (max-width: 1366px) {
+  .column-item__main-column {
+    border-radius: 0px;
+    flex: 5;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -26,5 +33,6 @@
 
   .column-item__main-column {
     border-radius: 0px;
+    flex: 2;
   }
 }

@@ -5,6 +5,7 @@ module.exports = {
   FB_AUTHOR_AVATAR_FOLDER_PATH: "author_avatar",
   FB_USER_AVATAR_FOLDER_PATH: "user_avatar",
   FB_COVER_IMAGE_FOLDER_PATH: "cover_image",
+  FB_CHAPTER_IMAGE_FOLDER_PATH: "chapter_image",
 
   // Handle code for common service
   CREATE_SUCCESS: 900,

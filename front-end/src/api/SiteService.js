@@ -88,7 +88,7 @@ export const getListMangaByKeyword = async (
   }
 };
 
-//#region get-detail-manga
+//#region detail-manga
 export const getDetailManga = async (mangaId) => {
   try {
     const response = await axios.get(`/manga/${mangaId}`); //use for dev
@@ -96,6 +96,46 @@ export const getDetailManga = async (mangaId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching detail manga:", error);
+  }
+};
+//#endregion
+
+//#region list-chapter
+export const getListChapter = async (mangaId) => {
+  try {
+    const response = await axios.get(`/chapter/list/${mangaId}`); //use for dev
+    // const response = await axiosInstance.get(`/chapter/list/${mangaId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw new Error("Không tìm thấy truyện.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region chapter-detail
+export const getChapterDetail = async (chapterId) => {
+  try {
+    const response = await axios.get(`/chapter/${chapterId}`); //use for dev
+    // const response = await axiosInstance.get(`/chapter/detail/${chapterId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw new Error("Không tìm thấy truyện.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
 //#endregion

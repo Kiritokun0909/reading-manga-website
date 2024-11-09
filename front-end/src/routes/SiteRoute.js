@@ -9,6 +9,7 @@ import UnauthorizedPage from "../pages/site/UnauthorizedPage";
 import NotFoundPage from "../pages/site/NotFoundPage";
 import ForgotPasswordPage from "../pages/site/ForgotPasswordPage";
 import MangaPage from "../pages/site/MangaPage";
+import ChapterPage from "../pages/site/ChapterPage";
 
 export default function SiteRoute() {
   return (
@@ -22,6 +23,7 @@ export default function SiteRoute() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/manga/:mangaId" element={<MangaPage />} />
+      <Route path="/chapter/:chapterId" element={<ChapterPage />} />
       <Route path="/*" element={<NotFoundPage />} />
     </Routes>
   );

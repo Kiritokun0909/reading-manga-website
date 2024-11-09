@@ -1,0 +1,85 @@
+.chapter-layout {
+  display: flex;
+  flex-direction: column;
+  /* background-color: #343a40; */
+}
+
+.chapter-info {
+  display: flex;
+  text-align: left;
+  padding: 20px 20px 0px 20px;
+}
+
+.chapter-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chapter-info a {
+  margin-left: 24px;
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chapter-info a:hover {
+  color: #f18121;
+}
+
+.btn-delete button {
+  margin: 8px 4px;
+  border: none;
+  background-color: #ff3860;
+  color: white;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: medium;
+  transition: filter 0.3s ease; /* Add transition for smooth effect */
+}
+
+.btn-delete button:hover {
+  filter: brightness(85%); /* Adjust brightness for blur effect */
+}
+
+.chapter-navigate {
+  margin-bottom: 12px;
+  margin-top: 12px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.chapter-navigate a {
+  border-radius: 4px;
+  background-color: #5bc0de;
+  color: white;
+  text-decoration: none;
+  padding: 4px 6px;
+  margin: 0px 2px;
+  font-size: large;
+}
+
+.chapter-navigate a:hover {
+  filter: brightness(80%);
+}
+
+.nav-disable {
+  background-color: grey !important;
+}
+
+.chapter-images {
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chapter-image {
+  display: flex;
+  justify-content: center;
+}
+
+.chapter-image img {
+  width: 88%;
+  border-radius: 2px;
+}

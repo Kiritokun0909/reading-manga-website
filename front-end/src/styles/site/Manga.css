@@ -114,7 +114,7 @@
 
 .manga-chapter {
   padding: 8px 12px;
-  max-height: 200px;
+  max-height: 250px;
   overflow: auto;
   min-height: 100px;
 }

@@ -23,11 +23,6 @@ export default function UpdateMangaPage() {
   const [ageLimit, setAgeLimit] = useState(8);
   const [description, setDescription] = useState("");
 
-  const [numChapters, setNumChapters] = useState(0);
-  const [numViews, setNumViews] = useState(0);
-  const [numLikes, setNumLikes] = useState(0);
-  const [numFollows, setNumFollows] = useState(0);
-
   const [genres, setGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
 
@@ -58,11 +53,6 @@ export default function UpdateMangaPage() {
         setPublishedYear(manga.publishedYear);
         setAgeLimit(manga.ageLimit);
         setDescription(manga.description === null ? "" : manga.description);
-
-        setNumChapters(manga.numChapters);
-        setNumViews(manga.numViews);
-        setNumLikes(manga.numLikes);
-        setNumFollows(manga.numFollows);
 
         if (manga.authorId != null) {
           setSelectedAuthorId(manga.authorId);

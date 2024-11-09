@@ -1,5 +1,6 @@
 const db = require("../../configs/DatabaseConfig.js");
 const HandleCode = require("../../utilities/HandleCode.js");
+const { formatISODate } = require("../../utilities/utils.js");
 
 //#region get-list-manga
 module.exports.getListManga = async (
@@ -64,19 +65,6 @@ module.exports.getListManga = async (
 };
 //#endregion
 
-// Utility function to format the date
-function formatISODate(isoDate) {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
 //#region get-by-id
 module.exports.getMangaById = async (mangaId) => {
   try {
@@ -105,11 +93,14 @@ module.exports.getMangaById = async (mangaId) => {
       [mangaId]
     );
 
+    const formatCreateAt = formatISODate(rows[0].createAt);
+    const formatUpdateAt = formatISODate(rows[0].updateAt);
+
     // Formatting the date fields and handling null authorName if necessary
     const mangaInfo = {
       ...rows[0],
-      createAt: formatISODate(rows[0].createAt),
-      updateAt: formatISODate(rows[0].updateAt),
+      createAt: formatCreateAt,
+      updateAt: formatUpdateAt,
       authorName: rows[0].authorName || "", // Default value if null
       genres: genreRows,
     };
@@ -275,15 +266,34 @@ module.exports.removeManga = async (mangaId) => {
   }
 };
 
-module.exports.updateMangaNewChapter = async (
+module.exports.updateMangaNumChapter = async (mangaId) => {
+  try {
+    const [countRows] = await db.query(
+      `SELECT COUNT(chapterId) as total FROM chapters WHERE mangaId = ?`,
+      [mangaId]
+    );
+    const numChapters = countRows[0].total;
+
+    const [rows] = await db.query(
+      `UPDATE mangas SET numChapters = ? WHERE mangaId = ?`,
+      [numChapters, mangaId]
+    );
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.updateMangaNewChapterNumber = async (
   mangaId,
-  newChapterNumber,
-  numChapters
+  newChapterNumber
 ) => {
   try {
     const [rows] = await db.query(
-      `UPDATE mangas SET numChapters = ?, newestChapterNumber = ?, updateDate = CURRENT_TIMESTAMP() WHERE mangaId = ?`,
-      [numChapters, newChapterNumber, mangaId]
+      `UPDATE mangas SET newestChapterNumber = ? WHERE mangaId = ?`,
+      [newChapterNumber, mangaId]
     );
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
