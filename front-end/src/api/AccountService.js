@@ -2,6 +2,7 @@ import axios from "axios";
 // import axiosInstance from "./axiosInstance";
 const ACCOUNT_URL = "/account";
 
+//#region get-info
 export const getUserInfo = async (userId = 0) => {
   const accessToken = localStorage.getItem("accessToken");
   try {
@@ -25,7 +26,9 @@ export const getUserInfo = async (userId = 0) => {
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
+//#endregion
 
+//#region update-info
 export const updateUserInfo = async (username, fileAvatar) => {
   const accessToken = localStorage.getItem("accessToken");
   const formData = new FormData();
@@ -55,7 +58,9 @@ export const updateUserInfo = async (username, fileAvatar) => {
     throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
   }
 };
+//#endregion
 
+//#region update-email
 export const updateUserEmail = async (email) => {
   const accessToken = localStorage.getItem("accessToken");
   try {
@@ -92,7 +97,9 @@ export const updateUserEmail = async (email) => {
     throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
   }
 };
+//#endregion
 
+//#region update-pwd
 export const updateUserPassword = async (oldPassword, newPassword) => {
   const accessToken = localStorage.getItem("accessToken");
   try {
@@ -130,3 +137,186 @@ export const updateUserPassword = async (oldPassword, newPassword) => {
     throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
   }
 };
+//#endregion
+
+//#region check-like
+export const checkIsLike = async (mangaId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(`${ACCOUNT_URL}/is-like/${mangaId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region check-follow
+export const checkIsFollow = async (mangaId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(`${ACCOUNT_URL}/is-follow/${mangaId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region like-manga
+export const likeManga = async (mangaId, isLike = true) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    if (isLike) {
+      await axios.post(
+        `${ACCOUNT_URL}/like/${mangaId}`,
+        { isLike },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } else {
+      await axios.delete(`${ACCOUNT_URL}/like/${mangaId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+
+    // await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region follow-manga
+export const followManga = async (mangaId, isFollow = true) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    if (isFollow) {
+      await axios.post(
+        `${ACCOUNT_URL}/follow/${mangaId}`,
+        { isFollow },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } else {
+      await axios.delete(`${ACCOUNT_URL}/follow/${mangaId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+
+    // await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+//#endregion
+
+//#region get-list-líke
+export const getListLike = async (pageNumber, itemsPerPage) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${ACCOUNT_URL}/like-list?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region get-list-follow
+export const getListFollow = async (pageNumber, itemsPerPage) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${ACCOUNT_URL}/follow-list?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw error.response.status;
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

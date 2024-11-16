@@ -1,5 +1,4 @@
 // src/app/controllers/AuthorController.js
-const mangaService = require("../services/MangaService.js");
 const chapterService = require("../services/ChapterService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 const { uploadFile } = require("../../utilities/UploadFile.js");
@@ -39,8 +38,9 @@ class ChapterController {
       res.status(500).json({ message: "Failed to get chapter by id." });
     }
   }
+  //#endregion
 
-  //#region add chapter
+  //#region add-chapter
   async addChapter(req, res) {
     const mangaId = parseInt(req.params.mangaId, 10);
     const { volumeNumber, chapterNumber, chapterName, isFree, novelContext } =
@@ -82,6 +82,7 @@ class ChapterController {
       res.status(500).json({ message: "Failed to add new chapter." });
     }
   }
+  //#endregion
 
   //#region update-chapter
   async updateChapter(req, res) {

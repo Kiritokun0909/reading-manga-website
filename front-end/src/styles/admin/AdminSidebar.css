@@ -1,0 +1,8 @@
+.row-manager a {
+  text-decoration: none;
+  color: white;
+}
+
+.row-manager a:hover {
+  color: orange;
+}

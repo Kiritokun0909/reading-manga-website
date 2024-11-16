@@ -17,15 +17,14 @@ router.put("/change-password", userController.changeUserPassword);
 
 router.put("/", upload.single("avatar"), userController.updateUserInfo);
 
+router.get("/is-like/:mangaId", userController.isLike);
+router.get("/is-follow/:mangaId", userController.isFollow);
+
 router.post("/like/:mangaId", userController.likeManga);
 router.delete("/like/:mangaId", userController.unlikeManga);
 
 router.post("/follow/:mangaId", userController.followManga);
 router.delete("/follow/:mangaId", userController.unfollowManga);
-
-router.get("/is-like/:mangaId", userController.isLike);
-
-router.get("/is-follow/:mangaId", userController.isFollow);
 
 router.get("/:userId", userController.getUserInfo);
 

@@ -94,7 +94,7 @@ export default function ManageGenrePage() {
 
   return (
     <div className="flex flex-col justify-center p-4 pt-0">
-      <div className="flex justify-center pb-4">
+      <div className="flex justify-center py-4">
         <h1>Quản lý thể loại</h1>
       </div>
 

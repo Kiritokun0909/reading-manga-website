@@ -65,6 +65,113 @@ module.exports.getListManga = async (
 };
 //#endregion
 
+//#region get-by-genre
+module.exports.getListMangaByGenreId = async (
+  pageNumber = 1,
+  itemsPerPage = 5,
+  genreId
+) => {
+  try {
+    const [totalRows] = await db.query(
+      `SELECT COUNT(MangaId) as total 
+        FROM manga_genres
+        WHERE GenreId= ?;`,
+      [genreId]
+    );
+    const totalMangas = totalRows[0].total;
+    const totalPages = Math.ceil(totalMangas / itemsPerPage);
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        mangas: [],
+      };
+    }
+
+    const [genreRow] = await db.query(
+      `SELECT genreName FROM genres WHERE GenreId = ?;`,
+      [genreId]
+    );
+    const genreName = genreRow[0].genreName;
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT m.mangaId, m.mangaName, m.coverImageUrl, m.newestChapterNumber
+        FROM manga_genres mg
+            JOIN (SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber FROM mangas) as m ON mg.mangaId = m.mangaId
+        WHERE genreId = ?
+        LIMIT ? OFFSET ?;`,
+      [genreId, itemsPerPage, offset]
+    );
+
+    return {
+      genreId,
+      genreName,
+      pageNumber,
+      totalPages,
+      mangas: rows,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region get-by-author
+module.exports.getListMangaByAuthorId = async (
+  pageNumber = 1,
+  itemsPerPage = 5,
+  authorId
+) => {
+  try {
+    const [totalRows] = await db.query(
+      `SELECT COUNT(MangaId) as total 
+        FROM mangas
+        WHERE authorId= ?;`,
+      [authorId]
+    );
+    const totalMangas = totalRows[0].total;
+    const totalPages = Math.ceil(totalMangas / itemsPerPage);
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        mangas: [],
+      };
+    }
+
+    const [authorRow] = await db.query(
+      `SELECT authorName, avatar, biography FROM authors WHERE AuthorId = ?;`,
+      [authorId]
+    );
+    const authorName = authorRow[0].authorName;
+    const avatar = authorRow[0].avatar;
+    const biography = authorRow[0].biography;
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
+        FROM mangas m
+        WHERE authorId = ?
+        LIMIT ? OFFSET ?;`,
+      [authorId, itemsPerPage, offset]
+    );
+
+    return {
+      authorId,
+      authorName,
+      avatar,
+      biography,
+      pageNumber,
+      totalPages,
+      mangas: rows,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
 //#region get-by-id
 module.exports.getMangaById = async (mangaId) => {
   try {
@@ -187,7 +294,9 @@ module.exports.addManga = async (
     throw err;
   }
 };
+//#endregion
 
+//#region update-manga
 module.exports.updateMangaInfo = async (
   mangaId,
   mangaName,
@@ -252,7 +361,9 @@ module.exports.updateMangaInfo = async (
     throw err;
   }
 };
+//#endregion
 
+//#region remove-manga
 module.exports.removeManga = async (mangaId) => {
   try {
     const [rows] = await db.query("DELETE FROM mangas WHERE mangaId = ?", [
@@ -265,6 +376,7 @@ module.exports.removeManga = async (mangaId) => {
     throw err;
   }
 };
+//#endregion
 
 module.exports.updateMangaNumChapter = async (mangaId) => {
   try {
@@ -275,7 +387,7 @@ module.exports.updateMangaNumChapter = async (mangaId) => {
     const numChapters = countRows[0].total;
 
     const [rows] = await db.query(
-      `UPDATE mangas SET numChapters = ? WHERE mangaId = ?`,
+      `UPDATE mangas SET numChapters = ?, updatedAt = CURRENT_TIMESTAMP() WHERE mangaId = ?`,
       [numChapters, mangaId]
     );
     if (rows.affectedRows === 0) {
@@ -298,6 +410,7 @@ module.exports.updateMangaNewChapterNumber = async (
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
+    await mangaService.updateMangaNumChapter(mangaId);
   } catch (err) {
     throw err;
   }
@@ -357,105 +470,6 @@ module.exports.updateMangaGenres = async (mangaId, genreIds) => {
         );
       }
     }
-  } catch (err) {
-    throw err;
-  }
-};
-
-module.exports.getListMangaByGenreId = async (
-  genreId,
-  pageNumber = 1,
-  itemsPerPage = 5
-) => {
-  try {
-    const [totalRows] = await db.query(
-      `SELECT COUNT(MangaId) as total 
-        FROM mangagenres
-        WHERE GenreId= ?;`,
-      [genreId]
-    );
-    const totalMangas = totalRows[0].total;
-    const totalPages = Math.ceil(totalMangas / itemsPerPage);
-    if (pageNumber > totalPages) {
-      return {
-        pageNumber,
-        totalPages,
-        mangas: [],
-      };
-    }
-
-    const [genreRow] = await db.query(
-      `SELECT genreName FROM genres WHERE GenreId = ?;`,
-      [genreId]
-    );
-    const genreName = genreRow[0].genreName;
-
-    const offset = (pageNumber - 1) * itemsPerPage;
-    const [rows] = await db.query(
-      `SELECT m.mangaId, m.mangaName, m.coverImageUrl, m.newestChapterNumber
-        FROM mangagenres mg
-            JOIN (SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber FROM mangas) as m ON mg.mangaId = m.mangaId
-        WHERE genreId = ?
-        LIMIT ? OFFSET ?;`,
-      [genreId, itemsPerPage, offset]
-    );
-
-    return {
-      genreId,
-      genreName,
-      pageNumber,
-      totalPages,
-      mangas: rows,
-    };
-  } catch (err) {
-    throw err;
-  }
-};
-
-module.exports.getListMangaByAuthorId = async (
-  authorId,
-  pageNumber = 1,
-  itemsPerPage = 5
-) => {
-  try {
-    const [totalRows] = await db.query(
-      `SELECT COUNT(MangaId) as total 
-        FROM mangas
-        WHERE authorId= ?;`,
-      [authorId]
-    );
-    const totalMangas = totalRows[0].total;
-    const totalPages = Math.ceil(totalMangas / itemsPerPage);
-    if (pageNumber > totalPages) {
-      return {
-        pageNumber,
-        totalPages,
-        mangas: [],
-      };
-    }
-
-    const [authorRow] = await db.query(
-      `SELECT authorName FROM authors WHERE AuthorId = ?;`,
-      [authorId]
-    );
-    const authorName = authorRow[0].authorName;
-
-    const offset = (pageNumber - 1) * itemsPerPage;
-    const [rows] = await db.query(
-      `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
-        FROM mangas m
-        WHERE authorId = ?
-        LIMIT ? OFFSET ?;`,
-      [authorId, itemsPerPage, offset]
-    );
-
-    return {
-      authorId,
-      authorName,
-      pageNumber,
-      totalPages,
-      mangas: rows,
-    };
   } catch (err) {
     throw err;
   }

@@ -118,8 +118,8 @@ export default function ManageAuthorPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center p-4 pt-0">
-      <div className="flex justify-center pb-4">
+    <div className="flex flex-col p-4 pt-0">
+      <div className="flex justify-center py-4">
         <h1>Quản lý tác giả</h1>
       </div>
 
@@ -131,7 +131,7 @@ export default function ManageAuthorPage() {
             placeholder="Nhập tên tác giả..."
             value={searchParam}
             onChange={(e) => setSearchParam(e.target.value)}
-            className="w-64 mr-4 py-1 color-black border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+            className="w-96 mr-4 py-1 color-black border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
           />
         </div>
 

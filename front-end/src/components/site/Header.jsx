@@ -75,100 +75,76 @@ export default function Header() {
     <header>
       <div className="top-header">
         <div className="logo">
-          {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
-            <Link to="/">MLReader</Link>
-          )}
-          {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
-            <Link to="/admin/dashboard">AdminDashboard</Link>
-          )}
+          <Link to="/">MLReader</Link>
         </div>
-        {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Tìm truyện..."
-              value={searchContext}
-              onChange={(e) => setSearchContext(e.target.value)}
-            />
-            <div className="auth-buttons">
-              <button onClick={handleFindClick}>Tìm</button>
-            </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Tìm truyện..."
+            value={searchContext}
+            onChange={(e) => setSearchContext(e.target.value)}
+          />
+          <div className="auth-buttons">
+            <button onClick={handleFindClick}>Tìm</button>
           </div>
-        )}
+        </div>
       </div>
       <div className="nav-bar">
         <ul>
-          {/* User Header */}
-          {parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
-            <>
-              <li
-                onMouseEnter={genresDropdown.show}
-                onMouseLeave={genresDropdown.hide}
-                ref={genresDropdown.buttonRef}
-              >
-                <Link to="#">Thể loại</Link>
-                {genresDropdown.isVisible && (
-                  <ul className="sub-menu" ref={genresDropdown.subMenuRef}>
-                    {genres?.map((genre) => (
-                      <li key={genre.genreId}>
-                        <Link
-                          to={`/genre?genreId=${genre.genreId}&pageNumber=1`}
-                          className="genre-link"
-                        >
-                          {genre.genreName}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
+          <li
+            onMouseEnter={genresDropdown.show}
+            onMouseLeave={genresDropdown.hide}
+            ref={genresDropdown.buttonRef}
+          >
+            <Link to="#">Thể loại</Link>
+            {genresDropdown.isVisible && (
+              <ul className="sub-menu" ref={genresDropdown.subMenuRef}>
+                {genres?.map((genre) => (
+                  <li key={genre.genreId}>
+                    <Link
+                      to={`/genre?genreId=${genre.genreId}&pageNumber=1`}
+                      className="genre-link"
+                    >
+                      {genre.genreName}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
 
-              <li
-                onMouseEnter={rankingDropdown.show}
-                onMouseLeave={rankingDropdown.hide}
-                ref={rankingDropdown.buttonRef}
-              >
-                <Link to="#">Xếp hạng</Link>
-                {rankingDropdown.isVisible && (
-                  <ul className="sub-menu" ref={rankingDropdown.subMenuRef}>
-                    <li>
-                      <Link to="/top-view">Lượt xem</Link>
-                    </li>
-                    <li>
-                      <Link to="/top-like">Lượt thích</Link>
-                    </li>
-                    <li>
-                      <Link to="/recent-update">Ngày cập nhật</Link>
-                    </li>
-                  </ul>
-                )}
-              </li>
-            </>
-          )}
-
-          {/* Admin Header */}
-          {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
-            <>
-              <li>
-                <Link to="/admin/manage-genre">Thể loại</Link>
-              </li>
-              <li>
-                <Link to="/admin/manage-author">Tác giả</Link>
-              </li>
-              <li>
-                <Link to="/admin/manage-manga">Truyện</Link>
-              </li>
-              <li>
-                <Link to="/admin/manage-subcripstion">Gói đăng ký</Link>
-              </li>
-              <li>
-                <Link to="/admin/manage-feedback">Phản hồi</Link>
-              </li>
-              <li>
-                <Link to="/admin/manage-document">Tài liệu</Link>
-              </li>
-            </>
-          )}
+          <li
+            onMouseEnter={rankingDropdown.show}
+            onMouseLeave={rankingDropdown.hide}
+            ref={rankingDropdown.buttonRef}
+          >
+            <Link to="#">Xếp hạng</Link>
+            {rankingDropdown.isVisible && (
+              <ul className="sub-menu" ref={rankingDropdown.subMenuRef}>
+                <li>
+                  <Link
+                    to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_VIEW_DESC}`}
+                  >
+                    Lượt xem
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_LIKE_DESC}`}
+                  >
+                    Lượt thích
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC}`}
+                  >
+                    Ngày cập nhật
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
 
           {/* Account Manager  */}
           {isLoggedIn ? (
@@ -190,24 +166,14 @@ export default function Header() {
                         <Link to="#">Thông báo</Link>
                       </li>
                       <li>
-                        <Link to="/like-list">Yêu thích</Link>
+                        <Link to="/account/like-list">Yêu thích</Link>
                       </li>
                       <li>
-                        <Link to="/follow-list">Theo dõi</Link>
+                        <Link to="/account/follow-list">Theo dõi</Link>
                       </li>
                     </>
                   )}
 
-                  {/* Admin Manager  */}
-                  {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
-                    <>
-                      <li>
-                        <Link to="/admin/manage-user">
-                          Quản lý các tài khoản trong hệ thống
-                        </Link>
-                      </li>
-                    </>
-                  )}
                   <li>
                     <Link to="/account/profile">Thông tin</Link>
                   </li>

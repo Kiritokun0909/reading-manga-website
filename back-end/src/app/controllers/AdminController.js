@@ -5,44 +5,65 @@ const userService = require("../services/UserService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 
 class AdminController {
-  // [GET] /roles
+  //#region get-roles
   async getListRole(req, res) {
-    return await getRoles(req, res);
-  }
-
-  // [PUT] /ban/{userId}
-  async banUser(req, res) {
-    return await banUser(req, res);
-  }
-}
-
-const getRoles = async (req, res) => {
-  try {
-    const result = await roleService.getRoles();
-    res.status(200).json(result.roles);
-  } catch (err) {
-    console.log("Failed to get list roles:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to get list roles. Please try again later." });
-  }
-};
-
-const banUser = async (req, res) => {
-  const { userId } = req.params;
-  const { isBanned } = req.query;
-  try {
-    const result = await userService.setUserBanStatus(userId, isBanned);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      return res.status(404).json({ message: "User not found." });
+    try {
+      const result = await roleService.getRoles();
+      res.status(200).json(result.roles);
+    } catch (err) {
+      console.log("Failed to get list roles:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to get list roles. Please try again later." });
     }
-    res.status(200).json({ message: "Ban user successfully." });
-  } catch (err) {
-    console.log("Failed to ban user:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to ban user. Please try again later." });
   }
-};
+  //#endregion
+
+  //#region ban-user
+  async banUser(req, res) {
+    const currentUser = req.user.id;
+    const { userId } = req.params;
+    const { status } = req.body;
+    try {
+      if (currentUser == userId) {
+        return res.status(400).json({ message: "You cannot ban yourself." });
+      }
+
+      const result = await userService.setUserBanStatus(userId, status);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        return res.status(404).json({ message: "User not found." });
+      }
+      res.status(200).json({ message: "Ban/Unban user successfully." });
+    } catch (err) {
+      console.log("Failed to ban/unban user:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to ban/unban user. Please try again later." });
+    }
+  }
+  //#endregion
+
+  //#region get-users
+  async getListUser(req, res) {
+    const { pageNumber, itemsPerPage, status, role, keyword } = req.query;
+    try {
+      const result = await userService.getListUser(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        status,
+        role,
+        keyword
+      );
+
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get list users:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to get list users. Please try again later." });
+    }
+  }
+  //#endregion
+}
 
 module.exports = new AdminController();

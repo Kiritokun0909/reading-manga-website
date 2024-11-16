@@ -68,7 +68,7 @@ module.exports.addChapter = async (
 
     const chapterId = insertRow.insertId;
     await mangaService.updateMangaNewChapterNumber(mangaId, chapterNumber);
-    await mangaService.updateMangaNumChapter(mangaId);
+
     return { chapterId: chapterId };
   } catch (err) {
     if (err.code === "ER_NO_REFERENCED_ROW_2") {
@@ -150,7 +150,7 @@ module.exports.getChapter = async (chapterId) => {
     const [chapterImageRows] = await db.query(
       `
         SELECT pageNumber, imageUrl 
-        FROM chapter_pages 
+        FROM chapter_images 
         WHERE ChapterId = ?
         ORDER BY PageNumber ASC;
     `,
@@ -164,13 +164,13 @@ module.exports.getChapter = async (chapterId) => {
         FROM chapters
         WHERE MangaId = ?
         ORDER BY 
-          volumeNumber ASC, chapterNumber ASC
+          chapterNumber DESC
         ;
     `,
       [mangaId]
     );
 
-    // console.log(listChapterRows);
+    console.log(listChapterRows);
     // console.log('length=', listChapterRows.length);
     const index = listChapterRows.findIndex(
       (chapter) => chapter.chapterId === chapterId
@@ -209,17 +209,18 @@ module.exports.getChapter = async (chapterId) => {
 };
 //#endregion
 
+//#region update-images
 module.exports.updateChapterImages = async (chapterId, chapterImages) => {
   try {
     const [rows] = await db.query(
-      `DELETE FROM chapter_pages WHERE ChapterId = ?`,
+      `DELETE FROM chapter_images WHERE ChapterId = ?`,
       [chapterId]
     );
 
     for (let i = 0; i < chapterImages.length; i++) {
       const [row] = await db.query(
         `
-          INSERT INTO chapter_pages(
+          INSERT INTO chapter_images(
               \`ChapterId\`,
               \`PageNumber\`,
               \`ImageUrl\`
@@ -232,6 +233,7 @@ module.exports.updateChapterImages = async (chapterId, chapterImages) => {
     throw err;
   }
 };
+//#endregion
 
 //#region delete-chapter
 module.exports.deleteChapter = async (chapterId) => {

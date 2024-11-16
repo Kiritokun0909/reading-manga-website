@@ -6,18 +6,13 @@ import MangaItem from "./MangaItem";
 
 export default function MangaList({
   mangas,
-  title,
   currentPage,
   totalPages,
   onPageChange,
 }) {
   return (
     <div className="home-layout">
-      <div className="genre-info">
-        <h5>{title}</h5>
-      </div>
-
-      <div className="manga-list">
+      <div className="manga-list p-2">
         {mangas.map((manga) => (
           <MangaItem key={manga.mangaId} manga={manga} />
         ))}

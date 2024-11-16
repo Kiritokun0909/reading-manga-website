@@ -25,14 +25,42 @@ class AuthorController {
   //#endregion
 
   async getListMangaByGenre(req, res) {
-    return await getListMangaByGenre(req, res);
+    const { genreId } = req.params;
+    const { pageNumber, itemsPerPage } = req.query;
+    try {
+      const result = await mangaService.getListMangaByGenreId(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        genreId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get list manga by genre:", err);
+      res.status(500).json({
+        message: "Failed to get list manga by genre. Please try again later.",
+      });
+    }
   }
 
   async getListMangaByAuthor(req, res) {
-    return await getListMangaByAuthor(req, res);
+    const { authorId } = req.params;
+    const { pageNumber, itemsPerPage } = req.query;
+    try {
+      const result = await mangaService.getListMangaByAuthorId(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        authorId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get list manga by author:", err);
+      res.status(500).json({
+        message: "Failed to get list manga by author. Please try again later.",
+      });
+    }
   }
 
-  //#region get-manga-by-id
+  //#region get-by-id
   async getMangaInfo(req, res) {
     const { mangaId } = req.params;
     try {
@@ -163,41 +191,5 @@ class AuthorController {
   }
   //#endregion
 }
-
-const getListMangaByGenre = async (req, res) => {
-  const { genreId } = req.params;
-  const { pageNumber, itemsPerPage } = req.query;
-  try {
-    const result = await mangaService.getListMangaByGenreId(
-      genreId,
-      parseInt(pageNumber),
-      parseInt(itemsPerPage)
-    );
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to get list manga by genre:", err);
-    res.status(500).json({
-      message: "Failed to get list manga by genre. Please try again later.",
-    });
-  }
-};
-
-const getListMangaByAuthor = async (req, res) => {
-  const { authorId } = req.params;
-  const { pageNumber, itemsPerPage } = req.query;
-  try {
-    const result = await mangaService.getListMangaByAuthorId(
-      authorId,
-      parseInt(pageNumber),
-      parseInt(itemsPerPage)
-    );
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to get list manga by author:", err);
-    res.status(500).json({
-      message: "Failed to get list manga by author. Please try again later.",
-    });
-  }
-};
 
 module.exports = new AuthorController();

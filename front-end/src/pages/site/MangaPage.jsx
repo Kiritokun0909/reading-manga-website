@@ -1,17 +1,24 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactPaginate from "react-paginate";
+import { AuthContext } from "../../context/AuthContext";
 
 import "../../styles/site/Manga.css";
 
 import { getDetailManga, getListChapter } from "../../api/SiteService";
 import { deleteManga } from "../../api/AdminService";
 import HandleCode from "../../utilities/HandleCode";
+import {
+  checkIsLike,
+  checkIsFollow,
+  likeManga,
+  followManga,
+} from "../../api/AccountService";
 
 export default function MangaPage() {
   const mangaId = useParams().mangaId;
-  const roleId = localStorage.getItem("roleId");
+  const { isLoggedIn, roleId } = useContext(AuthContext);
 
   const [manga, setManga] = useState({});
   const [mangaGenres, setMangaGenres] = useState([]);
@@ -48,12 +55,58 @@ export default function MangaPage() {
     fetchManga();
   }, [mangaId]);
 
-  const handleLikeClick = () => {
-    setIsLike(!isLike);
+  useEffect(() => {
+    const fetchLike = async () => {
+      try {
+        await checkIsLike(mangaId);
+        setIsLike(true);
+      } catch (error) {
+        setIsLike(false);
+        toast.error(error.message);
+      }
+    };
+    if (!isLoggedIn) return;
+    fetchLike();
+  }, [isLike, isLoggedIn, mangaId]);
+
+  useEffect(() => {
+    const fetchFollow = async () => {
+      try {
+        await checkIsFollow(mangaId);
+        setIsFollow(true);
+      } catch (error) {
+        setIsFollow(false);
+        toast.error(error.message);
+      }
+    };
+    if (!isLoggedIn) return;
+    fetchFollow();
+  }, [isFollow, isLoggedIn, mangaId]);
+
+  const handleLikeClick = async () => {
+    if (!isLoggedIn) {
+      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      return;
+    }
+    try {
+      await likeManga(mangaId, !isLike);
+      setIsLike(!isLike);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
-  const handleFollowClick = () => {
-    setIsFollow(!isFollow);
+  const handleFollowClick = async () => {
+    if (!isLoggedIn) {
+      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      return;
+    }
+    try {
+      await followManga(mangaId, !isFollow);
+      setIsFollow(!isFollow);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const toggleExpand = () => {
@@ -109,13 +162,23 @@ export default function MangaPage() {
             </div>
             <div className="pl-2">
               <label className="font-bold text-base mr-2">Tác giả:</label>
-              {!manga.authorName ? "Đang cập nhật" : manga.authorName}
+              {!manga.authorName ? (
+                "Đang cập nhật"
+              ) : (
+                <Link to={`/author?authorId=${manga.authorId}&pageNumber=1`}>
+                  {manga.authorName}
+                </Link>
+              )}
             </div>
             <div className="pl-2">
               <label className="font-bold text-base mr-2">Loại truyện:</label>
               {manga.isManga === 0
                 ? "Tiểu thuyết (Novel)"
                 : "Truyện tranh (Manga)"}
+            </div>
+            <div className="pl-2">
+              <label className="font-bold text-base mr-2">Năm phát hành:</label>
+              {!manga.publishedYear ? "Đang cập nhật" : manga.publishedYear}
             </div>
             <div className="pl-2">
               <label className="font-bold text-base mr-2">Độ tuổi:</label>
@@ -168,7 +231,7 @@ export default function MangaPage() {
         {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
           <div className="flex flex-row mt-1.5">
             <Link to={`/admin/chapter/upload/${mangaId}`}>Đăng chương mới</Link>
-            <Link to={`/admin/manga/${mangaId}`}>
+            <Link to={`/admin/update-manga/${mangaId}`}>
               Cập nhật thông tin truyện
             </Link>
             <button
@@ -188,7 +251,11 @@ export default function MangaPage() {
           {mangaGenres.map((genre) => (
             <Link
               key={genre.genreId}
-              to={`/?genreId=${genre.genreId}&pageNumber=1`}
+              to={
+                parseInt(roleId) === HandleCode.ROLE_ADMIN
+                  ? "#"
+                  : `/genre?genreId=${genre.genreId}&pageNumber=1`
+              }
             >
               {genre.genreName}
             </Link>

@@ -5,7 +5,9 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const mangaService = require("./MangaService.js");
+const { formatISODate } = require("../../utilities/utils.js");
 
+//#region get-info
 module.exports.getUserInfoById = async (userId) => {
   try {
     const [rows] = await db.query(
@@ -24,7 +26,9 @@ module.exports.getUserInfoById = async (userId) => {
     throw err;
   }
 };
+//#endregion
 
+//#region update-info
 module.exports.updateUserInfo = async (userId, username = "", avatar = "") => {
   try {
     // Initialize arrays to hold the fields to update and the values
@@ -61,7 +65,9 @@ module.exports.updateUserInfo = async (userId, username = "", avatar = "") => {
     throw err;
   }
 };
+//#endregion
 
+//#region update-email
 module.exports.updateUserEmail = async (userId, email) => {
   try {
     const [rows] = await db.query(
@@ -84,7 +90,9 @@ module.exports.updateUserEmail = async (userId, email) => {
     throw err;
   }
 };
+//#endregion
 
+//#region update-password
 module.exports.updateUserPassword = async (
   userId,
   oldPassword,
@@ -120,17 +128,26 @@ module.exports.updateUserPassword = async (
     throw err;
   }
 };
+//#endregion
 
-module.exports.setUserBanStatus = async (userId, isBanned = true) => {
+//#region ban-user
+module.exports.setUserBanStatus = async (
+  userId,
+  status = HandleCode.BAN_STATUS
+) => {
   try {
-    const banStatus = isBanned ? 1 : 0;
+    const newStatus =
+      status === HandleCode.BAN_STATUS
+        ? HandleCode.BAN_STATUS
+        : HandleCode.ACTIVE_STATUS;
+
     const [rows] = await db.query(
       `
             UPDATE users
             SET
-                IsBanned = ?
+                Status = ?
             WHERE UserId = ?`,
-      [banStatus, userId]
+      [newStatus, userId]
     );
 
     if (rows.affectedRows === 0) {
@@ -140,12 +157,13 @@ module.exports.setUserBanStatus = async (userId, isBanned = true) => {
     throw err;
   }
 };
+//#endregion
 
-//#region like-unlike-manga
+//#region like-unlike
 module.exports.likeManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "INSERT INTO likes (mangaId, userId) VALUES (?, ?)",
+      "INSERT INTO favorites (mangaId, userId) VALUES (?, ?)",
       [mangaId, userId]
     );
     await mangaService.updateMangaLikes(mangaId);
@@ -163,7 +181,7 @@ module.exports.likeManga = async (mangaId, userId) => {
 module.exports.unlikeManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "DELETE FROM likes WHERE mangaId = ? AND userId = ?",
+      "DELETE FROM favorites WHERE mangaId = ? AND userId = ?",
       [mangaId, userId]
     );
     if (rows.affectedRows === 0) {
@@ -176,11 +194,11 @@ module.exports.unlikeManga = async (mangaId, userId) => {
 };
 //#endregion
 
-//#region follow-unfollow-manga
+//#region follow-unfollow
 module.exports.followManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "INSERT INTO follows (mangaId, userId) VALUES (?, ?)",
+      "INSERT INTO following (mangaId, userId) VALUES (?, ?)",
       [mangaId, userId]
     );
     await mangaService.updateMangaFollows(mangaId);
@@ -198,7 +216,7 @@ module.exports.followManga = async (mangaId, userId) => {
 module.exports.unfollowManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "DELETE FROM follows WHERE mangaId = ? AND userId = ?",
+      "DELETE FROM following WHERE mangaId = ? AND userId = ?",
       [mangaId, userId]
     );
     if (rows.affectedRows === 0) {
@@ -211,11 +229,11 @@ module.exports.unfollowManga = async (mangaId, userId) => {
 };
 //#endregion
 
-//#region check user like-follow-manga
+//#region check like-follow
 module.exports.isLikeManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "SELECT * FROM likes WHERE mangaId = ? AND userId = ?",
+      "SELECT * FROM favorites WHERE mangaId = ? AND userId = ?",
       [mangaId, userId]
     );
     if (rows.length === 0) {
@@ -229,7 +247,7 @@ module.exports.isLikeManga = async (mangaId, userId) => {
 module.exports.isFollowManga = async (mangaId, userId) => {
   try {
     const [rows] = await db.query(
-      "SELECT * FROM follows WHERE mangaId = ? AND userId = ?",
+      "SELECT * FROM following WHERE mangaId = ? AND userId = ?",
       [mangaId, userId]
     );
     if (rows.length === 0) {
@@ -243,13 +261,13 @@ module.exports.isFollowManga = async (mangaId, userId) => {
 
 //#region get-list-like-follow
 module.exports.getListMangaUserLike = async (
-  userId,
   pageNumber,
-  itemsPerPage
+  itemsPerPage,
+  userId
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(UserId) as total FROM likes"
+      "SELECT COUNT(UserId) as total FROM favorites"
     );
     const totalMangas = totalRows[0].total;
 
@@ -265,7 +283,7 @@ module.exports.getListMangaUserLike = async (
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
       `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
-        FROM likes l
+        FROM favorites l
           JOIN mangas m ON l.mangaId = m.mangaId 
         WHERE userId = ?
         LIMIT ? OFFSET ?`,
@@ -283,13 +301,13 @@ module.exports.getListMangaUserLike = async (
 };
 
 module.exports.getListMangaUserFollow = async (
-  userId,
   pageNumber,
-  itemsPerPage
+  itemsPerPage,
+  userId
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(UserId) as total FROM follows"
+      "SELECT COUNT(UserId) as total FROM following"
     );
     const totalMangas = totalRows[0].total;
 
@@ -305,7 +323,7 @@ module.exports.getListMangaUserFollow = async (
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
       `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
-        FROM follows f
+        FROM following f
           JOIN mangas m ON f.mangaId = m.mangaId 
         WHERE userId = ?
         ORDER BY f.createDate DESC
@@ -317,6 +335,60 @@ module.exports.getListMangaUserFollow = async (
       pageNumber,
       totalPages,
       mangas: rows,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region get-user
+module.exports.getListUser = async (
+  pageNumber = 1,
+  itemsPerPage = 5,
+  status = HandleCode.ACTIVE_STATUS,
+  role = HandleCode.ROLE_USER,
+  keyword = ""
+) => {
+  try {
+    const [totalRows] = await db.query(
+      `SELECT COUNT(userId) as total 
+      FROM users 
+      WHERE status = ? AND roleId = ? AND (username LIKE ? OR email LIKE ?)`,
+      [status, role, `%${keyword}%`, `%${keyword}%`]
+    );
+
+    const totalUsers = totalRows[0].total;
+    const totalPages = Math.ceil(totalUsers / itemsPerPage);
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        users: [],
+      };
+    }
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT userId, avatar, username, email, status, updateAt, roleId 
+      FROM users 
+      WHERE status = ? AND roleId = ? AND (username LIKE ? OR email LIKE ?)
+      ORDER BY updateAt DESC
+      LIMIT ? OFFSET ?`,
+      [status, role, `%${keyword}%`, `%${keyword}%`, itemsPerPage, offset]
+    );
+
+    const formattedRows = rows.map((row) => {
+      return {
+        ...row,
+        updateAt: formatISODate(row.updateAt),
+      };
+    });
+
+    return {
+      pageNumber,
+      totalPages,
+      users: formattedRows,
     };
   } catch (err) {
     throw err;

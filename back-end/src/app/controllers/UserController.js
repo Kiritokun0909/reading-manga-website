@@ -4,7 +4,7 @@ const userService = require("../services/UserService");
 const { uploadFile } = require("../../utilities/UploadFile");
 
 class UserController {
-  //#region manage-account
+  //#region get-info
   async getUserInfo(req, res) {
     let userId = req.params.userId;
     if (userId == 0) userId = req.user.id;
@@ -25,7 +25,7 @@ class UserController {
   }
   //#endregion
 
-  //#region update-account
+  //#region update-info
   async updateUserInfo(req, res) {
     const { username } = req.body;
     const userId = req.user.id;
@@ -56,7 +56,9 @@ class UserController {
         .json({ message: "Failed to update info. Please try again later." });
     }
   }
+  //#endregion
 
+  //#region change-mail
   async changeUserEmail(req, res) {
     const { email } = req.body;
     const userId = req.user.id;
@@ -83,7 +85,9 @@ class UserController {
         .json({ message: "Failed to change email. Please try again later." });
     }
   }
+  //#endregion
 
+  //#region change-pwd
   async changeUserPassword(req, res) {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.id;
@@ -107,228 +111,188 @@ class UserController {
       res.status(200).json({ message: "Change password successfully." });
     } catch (err) {
       console.log("Failed to change user password:", err);
-      res
-        .status(500)
-        .json({
-          message: "Failed to change password. Please try again later.",
-        });
+      res.status(500).json({
+        message: "Failed to change password. Please try again later.",
+      });
     }
   }
   //#endregion
 
-  //#region like-unlike-manga
+  //#region like-manga
   async likeManga(req, res) {
-    return await likeManga(req, res);
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+
+    try {
+      const result = await userService.likeManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "Manga not found." });
+        return;
+      }
+      if (result && result.code == HandleCode.USER_ALREADY_LIKE) {
+        res.status(403).json({ message: "User already like this manga." });
+        return;
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to like manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to like manga. Please try again later." });
+    }
   }
 
   async unlikeManga(req, res) {
-    return await unlikeManga(req, res);
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+
+    try {
+      const result = await userService.unlikeManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({
+          message: "Manga not found or user already unlike this manga.",
+        });
+        return;
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to like manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to unlike manga. Please try again later." });
+    }
   }
   //#endregion
 
-  //#region follow-unfollow-manga
+  //#region follow-manga
   async followManga(req, res) {
-    return await followManga(req, res);
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await userService.followManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({ message: "Manga not found." });
+        return;
+      }
+      if (result && result.code == HandleCode.USER_ALREADY_LIKE) {
+        res.status(403).json({ message: "User already follow this manga." });
+        return;
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to follow manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to follow manga. Please try again later." });
+    }
   }
 
   async unfollowManga(req, res) {
-    return await unfollowManga(req, res);
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await userService.unfollowManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({
+          message: "Manga not found or user already unlike this manga.",
+        });
+        return;
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to unfollow manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to unfollow manga. Please try again later." });
+    }
   }
   //#endregion
 
-  //#region check-user-like-follow
+  //#region check-like
   async isLike(req, res) {
-    return await isLike(req, res);
-  }
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await userService.isLikeManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({
+          message: "Manga not found or user already unlike this manga.",
+        });
+        return;
+      }
 
-  async isFollow(req, res) {
-    return await isFollow(req, res);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to check user like manga:", err);
+      res.status(500).json({
+        message: "Failed to check user like manga. Please try again later.",
+      });
+    }
   }
   //#endregion
 
-  //#region get-list-like-follow
-  async getListLike(req, res) {
-    return await getListLike(req, res);
-  }
+  //#region check-follow
+  async isFollow(req, res) {
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await userService.isFollowManga(mangaId, userId);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        res.status(404).json({
+          message: "Manga not found or user already unfollow this manga.",
+        });
+        return;
+      }
 
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to check user follow manga:", err);
+      res.status(500).json({
+        message: "Failed to check user follow manga. Please try again later.",
+      });
+    }
+  }
+  //#endregion
+
+  //#region get-list-like
+  async getListLike(req, res) {
+    const { pageNumber, itemsPerPage } = req.query;
+    const userId = req.user.id;
+    try {
+      const result = await userService.getListMangaUserLike(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        userId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get list like manga:", err);
+      res.status(500).json({
+        message: "Failed to get list like manga. Please try again later.",
+      });
+    }
+  }
+  //#endregion
+
+  //#region get-list-follow
   async getListFollow(req, res) {
-    return await getListFollow(req, res);
+    const { pageNumber, itemsPerPage } = req.query;
+    const userId = req.user.id;
+    try {
+      const result = await userService.getListMangaUserFollow(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        userId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get list follow manga:", err);
+      res.status(500).json({
+        message: "Failed to get list follow manga. Please try again later.",
+      });
+    }
   }
   //#endregion
 }
 
 module.exports = new UserController();
-
-//#region implement like-unlike-manga
-const likeManga = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-
-  try {
-    const result = await userService.likeManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found." });
-      return;
-    }
-    if (result && result.code == HandleCode.USER_ALREADY_LIKE) {
-      res.status(403).json({ message: "User already like this manga." });
-      return;
-    }
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to like manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to like manga. Please try again later." });
-  }
-};
-
-const unlikeManga = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-
-  try {
-    const result = await userService.unlikeManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({
-        message: "Manga not found or user already unlike this manga.",
-      });
-      return;
-    }
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to like manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to unlike manga. Please try again later." });
-  }
-};
-//#endregion
-
-//#region implement follow-unfollow-manga
-const followManga = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-
-  try {
-    const result = await userService.followManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({ message: "Manga not found." });
-      return;
-    }
-    if (result && result.code == HandleCode.USER_ALREADY_LIKE) {
-      res.status(403).json({ message: "User already follow this manga." });
-      return;
-    }
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to follow manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to follow manga. Please try again later." });
-  }
-};
-
-const unfollowManga = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-
-  try {
-    const result = await userService.unfollowManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({
-        message: "Manga not found or user already unlike this manga.",
-      });
-      return;
-    }
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to unfollow manga:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to unfollow manga. Please try again later." });
-  }
-};
-//#endregion
-
-//#region implement check-user-like-follow-manga
-const isLike = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-  try {
-    const result = await userService.isLikeManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({
-        message: "Manga not found or user already unlike this manga.",
-      });
-      return;
-    }
-
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to check user like manga:", err);
-    res.status(500).json({
-      message: "Failed to check user like manga. Please try again later.",
-    });
-  }
-};
-
-const isFollow = async (req, res) => {
-  const { mangaId } = req.params;
-  const userId = req.user.id;
-  try {
-    const result = await userService.isFollowManga(mangaId, userId);
-    if (result && result.code == HandleCode.NOT_FOUND) {
-      res.status(404).json({
-        message: "Manga not found or user already unfollow this manga.",
-      });
-      return;
-    }
-
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to check user follow manga:", err);
-    res.status(500).json({
-      message: "Failed to check user follow manga. Please try again later.",
-    });
-  }
-};
-//#endregion
-
-//#region get-list-like-follow
-const getListLike = async (req, res) => {
-  const { pageNumber, itemsPerPage } = req.query;
-  const userId = req.user.id;
-  try {
-    const result = await userService.getListMangaUserLike(
-      userId,
-      parseInt(pageNumber),
-      parseInt(itemsPerPage)
-    );
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to get list like manga:", err);
-    res.status(500).json({
-      message: "Failed to get list like manga. Please try again later.",
-    });
-  }
-};
-
-const getListFollow = async (req, res) => {
-  const { pageNumber, itemsPerPage } = req.query;
-  const userId = req.user.id;
-  try {
-    const result = await userService.getListMangaUserFollow(
-      userId,
-      parseInt(pageNumber),
-      parseInt(itemsPerPage)
-    );
-    res.status(200).json(result);
-  } catch (err) {
-    console.log("Failed to get list follow manga:", err);
-    res.status(500).json({
-      message: "Failed to get list follow manga. Please try again later.",
-    });
-  }
-};
-//#endregion

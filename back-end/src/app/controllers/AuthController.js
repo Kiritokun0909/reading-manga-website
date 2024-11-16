@@ -38,7 +38,7 @@ class AuthController {
   }
   //#endregion
 
-  //#region register
+  //#region register-user
   async register(req, res) {
     const { email, password } = req.body;
     try {
@@ -46,6 +46,35 @@ class AuthController {
         email,
         password,
         authService.RoleEnum.USER
+      );
+
+      if (result && result.code == HandleCode.EMAIL_EXIST) {
+        res.status(409).json({
+          message: "Email is already existed. Try another email.",
+        });
+        return;
+      }
+
+      res.status(201).json({
+        message: "Register account successfully.",
+      });
+    } catch (err) {
+      console.log("Failed to register account:", err);
+      res.status(500).json({
+        message: "Failed to register account.",
+      });
+    }
+  }
+  //#endregion
+
+  //#region register-admin
+  async registerAdmin(req, res) {
+    const { email, password } = req.body;
+    try {
+      const result = await authService.register(
+        email,
+        password,
+        authService.RoleEnum.ADMIN
       );
 
       if (result && result.code == HandleCode.EMAIL_EXIST) {

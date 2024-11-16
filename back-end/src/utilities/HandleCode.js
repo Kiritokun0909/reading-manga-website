@@ -7,6 +7,10 @@ module.exports = {
   FB_COVER_IMAGE_FOLDER_PATH: "cover_image",
   FB_CHAPTER_IMAGE_FOLDER_PATH: "chapter_image",
 
+  //Role enum
+  ROLE_ADMIN: 1,
+  ROLE_USER: 2,
+
   // Handle code for common service
   CREATE_SUCCESS: 900,
   CREATE_FAILED: 901,

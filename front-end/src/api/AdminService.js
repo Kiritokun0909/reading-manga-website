@@ -5,6 +5,7 @@ const GENRE_URL = "/genre";
 const AUTHOR_URL = "/author";
 const MANGA_URL = "/manga";
 const CHAPTER_URL = "/chapter";
+const ADMIN_URL = "/admin";
 
 //#region Genre
 export const addGenre = async (genreName) => {
@@ -458,3 +459,98 @@ export const deleteChapter = async (chapterId) => {
   }
 };
 //#endregion
+
+//#region User
+export const getListUser = async (
+  pageNumber = 1,
+  itemsPerPage = 5,
+  status = HandleCode.ACTIVE_STATUS,
+  role = HandleCode.ROLE_USER,
+  keyword = ""
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${ADMIN_URL}/users?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&status=${status}&role=${role}&keyword=${keyword}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.get(`${ADMIN_URL}/users?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&status=${status}&role=${role}`); // use for dev
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const setUserStatus = async (userId, status = HandleCode.BAN_STATUS) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.put(
+      `${ADMIN_URL}/ban/${userId}`,
+      {
+        status: status,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.put(`${ADMIN_URL}/users/${userId}`, {
+    //   isBanned,
+    // });
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 400) {
+      throw new Error("Không thể tự khoá tài khoản của bản thân.");
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw new Error("Mã người dung không tìm thấy. Vui lòng thử lại.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const registerAdmin = async (email, password) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.post(
+      `${ADMIN_URL}/register`,
+      {
+        email: email,
+        password: password,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error && error.response.status === 409) {
+      throw new Error("Email đã được sử dụng. Vui lòng thử email khác.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};

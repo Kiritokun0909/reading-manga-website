@@ -5,7 +5,7 @@ import MangaList from "../../components/admin/manga/MangaList";
 import { getListManga } from "../../api/SiteService";
 import { useNavigate } from "react-router-dom";
 
-export default function ManageListMangaPage() {
+export default function ManageMangaPage() {
   const [mangas, setMangas] = useState([]);
   const [filter, setFilter] = useState(
     HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC
@@ -16,7 +16,7 @@ export default function ManageListMangaPage() {
 
   const navigate = useNavigate();
 
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
     const fetchMangas = async () => {
@@ -47,7 +47,7 @@ export default function ManageListMangaPage() {
 
   return (
     <div className="flex flex-col justify-center p-4 pt-0">
-      <div className="flex justify-center pb-4">
+      <div className="flex justify-center py-4">
         <h1>Quản lý danh sách truyện</h1>
       </div>
 
@@ -59,7 +59,7 @@ export default function ManageListMangaPage() {
             placeholder="Tên truyện hoặc tên khác..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 mr-4 py-1 color-black border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+            className="w-96 mr-4 py-1 color-black border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
           />
         </div>
 
