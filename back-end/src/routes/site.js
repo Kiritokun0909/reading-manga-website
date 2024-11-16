@@ -1,19 +1,11 @@
 const express = require("express");
+const SiteController = require("../app/controllers/SiteController");
 const router = express.Router();
 
-/**
- * @swagger
- * /site/test:
- *   get:
- *     tags: [Site]
- *     summary: Test api call
- *     description: Test api call
- *     responses:
- *       200:
- *         description: Successful response
- */
 router.get("/test-api", (req, res) => {
   res.json({ message: "API is working." });
 });
+
+router.get("/document/:docType", SiteController.getDocument);
 
 module.exports = router;

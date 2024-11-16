@@ -2,6 +2,7 @@
 
 const roleService = require("../services/RoleService.js");
 const userService = require("../services/UserService.js");
+const siteService = require("../services/SiteService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 
 class AdminController {
@@ -61,6 +62,23 @@ class AdminController {
       res
         .status(500)
         .json({ message: "Failed to get list users. Please try again later." });
+    }
+  }
+  //#endregion
+
+  //#region update-document
+  async updateDocument(req, res) {
+    const { docType } = req.params;
+    const { content } = req.body;
+    try {
+      const result = await siteService.updateDocument(docType, content);
+
+      res.status(200).json({ message: "Update document successfully." });
+    } catch (err) {
+      console.log("Failed to update document:", err);
+      res.status(500).json({
+        message: "Failed to update document. Please try again later.",
+      });
     }
   }
   //#endregion

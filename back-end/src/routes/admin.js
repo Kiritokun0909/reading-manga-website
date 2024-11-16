@@ -18,4 +18,6 @@ router.put("/ban/:userId", adminController.banUser);
 
 router.post("/register", authController.registerAdmin);
 
+router.put("/document/:docType", adminController.updateDocument);
+
 module.exports = router;

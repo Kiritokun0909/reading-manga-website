@@ -170,7 +170,7 @@ module.exports.getChapter = async (chapterId) => {
       [mangaId]
     );
 
-    console.log(listChapterRows);
+    // console.log(listChapterRows);
     // console.log('length=', listChapterRows.length);
     const index = listChapterRows.findIndex(
       (chapter) => chapter.chapterId === chapterId

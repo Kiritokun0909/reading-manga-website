@@ -2,6 +2,20 @@ import axios from "axios";
 // import axiosInstance from "./axiosInstance";
 import HandleCode from "../utilities/HandleCode";
 
+export const getDocument = async (docType = HandleCode.DOC_TYPE_ABOUT) => {
+  try {
+    const response = await axios.get(`/site/document/${docType}`); //use for dev
+    // const response = await axiosInstance.get(`/document/${docType}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
 //#region get-list-genre
 export const getListGenres = async () => {
   try {

@@ -554,3 +554,32 @@ export const registerAdmin = async (email, password) => {
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
+
+//#region Document
+export const updateDocument = async (docType, content) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.put(
+      `${ADMIN_URL}/document/${docType}`,
+      {
+        content: content,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.put(`${ADMIN_URL}/document/${docType}`, {
+    //   content: content,
+    // });
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};

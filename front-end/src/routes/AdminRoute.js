@@ -13,6 +13,7 @@ import PasswordPage from "../pages/account/PasswordPage";
 import NotFoundPage from "../pages/site/NotFoundPage";
 import MangaPage from "../pages/site/MangaPage";
 import ManageUserPage from "../pages/admin/ManageUserPage";
+import ManageDocumentPage from "../pages/admin/ManageDocumentPage";
 
 export default function AdminRoute() {
   return (
@@ -33,6 +34,7 @@ export default function AdminRoute() {
         />
         <Route path="/chapter/:chapterId" element={<UpdateChapterPage />} />
         <Route path="/manage-user" element={<ManageUserPage />} />
+        <Route path="/manage-document" element={<ManageDocumentPage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Route>
     </Routes>

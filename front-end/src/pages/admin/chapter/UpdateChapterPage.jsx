@@ -172,7 +172,7 @@ export default function UpdateChapterPage() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-2">
       {loading && <Loading />}
 
       {/* Manga information  */}

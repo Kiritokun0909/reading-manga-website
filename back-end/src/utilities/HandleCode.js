@@ -11,6 +11,10 @@ module.exports = {
   ROLE_ADMIN: 1,
   ROLE_USER: 2,
 
+  //Handle code for document type
+  DOC_TYPE_POLICY: "policy",
+  DOC_TYPE_ABOUT: "about",
+
   // Handle code for common service
   CREATE_SUCCESS: 900,
   CREATE_FAILED: 901,
