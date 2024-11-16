@@ -80,6 +80,26 @@ class AuthorController {
   }
   //#endregion
 
+  //#region get-manga-review
+  async getMangaReview(req, res) {
+    const { mangaId } = req.params;
+    const { pageNumber, itemsPerPage } = req.query;
+    try {
+      const result = await mangaService.getReviewsByMangaId(
+        parseInt(itemsPerPage),
+        parseInt(pageNumber),
+        mangaId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get manga review:", err);
+      res.status(500).json({
+        message: "Failed to get manga review. Please try again later.",
+      });
+    }
+  }
+  //#endregion
+
   //#region add-manga
   async addManga(req, res) {
     const {

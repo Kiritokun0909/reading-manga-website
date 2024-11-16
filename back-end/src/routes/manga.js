@@ -47,4 +47,6 @@ router.delete(
   mangaController.removeManga
 );
 
+router.get("/reviews/:mangaId", mangaController.getMangaReview);
+
 module.exports = router;

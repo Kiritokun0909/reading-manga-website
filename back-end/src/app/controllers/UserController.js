@@ -293,6 +293,23 @@ class UserController {
     }
   }
   //#endregion
+
+  //#region user-review
+  async addReview(req, res) {
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    const { context } = req.body;
+    try {
+      const result = await userService.addReview(userId, mangaId, context);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to add review:", err);
+      res.status(500).json({
+        message: "Failed to add review. Please try again later.",
+      });
+    }
+  }
+  //#endregion
 }
 
 module.exports = new UserController();

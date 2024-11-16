@@ -583,3 +583,37 @@ export const updateDocument = async (docType, content) => {
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
+
+//#endregion
+
+//#region Review
+export const setReviewStatus = async (
+  reviewId,
+  status = HandleCode.REVIEW_IS_HIDE
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.put(
+      `${ADMIN_URL}/review/${reviewId}`,
+      {
+        status: status,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.put(`${ADMIN_URL}/review/${reviewId}`, {
+    //   status: status,
+    // });
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống khônh phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};

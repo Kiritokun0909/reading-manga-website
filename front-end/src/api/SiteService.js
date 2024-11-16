@@ -162,3 +162,25 @@ export const getChapterDetail = async (chapterId) => {
   }
 };
 //#endregion
+
+//#region list-review
+export const getListReview = async (
+  mangaId,
+  itemsPerPage = 5,
+  pageNumber = 1
+) => {
+  try {
+    const response = await axios.get(
+      `/manga/reviews/${mangaId}?itemsPerPage=${itemsPerPage}&pageNumber=${pageNumber}`
+    ); //use for dev
+    // const response = await axiosInstance.get(`/comment/list/${chapterId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

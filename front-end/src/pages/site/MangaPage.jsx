@@ -6,14 +6,19 @@ import { AuthContext } from "../../context/AuthContext";
 
 import "../../styles/site/Manga.css";
 
-import { getDetailManga, getListChapter } from "../../api/SiteService";
-import { deleteManga } from "../../api/AdminService";
+import {
+  getDetailManga,
+  getListChapter,
+  getListReview,
+} from "../../api/SiteService";
+import { deleteManga, setReviewStatus } from "../../api/AdminService";
 import HandleCode from "../../utilities/HandleCode";
 import {
   checkIsLike,
   checkIsFollow,
   likeManga,
   followManga,
+  addReview,
 } from "../../api/AccountService";
 
 export default function MangaPage() {
@@ -27,10 +32,11 @@ export default function MangaPage() {
   const [isFollow, setIsFollow] = useState(false);
   const [isLike, setIsLike] = useState(false);
 
-  const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState(null);
+  const [newReview, setNewReview] = useState("");
+  const [reviews, setReviews] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const REVIEWS_PER_PAGE = 5;
 
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 100; // Maximum characters to show when collapsed
@@ -53,7 +59,38 @@ export default function MangaPage() {
     };
 
     fetchManga();
-  }, [mangaId]);
+  }, [mangaId, currentPage]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await getListReview(
+          mangaId,
+          REVIEWS_PER_PAGE,
+          currentPage
+        );
+        setReviews(response.reviews);
+        setTotalPages(response.totalPages);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    fetchReviews();
+  }, [currentPage, mangaId]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await getListReview(
+        mangaId,
+        REVIEWS_PER_PAGE,
+        currentPage
+      );
+      setReviews(response.reviews);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     const fetchLike = async () => {
@@ -128,13 +165,44 @@ export default function MangaPage() {
     setCurrentPage(page);
   };
 
-  const handleSubmitComment = async (event) => {
-    event.preventDefault();
-    console.log(newComment);
+  const handleSubmitReview = async (event) => {
+    if (!isLoggedIn) {
+      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      return;
+    }
+
+    if (newReview === "") {
+      toast.error("Vui làng nhập đánh giá trước khi gửi!");
+      return;
+    }
+
+    try {
+      await addReview(mangaId, newReview);
+      toast.success("Gửi đánh giá thành công.");
+      setNewReview("");
+      fetchReviews();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleHideReview = async (reviewId, status) => {
+    try {
+      await setReviewStatus(
+        reviewId,
+        status === HandleCode.REVIEW_IS_HIDE
+          ? HandleCode.REVIEW_NOT_HIDE
+          : HandleCode.REVIEW_IS_HIDE
+      );
+      toast.success("Ẩn/Hiện bình luận thành công!");
+      fetchReviews();
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       {/* Manga information  */}
       <div className="manga-info">
         {/* Cover image */}
@@ -317,35 +385,51 @@ export default function MangaPage() {
 
       {/* Review list */}
       <div className="comment-section">
-        <h4>Bình luận</h4>
+        <h4>Đánh giá</h4>
         <div className="manga-comment">
           <div className="comment-form">
             <div className="comment-area">
               <textarea
                 className="border-1 border-gray-300 rounded-md p-2"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Bình luận..."
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+                placeholder="Nhập đánh giá của bạn..."
               />
             </div>
 
             <div className="comment-button">
-              <button onClick={handleSubmitComment}>Bình luận</button>
+              <button onClick={handleSubmitReview}>Gửi đánh giá</button>
             </div>
           </div>
 
           <div className="list-comment">
             <ul>
-              {comments &&
-                comments.map((comment, index) => (
-                  <li key={`${comment.commentDate}-${index}`}>
+              {reviews &&
+                reviews.map((review) => (
+                  <li key={review.reviewId}>
                     <div className="comment-header">
-                      <span className="username">{comment.username}</span>
-                      <span className="comment-date">
-                        {comment.commentDate}
+                      <span className="username">
+                        {review.username}{" "}
+                        {parseInt(roleId) === HandleCode.ROLE_ADMIN &&
+                          `<${review.email}>`}
                       </span>
+                      <span className="comment-date">{review.createAt}</span>
+                      {parseInt(roleId) === HandleCode.ROLE_ADMIN && (
+                        <button
+                          className="underline text-blue-500 ml-2"
+                          onClick={() =>
+                            handleHideReview(review.reviewId, review.isHide)
+                          }
+                        >
+                          {review.isHide === 1 ? "Hiện" : "Ẩn"}
+                        </button>
+                      )}
                     </div>
-                    <p className="comment-content">{comment.context}</p>
+                    <p className="comment-content">
+                      {review.context === ""
+                        ? "Bình luận này đã bị ẩn"
+                        : review.context}
+                    </p>
                   </li>
                 ))}
             </ul>

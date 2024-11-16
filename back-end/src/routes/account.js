@@ -28,4 +28,6 @@ router.delete("/follow/:mangaId", userController.unfollowManga);
 
 router.get("/:userId", userController.getUserInfo);
 
+router.post("/add-review/:mangaId", userController.addReview);
+
 module.exports = router;

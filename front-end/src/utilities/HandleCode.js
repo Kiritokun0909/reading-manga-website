@@ -9,6 +9,10 @@ module.exports = {
   DOC_TYPE_POLICY: "policy",
   DOC_TYPE_ABOUT: "about",
 
+  //Handle code for reviews
+  REVIEW_IS_HIDE: 1,
+  REVIEW_NOT_HIDE: 0,
+
   // Handle code for common service
   CREATE_SUCCESS: 900,
   CREATE_FAILED: 901,

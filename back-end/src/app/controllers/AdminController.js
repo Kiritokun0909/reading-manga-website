@@ -2,6 +2,7 @@
 
 const roleService = require("../services/RoleService.js");
 const userService = require("../services/UserService.js");
+const reviewService = require("../services/ReviewService.js");
 const siteService = require("../services/SiteService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 
@@ -78,6 +79,25 @@ class AdminController {
       console.log("Failed to update document:", err);
       res.status(500).json({
         message: "Failed to update document. Please try again later.",
+      });
+    }
+  }
+  //#endregion
+
+  //#region set-review-status
+  async setReviewStatus(req, res) {
+    const { reviewId } = req.params;
+    const { status } = req.body;
+    try {
+      const result = await reviewService.setReviewStatus(reviewId, status);
+      if (result && result.code == HandleCode.NOT_FOUND) {
+        return res.status(404).json({ message: "Review not found." });
+      }
+      res.status(200).json({ message: "Set review status successfully." });
+    } catch (err) {
+      console.log("Failed to set review status:", err);
+      res.status(500).json({
+        message: "Failed to set review status. Please try again later.",
       });
     }
   }

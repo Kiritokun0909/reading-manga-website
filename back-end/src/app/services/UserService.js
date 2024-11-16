@@ -395,3 +395,18 @@ module.exports.getListUser = async (
   }
 };
 //#endregion
+
+//#region user-review
+module.exports.addReview = async (userId, mangaId, context = "") => {
+  try {
+    const [rows] = await db.query(
+      `INSERT INTO reviews (userId, mangaId, context) 
+       VALUES (?, ?, ?)`,
+      [userId, mangaId, context]
+    );
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
