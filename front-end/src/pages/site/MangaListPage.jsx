@@ -161,7 +161,7 @@ export default function MangaListPage({ type }) {
               <option value={HandleCode.FILTER_BY_MANGA_LIKE_ASC}>
                 Lượt thích tăng dần
               </option>
-              <option value={HandleCode.FILTER_BY_MANGA_VIEW_ASC}>
+              <option value={HandleCode.FILTER_BY_MANGA_LIKE_DESC}>
                 Lượt thích giảm dần
               </option>
             </select>

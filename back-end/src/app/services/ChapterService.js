@@ -10,7 +10,7 @@ module.exports.getListChapterByMangaId = async (mangaId) => {
       `SELECT chapterId, volumeNumber, chapterNumber, chapterName, updateAt, isFree 
       FROM chapters 
       WHERE mangaId = ? 
-      ORDER BY chapterNumber DESC`,
+      ORDER BY volumeNumber DESC, chapterNumber DESC`,
       [mangaId]
     );
 

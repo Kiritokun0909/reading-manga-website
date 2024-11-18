@@ -1,6 +1,7 @@
 const db = require("../../configs/DatabaseConfig.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 const { formatISODate } = require("../../utilities/utils.js");
+const notificationService = require("./NotificationService.js");
 
 //#region get-list-manga
 module.exports.getListManga = async (
@@ -429,6 +430,7 @@ module.exports.removeManga = async (mangaId) => {
 };
 //#endregion
 
+//#region update-num-chapter
 module.exports.updateMangaNumChapter = async (mangaId) => {
   try {
     const [countRows] = await db.query(
@@ -438,7 +440,7 @@ module.exports.updateMangaNumChapter = async (mangaId) => {
     const numChapters = countRows[0].total;
 
     const [rows] = await db.query(
-      `UPDATE mangas SET numChapters = ?, updatedAt = CURRENT_TIMESTAMP() WHERE mangaId = ?`,
+      `UPDATE mangas SET numChapters = ?, updateAt = CURRENT_TIMESTAMP() WHERE mangaId = ?`,
       [numChapters, mangaId]
     );
     if (rows.affectedRows === 0) {
@@ -448,7 +450,9 @@ module.exports.updateMangaNumChapter = async (mangaId) => {
     throw err;
   }
 };
+//#endregion
 
+//#region update-newest-chapter
 module.exports.updateMangaNewChapterNumber = async (
   mangaId,
   newChapterNumber
@@ -461,11 +465,13 @@ module.exports.updateMangaNewChapterNumber = async (
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }
-    await mangaService.updateMangaNumChapter(mangaId);
+    await this.updateMangaNumChapter(mangaId);
+    await notificationService.notifyNewChapter(mangaId);
   } catch (err) {
     throw err;
   }
 };
+//#endregion
 
 module.exports.updateMangaViews = async (mangaId) => {
   try {

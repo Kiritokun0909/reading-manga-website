@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
@@ -26,6 +26,7 @@ export default function UploadChapterPage() {
   const fileInputRef = useRef(null); // Reference to trigger file input for changing
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchManga = async () => {
@@ -141,13 +142,14 @@ export default function UploadChapterPage() {
       );
       setLoading(false);
       toast.success("Thêm chương thành công");
+      navigate(`/admin/manga/${mangaId}`);
     } catch (error) {
       toast.error(error.message);
     }
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-2">
       {loading && <Loading />}
 
       {/* Manga information  */}
@@ -237,9 +239,7 @@ export default function UploadChapterPage() {
         </div>
 
         <div className="flex justify-start pt-2">
-          <label className="w-46 mr-2 font-bold text-lg">
-            Yêu cầu phí đọc truyện:
-          </label>
+          <label className="w-46 mr-2 font-bold text-lg">Yêu cầu phí:</label>
           <input
             className="mr-1"
             type="radio"

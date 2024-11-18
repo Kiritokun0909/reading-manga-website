@@ -7,7 +7,8 @@ export default function Footer() {
     <footer>
       <div className="footer-content">
         <div className="social-links">
-          <Link to="/privacy">Privacy</Link> |<Link to="/about">About</Link>
+          <Link to="/privacy">Chính sách và điều khoản</Link> |
+          <Link to="/about">Giới thiệu ứng dụng</Link>
         </div>
 
         <div className="personal-info">

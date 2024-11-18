@@ -346,3 +346,49 @@ export const addReview = async (mangaId, context) => {
   }
 };
 //#endregion
+
+//#region count-unread-notification
+export const countUnreadNotification = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${ACCOUNT_URL}/count-unread-notification`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region get-list-notification
+export const getNotifications = async (pageNumber, itemsPerPage) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `${ACCOUNT_URL}/notification?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

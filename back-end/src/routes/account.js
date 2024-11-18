@@ -7,6 +7,13 @@ const upload = multer({ dest: "uploads/" });
 
 const userController = require("../app/controllers/UserController.js");
 
+router.get(
+  "/count-unread-notification",
+  userController.countUnreadNotification
+);
+
+router.get("/notification", userController.getNotification);
+
 router.get("/like-list", userController.getListLike);
 
 router.get("/follow-list", userController.getListFollow);
@@ -29,5 +36,10 @@ router.delete("/follow/:mangaId", userController.unfollowManga);
 router.get("/:userId", userController.getUserInfo);
 
 router.post("/add-review/:mangaId", userController.addReview);
+
+router.put(
+  "/read-notification/:notificationId",
+  userController.readNotification
+);
 
 module.exports = router;

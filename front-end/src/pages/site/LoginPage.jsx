@@ -7,6 +7,7 @@ import "../../styles/site/Login.css";
 import { loginApi, register } from "../../api/AuthService.js";
 import { AuthContext } from "../../context/AuthContext";
 import HandleCode from "../../utilities/HandleCode.js";
+import { countUnreadNotification } from "../../api/AccountService.js";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,6 +38,8 @@ export default function LoginPage() {
         if (response.roleId === HandleCode.ROLE_ADMIN) {
           navigate("/admin/manage-manga");
         } else {
+          const countUnread = await countUnreadNotification();
+          toast.success(`Có ${countUnread} thông báo chưa đọc.`);
           navigate("/");
         }
       } else {

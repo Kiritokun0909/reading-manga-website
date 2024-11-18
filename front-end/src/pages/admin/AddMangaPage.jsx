@@ -128,7 +128,7 @@ export default function AddMangaPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center p-4 pt-0">
+    <div className="flex flex-col justify-center p-4 pt-2">
       <div className="flex justify-center">
         <h1>Thêm truyện mới</h1>
       </div>

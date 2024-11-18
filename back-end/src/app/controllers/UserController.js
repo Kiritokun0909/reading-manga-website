@@ -1,6 +1,7 @@
 // src/app/controllers/AuthController.js
 const HandleCode = require("../../utilities/HandleCode");
 const userService = require("../services/UserService");
+const notificationService = require("../services/NotificationService");
 const { uploadFile } = require("../../utilities/UploadFile");
 
 class UserController {
@@ -310,6 +311,54 @@ class UserController {
     }
   }
   //#endregion
+
+  //#region count-unread-notification
+  async countUnreadNotification(req, res) {
+    const userId = req.user.id;
+    try {
+      const result = await notificationService.countUnreadNotification(userId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to count unread notification:", err);
+      res.status(500).json({
+        message: "Failed to count unread notification. Please try again later.",
+      });
+    }
+  }
+
+  //#region get-notification
+  async getNotification(req, res) {
+    const { pageNumber, itemsPerPage } = req.query;
+    const userId = req.user.id;
+    try {
+      const result = await notificationService.getNotifications(
+        parseInt(itemsPerPage),
+        parseInt(pageNumber),
+        userId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get notification:", err);
+      res.status(500).json({
+        message: "Failed to get notification. Please try again later.",
+      });
+    }
+  }
+  //#endregion
+
+  //#region read-notification
+  async readNotification(req, res) {
+    const { notificationId } = req.params;
+    try {
+      const result = await notificationService.readNotification(notificationId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to read notification:", err);
+      res.status(500).json({
+        message: "Failed to read notification. Please try again later.",
+      });
+    }
+  }
 }
 
 module.exports = new UserController();

@@ -4,6 +4,7 @@ import ProfilePage from "../pages/account/ProfilePage";
 import PasswordPage from "../pages/account/PasswordPage";
 import LikeFollowPage from "../pages/account/LikeFollowPage";
 import SiteLayout from "../layout/SiteLayout";
+import NotificationPage from "../pages/account/NotificationPage";
 
 export default function AccountRoute() {
   return (
@@ -13,6 +14,7 @@ export default function AccountRoute() {
         <Route path="/password" element={<PasswordPage />} />
         <Route path="/like-list" element={<LikeFollowPage type="like" />} />
         <Route path="/follow-list" element={<LikeFollowPage type="follow" />} />
+        <Route path="/notification" element={<NotificationPage />} />
       </Route>
     </Routes>
   );

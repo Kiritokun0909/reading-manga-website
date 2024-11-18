@@ -163,7 +163,7 @@ export default function Header() {
                   {parseInt(roleId) === HandleCode.ROLE_USER && (
                     <>
                       <li>
-                        <Link to="#">Thông báo</Link>
+                        <Link to="/account/notification">Thông báo</Link>
                       </li>
                       <li>
                         <Link to="/account/like-list">Yêu thích</Link>
