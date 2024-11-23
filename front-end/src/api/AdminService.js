@@ -225,6 +225,7 @@ export const addManga = async (
   mangaName,
   otherName,
   isManga,
+  isFree,
   publishedYear,
   ageLimit,
   description,
@@ -236,6 +237,7 @@ export const addManga = async (
   formData.append("mangaName", mangaName);
   formData.append("otherName", otherName);
   formData.append("isManga", isManga ? 1 : 0);
+  formData.append("isFree", isFree ? 1 : 0);
   formData.append("publishedYear", publishedYear);
   formData.append("ageLimit", ageLimit);
   formData.append("description", description);
@@ -265,6 +267,7 @@ export const updateManga = async (
   mangaName,
   otherName,
   isManga,
+  isFree,
   publishedYear,
   ageLimit,
   description,
@@ -276,6 +279,7 @@ export const updateManga = async (
   formData.append("mangaName", mangaName);
   formData.append("otherName", otherName);
   formData.append("isManga", isManga ? 1 : 0);
+  formData.append("isFree", isFree ? 1 : 0);
   formData.append("publishedYear", publishedYear);
   formData.append("ageLimit", ageLimit);
   formData.append("description", description);
@@ -351,7 +355,6 @@ export const addChapter = async (
   volumeNumber,
   chapterNumber,
   chapterName,
-  isFree,
   isManga,
   chapterImages,
   novelContext
@@ -362,7 +365,6 @@ export const addChapter = async (
     formData.append("volumeNumber", volumeNumber);
     formData.append("chapterNumber", chapterNumber);
     formData.append("chapterName", chapterName);
-    formData.append("isFree", isFree ? 1 : 0);
     if (isManga) {
       chapterImages.forEach((image) => {
         if (!image) {
@@ -395,7 +397,6 @@ export const updateChapter = async (
   volumeNumber,
   chapterNumber,
   chapterName,
-  isFree,
   isManga,
   chapterImages,
   novelContext
@@ -406,8 +407,6 @@ export const updateChapter = async (
     formData.append("volumeNumber", volumeNumber);
     formData.append("chapterNumber", chapterNumber);
     formData.append("chapterName", chapterName);
-    console.log(isFree ? 1 : 0);
-    formData.append("isFree", isFree ? 1 : 0);
     if (isManga) {
       chapterImages.forEach((image) => {
         if (!image) {
@@ -617,3 +616,119 @@ export const setReviewStatus = async (
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
+//#endregion
+
+//#region Plan
+export const addPlan = async (
+  planName,
+  price,
+  duration,
+  description,
+  startAt,
+  endAt,
+  canReadAll,
+  mangaIds
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.post(
+      `/plan`,
+      {
+        planName: planName,
+        price: price,
+        duration: duration,
+        description: description,
+        startAt: startAt,
+        endAt: endAt === "" ? null : endAt,
+        canReadAll: canReadAll
+          ? HandleCode.CAN_READ_ALL
+          : HandleCode.CANNOT_READ_ALL,
+        mangaIds: mangaIds,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.post(`${ADMIN_URL}/subscription`, subscription);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống khônh phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const updatePlan = async (
+  planId,
+  planName,
+  price,
+  duration,
+  description,
+  startAt,
+  endAt,
+  canReadAll,
+  mangaIds
+) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.put(
+      `/plan/${planId}`,
+      {
+        planName: planName,
+        price: price,
+        duration: duration,
+        description: description,
+        startAt: startAt,
+        endAt: endAt === "" ? null : endAt,
+        canReadAll: canReadAll
+          ? HandleCode.CAN_READ_ALL
+          : HandleCode.CANNOT_READ_ALL,
+        mangaIds: mangaIds,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+
+    // const response = await axiosInstance.put(`${ADMIN_URL}/subscription/${subscriptionId}`, subscription);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const deletePlan = async (planId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.delete(`/plan/${planId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+
+    // const response = await axiosInstance.delete(`${ADMIN_URL}/subscription/${subscriptionId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 405) {
+      throw new Error("Không thể xoá gói vì đã có người dùng mua nó.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

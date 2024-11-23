@@ -6,6 +6,7 @@ const genreRoute = require("./genre.js");
 const authorRoute = require("./author.js");
 const mangaRoute = require("./manga.js");
 const chapterRoute = require("./chapter.js");
+const planRoute = require("./plan.js");
 
 const authService = require("../app/services/AuthService.js");
 const { verifyAccessToken, authorizeRole } = require("../middlewares/jwt.js");
@@ -23,6 +24,7 @@ function route(app) {
     authorizeRole([authService.RoleEnum.ADMIN]),
     adminRoute
   );
+  app.use("/plan", planRoute);
   app.use("/chapter", chapterRoute);
   app.use("/manga", mangaRoute);
   app.use("/author", authorRoute);

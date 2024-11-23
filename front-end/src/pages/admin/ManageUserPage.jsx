@@ -99,7 +99,7 @@ export default function ManageUserPage() {
   return (
     <div className="flex flex-col p-4 pt-0 w-full">
       <div className="flex justify-center py-4">
-        <h1>Quản lý các tài khoản trong hệ thống</h1>
+        <h1>Danh sách các tài khoản trong hệ thống</h1>
       </div>
 
       <div className="flex flex-row justify-end pb-4">

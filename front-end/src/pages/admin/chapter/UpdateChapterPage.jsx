@@ -17,7 +17,6 @@ export default function UpdateChapterPage() {
   const [volumeNumber, setVolumeNumber] = useState(0);
   const [chapterNumber, setChapterNumber] = useState(0);
   const [chapterName, setChapterName] = useState("");
-  const [isFree, setIsFree] = useState(true);
 
   const [novelContext, setNovelContext] = useState("");
 
@@ -38,7 +37,6 @@ export default function UpdateChapterPage() {
         setVolumeNumber(chapterData.volumeNumber);
         setChapterNumber(chapterData.chapterNumber);
         setChapterName(chapterData.chapterName);
-        setIsFree(chapterData.isFree === 1 ? true : false);
         setNovelContext(chapterData.novelContext);
         setPreviewImages(chapterData.chapterImages || []);
         setChapterFiles(chapterData.chapterImages || []);
@@ -144,7 +142,6 @@ export default function UpdateChapterPage() {
         volumeNumber,
         chapterNumber,
         chapterName,
-        isFree,
         manga.isManga,
         chapterFiles,
         novelContext
@@ -245,28 +242,6 @@ export default function UpdateChapterPage() {
             value={chapterName}
             onChange={(e) => setChapterName(e.target.value)}
           />
-        </div>
-
-        <div className="flex justify-start pt-2">
-          <label className="w-46 mr-2 font-bold text-lg">
-            Yêu cầu phí đọc truyện:
-          </label>
-          <input
-            className="mr-1"
-            type="radio"
-            name="editGenre"
-            checked={isFree}
-            onChange={() => setIsFree(true)}
-          />{" "}
-          <label className="mr-4">Miễn phí</label>
-          <input
-            className="mr-1"
-            type="radio"
-            name="editGenre"
-            checked={!isFree}
-            onChange={() => setIsFree(false)}
-          />{" "}
-          <label>Trả phí</label>
         </div>
       </div>
 

@@ -7,7 +7,7 @@ const { formatISODate } = require("../../utilities/utils.js");
 module.exports.getListChapterByMangaId = async (mangaId) => {
   try {
     const [rows] = await db.query(
-      `SELECT chapterId, volumeNumber, chapterNumber, chapterName, updateAt, isFree 
+      `SELECT chapterId, volumeNumber, chapterNumber, chapterName, updateAt 
       FROM chapters 
       WHERE mangaId = ? 
       ORDER BY volumeNumber DESC, chapterNumber DESC`,
@@ -36,7 +36,7 @@ module.exports.getListChapterByMangaId = async (mangaId) => {
 module.exports.getChapterInfoByChapterId = async (chapterId) => {
   try {
     const [rows] = await db.query(
-      `SELECT chapterId, volumeNumber, chapterNumber, chapterName, publishedDate, isFree 
+      `SELECT chapterId, volumeNumber, chapterNumber, chapterName, publishedDate 
       FROM chapters 
       WHERE chapterId = ?`,
       [chapterId]
@@ -56,14 +56,13 @@ module.exports.addChapter = async (
   volumeNumber,
   chapterNumber,
   chapterName,
-  isFree = 1,
   novelContext = ""
 ) => {
   try {
     const [insertRow] = await db.query(
-      `INSERT INTO chapters (mangaId, volumeNumber, chapterNumber, chapterName, isFree, novelContext)
+      `INSERT INTO chapters (mangaId, volumeNumber, chapterNumber, chapterName, novelContext)
       VALUES (?, ?, ?, ?, ?, ?)`,
-      [mangaId, volumeNumber, chapterNumber, chapterName, isFree, novelContext]
+      [mangaId, volumeNumber, chapterNumber, chapterName, novelContext]
     );
 
     const chapterId = insertRow.insertId;
@@ -86,22 +85,14 @@ module.exports.updateChapter = async (
   volumeNumber,
   chapterNumber,
   chapterName,
-  isFree,
   novelContext
 ) => {
   try {
     const [rows] = await db.query(
       `UPDATE chapters
-      SET volumeNumber = ?, chapterNumber = ?, chapterName = ?, novelContext = ?, isFree = ?
+      SET volumeNumber = ?, chapterNumber = ?, chapterName = ?, novelContext = ?
       WHERE chapterId = ?`,
-      [
-        volumeNumber,
-        chapterNumber,
-        chapterName,
-        novelContext,
-        isFree,
-        chapterId,
-      ]
+      [volumeNumber, chapterNumber, chapterName, novelContext, chapterId]
     );
 
     if (rows.affectedRows === 0) {

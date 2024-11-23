@@ -109,6 +109,7 @@ class AuthorController {
       description,
       ageLimit,
       isManga,
+      isFree,
       authorId,
     } = req.body;
     try {
@@ -124,6 +125,7 @@ class AuthorController {
         mangaName,
         otherName,
         isManga,
+        isFree,
         publishedYear,
         ageLimit,
         description,
@@ -149,6 +151,7 @@ class AuthorController {
       description,
       ageLimit,
       isManga,
+      isFree,
       authorId,
     } = req.body;
     try {
@@ -168,6 +171,7 @@ class AuthorController {
         description,
         ageLimit,
         isManga,
+        isFree,
         authorId
       );
       res.status(200).json(result);

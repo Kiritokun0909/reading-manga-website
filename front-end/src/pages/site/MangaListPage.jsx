@@ -96,6 +96,7 @@ export default function MangaListPage({ type }) {
         type === "search" ? "keyword" : `${type}Id`
       ),
       pageNumber: page,
+      [type === "search" ? "filter" : ""]: filter,
     });
   };
 

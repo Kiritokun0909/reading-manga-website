@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import ManageMangaPage from "../pages/admin/ManageMangaPage";
 import ManageGenrePage from "../pages/admin/ManageGenrePage";
 import ManageAuthorPage from "../pages/admin/ManageAuthorPage";
-import AddMangaPage from "../pages/admin/AddMangaPage";
-import UpdateMangaPage from "../pages/admin/UpdateMangaPage";
+import AddMangaPage from "../pages/admin/manga/AddMangaPage";
+import UpdateMangaPage from "../pages/admin/manga/UpdateMangaPage";
 import UploadChapterPage from "../pages/admin/chapter/UploadChapterPage";
 import UpdateChapterPage from "../pages/admin/chapter/UpdateChapterPage";
 import AdminLayout from "../layout/AdminLayout";
@@ -14,6 +14,7 @@ import NotFoundPage from "../pages/site/NotFoundPage";
 import MangaPage from "../pages/site/MangaPage";
 import ManageUserPage from "../pages/admin/ManageUserPage";
 import ManageDocumentPage from "../pages/admin/ManageDocumentPage";
+import ManagePlanPage from "../pages/admin/ManagePlanPage";
 
 export default function AdminRoute() {
   return (
@@ -35,6 +36,7 @@ export default function AdminRoute() {
         <Route path="/chapter/:chapterId" element={<UpdateChapterPage />} />
         <Route path="/manage-user" element={<ManageUserPage />} />
         <Route path="/manage-document" element={<ManageDocumentPage />} />
+        <Route path="/manage-plan" element={<ManagePlanPage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Route>
     </Routes>

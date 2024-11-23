@@ -312,6 +312,11 @@ export default function MangaPage() {
         )}
       </div>
 
+      <div className="mt-2">
+        <label className="font-bold text-base mr-2">Yêu cầu trả phí:</label>
+        {manga.isFree === 0 ? <span>Có.</span> : <span>Không.</span>}
+      </div>
+
       {/* Manga genres */}
       <div className="manga-genres mt-2">
         <div className="genre-list">
@@ -373,9 +378,6 @@ export default function MangaPage() {
                   )}
                 </div>
                 <div className="flex">
-                  <div className="mr-4">
-                    {chapter.isFree === 1 ? "Miễn phí" : "Trả phí"}
-                  </div>
                   <i>{chapter.updateAt}</i>
                 </div>
               </div>

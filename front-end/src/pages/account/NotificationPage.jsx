@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getNotifications } from "../../api/AccountService";
+import { getNotifications, readNotification } from "../../api/AccountService";
 import ReactPaginate from "react-paginate";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function NotificationPage() {
   const [notifications, setNotifications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const navigate = useNavigate();
 
   const ITEMS_PER_PAGE = 5;
 
@@ -28,6 +30,14 @@ export default function NotificationPage() {
     setCurrentPage(page.selected + 1);
   };
 
+  const handleClickNotification = async (notificationId) => {
+    try {
+      await readNotification(notificationId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-center p-2">
@@ -39,10 +49,26 @@ export default function NotificationPage() {
           to={`/manga/${notice.mangaId}`}
           key={notice.notificationId}
           className="no-underline"
+          onClick={(e) => {
+            e.preventDefault(); // Prevent immediate navigation
+            handleClickNotification(notice.notificationId).then(() => {
+              // Navigate after marking notification as read
+              navigate(`/manga/${notice.mangaId}`);
+            });
+          }}
         >
-          <div className="flex justify-between p-2 border-b">
-            <div>{notice.mangaName} vừa đăng chương mới</div>
-            <div>{notice.createAt}</div>
+          <div
+            className={`flex flex-row p-2 border-b ${
+              notice.isRead === 1 ? "text-black" : ""
+            }`}
+          >
+            <div>
+              <img src={notice.coverImageUrl} alt="" className="w-32" />
+            </div>
+            <div className="flex justify-between w-full p-2">
+              <div>{notice.mangaName} vừa đăng chương mới</div>
+              <div>{notice.createAt}</div>
+            </div>
           </div>
         </Link>
       ))}

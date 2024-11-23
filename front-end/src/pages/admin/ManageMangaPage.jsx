@@ -48,7 +48,7 @@ export default function ManageMangaPage() {
   return (
     <div className="flex flex-col justify-center p-4 pt-0">
       <div className="flex justify-center py-4">
-        <h1>Quản lý danh sách truyện</h1>
+        <h1>Danh sách truyện</h1>
       </div>
 
       <div className="flex flex-row justify-end pb-4">

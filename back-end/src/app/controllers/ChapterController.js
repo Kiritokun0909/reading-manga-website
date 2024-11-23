@@ -43,8 +43,7 @@ class ChapterController {
   //#region add-chapter
   async addChapter(req, res) {
     const mangaId = parseInt(req.params.mangaId, 10);
-    const { volumeNumber, chapterNumber, chapterName, isFree, novelContext } =
-      req.body;
+    const { volumeNumber, chapterNumber, chapterName, novelContext } = req.body;
 
     try {
       let result = await chapterService.addChapter(
@@ -52,7 +51,6 @@ class ChapterController {
         volumeNumber,
         chapterNumber,
         chapterName,
-        isFree,
         novelContext
       );
 
@@ -87,15 +85,13 @@ class ChapterController {
   //#region update-chapter
   async updateChapter(req, res) {
     const chapterId = parseInt(req.params.chapterId, 10);
-    const { volumeNumber, chapterNumber, chapterName, isFree, novelContext } =
-      req.body;
+    const { volumeNumber, chapterNumber, chapterName, novelContext } = req.body;
     try {
       let result = await chapterService.updateChapter(
         chapterId,
         volumeNumber,
         chapterNumber,
         chapterName,
-        isFree,
         novelContext
       );
 

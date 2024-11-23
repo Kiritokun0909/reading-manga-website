@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import "../../styles/site/Home.css";
-import "../../styles/site/Genre.css";
-import { getListGenres } from "../../api/SiteService";
+import "../../../styles/site/Home.css";
+import "../../../styles/site/Genre.css";
+import { getListGenres, getDetailManga } from "../../../api/SiteService";
 import {
-  addManga,
   getListAuthor,
+  updateManga,
   updateMangaGenres,
-} from "../../api/AdminService";
-import HandleCode from "../../utilities/HandleCode";
-import { useNavigate } from "react-router-dom";
+} from "../../../api/AdminService";
+import HandleCode from "../../../utilities/HandleCode";
+import { useParams } from "react-router-dom";
 
-export default function AddMangaPage() {
+export default function UpdateMangaPage() {
+  const mangaId = useParams().mangaId;
+
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [mangaName, setMangaName] = useState("");
   const [otherName, setOtherName] = useState("");
   const [isManga, setIsManga] = useState(true);
+  const [isFree, setIsFree] = useState(true);
   const [publishedYear, setPublishedYear] = useState(2024);
   const [ageLimit, setAgeLimit] = useState(8);
   const [description, setDescription] = useState("");
@@ -26,15 +29,47 @@ export default function AddMangaPage() {
 
   const [searchAuthorName, setSearchAuthorName] = useState("");
   const [showResults, setShowResults] = useState(false);
-
   const [authors, setAuthors] = useState([]);
   const [selectedAuthorId, setSelectedAuthorId] = useState("");
 
-  const navigate = useNavigate();
-
   useEffect(() => {
+    const getGenres = async () => {
+      try {
+        const data = await getListGenres();
+        setGenres(data);
+      } catch (error) {
+        console.error("Error get list genre:", error);
+      }
+    };
+
+    const fetchManga = async () => {
+      try {
+        const data = await getDetailManga(mangaId);
+        const manga = data.mangaInfo;
+        setCoverImageUrl(manga.coverImageUrl);
+        setMangaName(manga.mangaName);
+        setOtherName(manga.otherName === null ? "" : manga.otherName);
+        setIsManga(manga.isManga === 1 ? true : false);
+        setIsFree(manga.isFree === 1 ? true : false);
+        setPublishedYear(manga.publishedYear);
+        setAgeLimit(manga.ageLimit);
+        setDescription(manga.description === null ? "" : manga.description);
+
+        if (manga.authorId != null) {
+          setSelectedAuthorId(manga.authorId);
+          setSearchAuthorName(manga.authorName);
+        }
+
+        const ids = manga.genres.map((genre) => String(genre.genreId));
+        setSelectedGenres(ids);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
     getGenres();
-  }, []);
+    fetchManga();
+  }, [mangaId]);
 
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -60,12 +95,28 @@ export default function AddMangaPage() {
     fetchAuthors();
   }, [searchAuthorName]);
 
-  const getGenres = async () => {
+  const fetchManga = async () => {
     try {
-      const data = await getListGenres();
-      setGenres(data);
+      const data = await getDetailManga(mangaId);
+      const manga = data.mangaInfo;
+      setCoverImageUrl(manga.coverImageUrl);
+      setMangaName(manga.mangaName);
+      setOtherName(manga.otherName === null ? "" : manga.otherName);
+      setIsManga(manga.isManga === 1 ? true : false);
+      setIsFree(manga.isFree === 1 ? true : false);
+      setPublishedYear(manga.publishedYear);
+      setAgeLimit(manga.ageLimit);
+      setDescription(manga.description === null ? "" : manga.description);
+
+      if (manga.authorId != null) {
+        setSelectedAuthorId(manga.authorId);
+        setSearchAuthorName(manga.authorName);
+      }
+
+      const ids = manga.genres.map((genre) => String(genre.genreId));
+      setSelectedGenres(ids);
     } catch (error) {
-      console.error("Error get list genre:", error);
+      toast.error(error.message);
     }
   };
 
@@ -100,28 +151,37 @@ export default function AddMangaPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("selected author id:", selectedAuthorId);
-    // console.log("selected genres:", selectedGenres);
-
     if (mangaName.trim().length === 0) {
       toast.error("Tên truyện không được để trống");
       return;
     }
 
+    if (otherName.trim().length === 0) {
+      toast.error("Tên khác không được để trống");
+      return;
+    }
+
+    if (description.trim().length === 0) {
+      toast.error("Mô tả không được để trống");
+      return;
+    }
+
     try {
-      const data = await addManga(
+      await updateManga(
+        mangaId,
         coverImageFile,
         mangaName,
         otherName,
         isManga,
+        isFree,
         publishedYear,
         ageLimit,
         description,
         selectedAuthorId
       );
-      await updateMangaGenres(selectedGenres, data.mangaId);
-      toast.success("Thêm truyện thành công");
-      navigate("/admin/manage-manga");
+      await updateMangaGenres(selectedGenres, mangaId);
+      toast.success("Cập nhật truyện thành công");
+      fetchManga();
     } catch (error) {
       toast.error(error.message);
     }
@@ -130,7 +190,7 @@ export default function AddMangaPage() {
   return (
     <div className="flex flex-col justify-center p-4 pt-2">
       <div className="flex justify-center">
-        <h1>Thêm truyện mới</h1>
+        <h1>Cập nhật truyện</h1>
       </div>
 
       <form>
@@ -230,9 +290,29 @@ export default function AddMangaPage() {
           </div>
 
           <div className="flex flex-row justify-start pt-2">
+            <label className="w-32 mr-2 font-bold text-lg">Yêu cầu phí:</label>
+            <input
+              className="mr-1"
+              type="radio"
+              name="editIsFree"
+              checked={isFree}
+              onChange={() => setIsFree(true)}
+            />{" "}
+            <label className="mr-4">Miễn phí</label>
+            <input
+              className="mr-1"
+              type="radio"
+              name="editIsFree"
+              checked={!isFree}
+              onChange={() => setIsFree(false)}
+            />{" "}
+            <label>Trả phí</label>
+          </div>
+
+          <div className="flex flex-row justify-start pt-2">
             <label className="w-32 font-bold text-lg">Mô tả:</label>
             <textarea
-              className="w-10/12 h-32 py-1 border-1 border-slate-600 rounded-lg px-3 focus:outline-none focus:border-slate-800 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+              className="w-10/12 py-1 border-1 border-slate-600 rounded-lg px-3 focus:outline-none focus:border-slate-800 hover:shadow dark:bg-gray-600 dark:text-gray-100"
               value={description}
               placeholder="Nhập mô tả..."
               onChange={(e) => setDescription(e.target.value)}
@@ -323,7 +403,7 @@ export default function AddMangaPage() {
               type="submit"
               onClick={handleSubmit}
             >
-              Đăng truyện
+              Cập nhật
             </button>
           </div>
         </div>

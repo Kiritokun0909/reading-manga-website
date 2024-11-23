@@ -75,7 +75,7 @@ module.exports.getNotifications = async (
 
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-      `SELECT notificationId, message, isRead, n.createAt, n.mangaId, m.mangaName, m.newestChapterNumber
+      `SELECT notificationId, message, isRead, n.createAt, n.mangaId, m.coverImageUrl, m.mangaName
       FROM notifications n
       LEFT JOIN mangas m ON n.mangaId = m.mangaId
       WHERE userId = ?

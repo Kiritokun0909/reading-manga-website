@@ -16,7 +16,9 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* public routes */}
-          <Route path="/*" element={<SiteRoute />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/*" element={<SiteRoute />} />
+          </Route>
 
           {/* account routes */}
           <Route

@@ -41,7 +41,7 @@ export default function AdminSidebar() {
         </div>
       </Link>
 
-      <Link to="/admin/manage-subscription" className="no-underline text-white">
+      <Link to="/admin/manage-plan" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
           <span className="pl-4 text-lg">Quản lý gói đăng ký</span>
         </div>

@@ -184,3 +184,41 @@ export const getListReview = async (
   }
 };
 //#endregion
+
+//#region PLAN
+export const getListPlan = async (
+  itemsPerPage,
+  pageNumber,
+  filter,
+  keyword
+) => {
+  try {
+    const response = await axios.get(
+      `/plan/list?itemsPerPage=${itemsPerPage}&pageNumber=${pageNumber}&filter=${filter}&keyword=${keyword}`
+    ); // use for dev
+
+    // const response = await axiosInstance.get(`${ADMIN_URL}/subscription/list?itemsPerPage=${itemsPerPage}&pageNumber=${pageNumber}&filter=${filter}&keyword=${keyword}`); // use for dev
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const getPlanDetail = async (planId) => {
+  try {
+    const response = await axios.get(`/plan/${planId}`); //use for dev
+    // const response = await axiosInstance.get(`/subscription/detail/${subscriptionId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

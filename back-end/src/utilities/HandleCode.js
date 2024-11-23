@@ -19,6 +19,16 @@ module.exports = {
   REVIEW_IS_HIDE: 1,
   REVIEW_NOT_HIDE: 0,
 
+  //Handle code for plan
+  CAN_READ_ALL: 1,
+  CANNOT_READ_ALL: 0,
+  BOUGHT_BY_USER: 6001,
+
+  //Handle code for payment status
+  PENDING: "pending",
+  COMPLETED: "completed",
+  FAILED: "failed",
+
   // Handle code for common service
   CREATE_SUCCESS: 900,
   CREATE_FAILED: 901,
@@ -66,4 +76,10 @@ module.exports = {
   FILTER_BY_MANGA_LIKE_DESC: 5007,
   FILTER_BY_MANGA_CREATE_DATE_DESC: 5008,
   FILTER_BY_MANGA_CREATE_DATE_ASC: 5009,
+
+  // Handle code for subscription service
+  FILTER_BY_UPDATE_DATE_DESC: 6000,
+  FILTER_BY_UPDATE_DATE_ASC: 6001,
+  FILTER_BY_CREATE_DATE_DESC: 6002,
+  FILTER_BY_CREATE_DATE_ASC: 6003,
 };

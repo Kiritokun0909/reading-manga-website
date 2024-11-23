@@ -392,3 +392,27 @@ export const getNotifications = async (pageNumber, itemsPerPage) => {
   }
 };
 //#endregion
+
+//#region read-notification
+export const readNotification = async (notificationId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.put(
+      `${ACCOUNT_URL}/read-notification/${notificationId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    // const response = await axiosInstance.get(`${ACCOUNT_URL}/like/${mangaId}/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

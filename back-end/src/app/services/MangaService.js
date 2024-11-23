@@ -178,7 +178,7 @@ module.exports.getMangaById = async (mangaId) => {
   try {
     const [rows] = await db.query(
       `SELECT m.mangaId, m.mangaName, m.otherName, m.coverImageUrl, 
-              m.publishedYear, m.description, m.ageLimit, m.isManga, 
+              m.publishedYear, m.description, m.ageLimit, m.isManga, m.isFree,
               m.numChapters, m.numViews, m.numLikes, m.numFollows,
               m.createAt, m.updateAt, m.authorId, a.authorName
        FROM mangas m
@@ -220,7 +220,7 @@ module.exports.getMangaById = async (mangaId) => {
 };
 //#endregion
 
-//#region get-comments
+//#region get-reviews
 module.exports.getReviewsByMangaId = async (
   itemsPerPage,
   pageNumber,
@@ -277,6 +277,7 @@ module.exports.addManga = async (
   mangaName,
   otherName = "",
   isManga = true,
+  isFree = false,
   publishedYear,
   ageLimit,
   description = "",
@@ -322,6 +323,11 @@ module.exports.addManga = async (
       placeholders.push("?");
       values.push(isManga);
     }
+    if (isFree) {
+      fields.push("isFree");
+      placeholders.push("?");
+      values.push(isFree);
+    }
     if (authorId && authorId.trim().length > 0) {
       fields.push("authorId");
       placeholders.push("?");
@@ -348,7 +354,7 @@ module.exports.addManga = async (
 };
 //#endregion
 
-//#region update-manga
+//#region update-manga-info
 module.exports.updateMangaInfo = async (
   mangaId,
   mangaName,
@@ -358,6 +364,7 @@ module.exports.updateMangaInfo = async (
   description,
   ageLimit,
   isManga,
+  isFree,
   authorId
 ) => {
   try {
@@ -392,6 +399,10 @@ module.exports.updateMangaInfo = async (
       fields.push("isManga = ?");
       values.push(isManga);
     }
+    if (isFree) {
+      fields.push("isFree = ?");
+      values.push(isFree);
+    }
     if (authorId) {
       fields.push("authorId = ?");
       values.push(authorId);
@@ -408,6 +419,25 @@ module.exports.updateMangaInfo = async (
 
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region update-manga-genres
+module.exports.updateMangaGenres = async (mangaId, genreIds) => {
+  try {
+    await db.query(`DELETE FROM manga_genres WHERE MangaId = ?`, [mangaId]);
+
+    if (genreIds && genreIds.length > 0) {
+      for (const genreId of genreIds) {
+        await db.query(
+          `INSERT INTO manga_genres(MangaId, GenreId) VALUES (?, ?)`,
+          [mangaId, genreId]
+        );
+      }
     }
   } catch (err) {
     throw err;
@@ -509,23 +539,6 @@ module.exports.updateMangaFollows = async (mangaId, isFollow = true) => {
     );
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
-    }
-  } catch (err) {
-    throw err;
-  }
-};
-
-module.exports.updateMangaGenres = async (mangaId, genreIds) => {
-  try {
-    await db.query(`DELETE FROM manga_genres WHERE MangaId = ?`, [mangaId]);
-
-    if (genreIds && genreIds.length > 0) {
-      for (const genreId of genreIds) {
-        await db.query(
-          `INSERT INTO manga_genres(MangaId, GenreId) VALUES (?, ?)`,
-          [mangaId, genreId]
-        );
-      }
     }
   } catch (err) {
     throw err;

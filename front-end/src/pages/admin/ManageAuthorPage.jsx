@@ -120,7 +120,7 @@ export default function ManageAuthorPage() {
   return (
     <div className="flex flex-col p-4 pt-0">
       <div className="flex justify-center py-4">
-        <h1>Quản lý tác giả</h1>
+        <h1>Danh sách tác giả</h1>
       </div>
 
       <div className="flex flex-row justify-end pb-4">

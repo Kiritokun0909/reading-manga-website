@@ -43,7 +43,11 @@ export default function HomePage() {
       <div className="p-2">
         <div className="flex justify-between">
           <h4>Truyện được xem nhiều</h4>
-          <Link to="/manga/list?pageNumber=1">Xem thêm</Link>
+          <Link
+            to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_VIEW_DESC}`}
+          >
+            Xem thêm
+          </Link>
         </div>
         <div className="manga-list">
           {mostViewed.map((manga) => (
@@ -56,7 +60,11 @@ export default function HomePage() {
       <div className="p-2">
         <div className="flex justify-between">
           <h4>Truyện mới cập nhật</h4>
-          <Link to="/manga/list?pageNumber=1">Xem thêm</Link>
+          <Link
+            to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC}`}
+          >
+            Xem thêm
+          </Link>
         </div>
         <div className="manga-list">
           {recentUploads.map((manga) => (
