@@ -416,3 +416,51 @@ export const readNotification = async (notificationId) => {
   }
 };
 //#endregion
+
+//#region buy-plan
+export const buyPlan = async (planId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(`/plan/buy/${planId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }); // use for dev
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    if (error.response && error.response.status === 405) {
+      throw new Error(
+        "Bạn đã mua và kích hoạt gói này. Hiện tại không thể mua lại cho đến khi gói hết hạn."
+      );
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion
+
+//#region get-purchase-history
+export const getPurchaseHistory = async (pageNumber, itemsPerPage) => {
+  const accessToken = localStorage.getItem("accessToken");
+  try {
+    const response = await axios.get(
+      `/plan/history?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ); // use for dev
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+//#endregion

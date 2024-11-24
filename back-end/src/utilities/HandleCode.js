@@ -68,6 +68,8 @@ module.exports = {
   FILTER_BY_AUTHOR_NAME_DESC: 4003,
 
   // Handle code for manga service
+  MANGA_IS_FREE: 1,
+  MANGA_NOT_FREE: 0,
   FILTER_BY_MANGA_UPDATE_DATE_DESC: 5000,
   FILTER_BY_MANGA_UPDATE_DATE_ASC: 5001,
   FILTER_BY_MANGA_VIEW_ASC: 5004,
@@ -82,4 +84,9 @@ module.exports = {
   FILTER_BY_UPDATE_DATE_ASC: 6001,
   FILTER_BY_CREATE_DATE_DESC: 6002,
   FILTER_BY_CREATE_DATE_ASC: 6003,
+
+  //Handle code for payment status
+  PAYMENT_PENDING: "pending",
+  PAYMENT_COMPLETED: "completed",
+  PAYMENT_FAILED: "failed",
 };

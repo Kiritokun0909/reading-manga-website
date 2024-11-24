@@ -24,7 +24,7 @@ export default function ManageAuthorPage() {
   const [isUpdated, setIsUpdated] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
     const fetchAuthors = async () => {

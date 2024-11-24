@@ -171,6 +171,9 @@ export default function Header() {
                       <li>
                         <Link to="/account/follow-list">Theo dõi</Link>
                       </li>
+                      <li>
+                        <Link to="/account/plan">Gói đăng ký</Link>
+                      </li>
                     </>
                   )}
 

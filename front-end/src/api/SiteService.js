@@ -144,18 +144,38 @@ export const getListChapter = async (mangaId) => {
 //#endregion
 
 //#region chapter-detail
+class MangaError extends Error {
+  constructor(message, mangaId) {
+    super(message); // Call the parent constructor with the message
+    this.name = "MangaError"; // Optional: to distinguish from other error types
+    this.mangaId = mangaId; // Add mangaId as a custom property
+  }
+}
+
 export const getChapterDetail = async (chapterId) => {
+  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.get(`/chapter/${chapterId}`); //use for dev
-    // const response = await axiosInstance.get(`/chapter/detail/${chapterId}`);
+    const response = await axios.get(`/chapter/${chapterId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }); //use for dev
     return response.data;
   } catch (error) {
     if (!error?.response) {
       throw new Error("Hệ thống không phản hồi.");
     }
 
+    const mangaId = error.response?.data?.mangaId || null;
+
+    if (error.response && error.response.status === 401) {
+      throw new MangaError("Yêu cầu đăng nhập và mua gói để đọc.", mangaId);
+    }
+
+    if (error.response && error.response.status === 403) {
+      throw new MangaError("Yêu cầu mua gói để đọc.", mangaId);
+    }
+
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy chương.");
+      throw new MangaError("Không tìm thấy chương.");
     }
 
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
@@ -205,6 +225,19 @@ export const getListPlan = async (
     }
 
     throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+  }
+};
+
+export const getListPlanByMangaId = async (mangaId) => {
+  try {
+    const response = await axios.get(`/plan/list-by-manga/${mangaId}`);
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error("Hệ thống không phản hồi.");
+    }
+
+    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
   }
 };
 

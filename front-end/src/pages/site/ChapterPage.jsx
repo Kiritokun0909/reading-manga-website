@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import RichTextDisplay from "../../components/RichTextDisplay";
 
@@ -22,6 +22,8 @@ export default function ChapterPage() {
   const [novelContext, setNovelContext] = useState("");
   const [chapterImages, setChapterImages] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchChapter = async () => {
       try {
@@ -37,13 +39,15 @@ export default function ChapterPage() {
         setNovelContext(data.novelContext);
         setChapterImages(data.chapterImages ? data.chapterImages : null);
       } catch (error) {
+        console.log(error);
         toast.error(error.message);
+        navigate(`/manga/${error.mangaId}`);
       }
     };
 
     fetchChapter();
     // getComments(currentPage);
-  }, [chapterId]);
+  }, [chapterId, navigate]);
 
   return (
     <div className="chapter-layout">

@@ -121,10 +121,38 @@ module.exports.getPlanById = async (planId) => {
 };
 //#endregion
 
+//#region get-plan-by-manga-id
+module.exports.getPlanByMangaId = async (mangaId) => {
+  try {
+    const [rows] = await db.query(
+      ` SELECT p.planId, p.planName, p.duration, p.price, p.canReadAll, p.StartAt, p.EndAt
+        FROM plans p
+        LEFT JOIN plan_mangas pm ON p.PlanId = pm.PlanId
+        WHERE (
+            -- Check if the manga is included in the plan
+            pm.MangaId = ? 
+            OR p.canReadAll = 1
+        )
+        AND (
+            -- Active plan: If endAt is null, consider the plan active forever; otherwise, check if current date is within the startAt and endAt range
+            (p.EndAt IS NULL OR CURRENT_TIMESTAMP() BETWEEN p.StartAt AND p.EndAt)
+            AND p.StartAt <= CURRENT_TIMESTAMP() -- Make sure the plan's start date has passed or is today
+        );
+        `,
+      [mangaId]
+    );
+
+    return { plans: rows };
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
 //#region add-subscription
 module.exports.addPlanInfo = async (
   planName,
-  price = 10000 * 1000, // 10.000 VND * 1000
+  price = 10000, // 10.000 VND
   duration = 31, // 31 days
   description = "",
   startAt,
@@ -148,11 +176,11 @@ module.exports.addPlanInfo = async (
 };
 //#endregion
 
-//region update-subscription
+//#region update-subscription
 module.exports.updatePlanInfo = async (
   planId,
   planName,
-  price = 10000 * 1000, // 10.000 VND * 1000
+  price = 10000, // 10.000 VND
   duration = 31, // 31 days
   description = "",
   startAt,
@@ -168,7 +196,7 @@ module.exports.updatePlanInfo = async (
     if (isBought) {
       const [rows] = await db.query(
         `UPDATE plans
-        SET planName, price, duration, description, endAt = ?
+        SET planName = ?, price = ?, duration = ?, description = ?, endAt = ?
         WHERE planId = ?`,
         [planName, price, duration, description, endAt, planId]
       );
@@ -208,7 +236,7 @@ module.exports.updatePlanInfo = async (
 };
 //#endregion
 
-//region delete-subscription
+//#region delete-subscription
 module.exports.deletePlanbyId = async (planId) => {
   try {
     // Check if the subscription is bought by any user
@@ -230,7 +258,7 @@ module.exports.deletePlanbyId = async (planId) => {
 };
 //#endregion
 
-//region update-subscription-chapter
+//#region update-subscription-chapter
 module.exports.updatePlanMangas = async (planId, mangaIds) => {
   try {
     // Check if the plan is bought by any user
@@ -253,6 +281,147 @@ module.exports.updatePlanMangas = async (planId, mangaIds) => {
     }
 
     return;
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region check-user-bought-manga
+module.exports.checkUserBoughtManga = async (userId, mangaId) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+          COUNT(userPlanId) AS total
+      FROM 
+          user_plans up
+      JOIN 
+          plans p ON up.PlanId = p.PlanId
+      LEFT JOIN 
+          plan_mangas pm ON p.PlanId = pm.PlanId
+      WHERE 
+          up.UserId = ?              -- Replace with the user's ID
+          AND (
+              p.canReadAll = 1       -- If the plan allows all mangas
+              OR pm.MangaId = ?      -- Or if the manga is explicitly in the plan
+          )
+          AND up.PaymentStatus = 'completed' -- Only consider plans with completed payment
+          AND CURRENT_TIMESTAMP() BETWEEN up.StartAt AND up.EndAt; -- Ensure the plan is active
+      `,
+      [userId, mangaId]
+    );
+    return rows[0].total > 0;
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region check-user-can-bought-plan
+module.exports.checkUserCanBoughtPlan = async (userId, planId) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+          COUNT(userPlanId) AS total
+      FROM 
+          user_plans up
+      WHERE 
+          up.UserId = ?              -- Replace with the user's ID
+          AND up.PlanId = ?          -- Replace with the plan's ID
+          AND up.PaymentStatus = 'completed' -- Only consider plans with completed payment
+          AND CURRENT_TIMESTAMP() BETWEEN up.StartAt AND up.EndAt; -- Ensure the plan is active
+      `,
+      [userId, planId]
+    );
+    return rows[0].total < 1;
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region user-buy-plan
+module.exports.addUserPlan = async (userId, planId, price) => {
+  try {
+    const [row] = await db.query(
+      `INSERT INTO user_plans (UserId, PlanId, Price) VALUES (?, ?, ?)`,
+      [userId, planId, price]
+    );
+
+    const insertId = row.insertId;
+
+    return {
+      userPlanId: insertId,
+    };
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region get-purchase-history
+module.exports.getPurchaseHistoryByUserId = async (
+  itemsPerPage = 5,
+  pageNumber = 1,
+  userId
+) => {
+  try {
+    const [totalRows] = await db.query(
+      `SELECT 
+          COUNT(up.userPlanId) AS total
+      FROM 
+          user_plans up
+      JOIN 
+          plans p ON up.PlanId = p.PlanId
+      WHERE 
+          up.UserId = ?              -- Replace with the user's ID
+          AND up.PaymentStatus = 'completed' -- Only consider plans with completed payment
+      `,
+      [userId]
+    );
+
+    const total = totalRows[0].total;
+    const totalPages = Math.ceil(total / itemsPerPage);
+
+    if (pageNumber > totalPages) {
+      return {
+        pageNumber,
+        totalPages,
+        plans: [],
+      };
+    }
+
+    const offset = (pageNumber - 1) * itemsPerPage;
+    const [rows] = await db.query(
+      `SELECT 
+          up.userPlanId, up.planId, p.planName, up.price, up.startAt, up.endAt,
+          CASE 
+              WHEN CURRENT_TIMESTAMP() BETWEEN up.startAt AND up.endAt THEN 'active'
+              ELSE 'expired'
+          END AS planStatus
+      FROM 
+          user_plans up
+      JOIN 
+          plans p ON up.PlanId = p.PlanId
+      WHERE 
+          up.UserId = ?
+          AND up.PaymentStatus = 'completed'
+      ORDER BY up.startAt DESC
+      LIMIT ? OFFSET ?`,
+      [userId, itemsPerPage, offset]
+    );
+
+    const formattedRows = rows.map((row) => ({
+      ...row,
+      startAt: formatISODate(row.startAt),
+      endAt: formatISODate(row.endAt),
+    }));
+
+    return {
+      pageNumber,
+      totalPages,
+      plans: formattedRows,
+    };
   } catch (err) {
     throw err;
   }

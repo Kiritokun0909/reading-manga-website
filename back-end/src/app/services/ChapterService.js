@@ -245,3 +245,44 @@ module.exports.deleteChapter = async (chapterId) => {
   }
 };
 //#endregion
+
+//#region check-manga-free-by-chapter-id
+module.exports.checkMangaFreeByChapterId = async (chapterId) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT m.isFree, m.mangaId
+      FROM chapters c
+      JOIN mangas m
+        ON c.mangaId = m.mangaId
+      WHERE chapterId = ?`,
+      [chapterId]
+    );
+    if (rows.length === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    return {
+      mangaId: rows[0].mangaId,
+      isFree: rows[0].isFree,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+//#endregion
+
+//#region get-manga-id-by-chapter-id
+module.exports.getMangaIdByChapterId = async (chapterId) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT mangaId FROM chapters WHERE chapterId = ?`,
+      [chapterId]
+    );
+    if (rows.length === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+    return rows[0].mangaId;
+  } catch (error) {
+    throw error;
+  }
+};
+//#endregion

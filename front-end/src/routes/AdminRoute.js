@@ -15,6 +15,7 @@ import MangaPage from "../pages/site/MangaPage";
 import ManageUserPage from "../pages/admin/ManageUserPage";
 import ManageDocumentPage from "../pages/admin/ManageDocumentPage";
 import ManagePlanPage from "../pages/admin/ManagePlanPage";
+import StatisticPage from "../pages/admin/StatisticPage";
 
 export default function AdminRoute() {
   return (
@@ -37,6 +38,7 @@ export default function AdminRoute() {
         <Route path="/manage-user" element={<ManageUserPage />} />
         <Route path="/manage-document" element={<ManageDocumentPage />} />
         <Route path="/manage-plan" element={<ManagePlanPage />} />
+        <Route path="/statistic" element={<StatisticPage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Route>
     </Routes>

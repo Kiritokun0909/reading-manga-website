@@ -20,6 +20,7 @@ import {
   followManga,
   addReview,
 } from "../../api/AccountService";
+import PlanList from "../../components/site/plan/PlanList";
 
 export default function MangaPage() {
   const mangaId = useParams().mangaId;
@@ -383,6 +384,16 @@ export default function MangaPage() {
               </div>
             ))}
         </div>
+      </div>
+
+      {/* Plans list  */}
+      <div className="mt-2">
+        {manga.isFree === HandleCode.MANGA_NOT_FREE && (
+          <div>
+            <h4>Danh sách các gói đăng ký</h4>
+            <PlanList mangaId={mangaId} />
+          </div>
+        )}
       </div>
 
       {/* Review list */}

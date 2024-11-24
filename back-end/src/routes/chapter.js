@@ -7,11 +7,19 @@ const upload = multer({ dest: "uploads/" });
 
 const authService = require("../app/services/AuthService.js");
 const chapterController = require("../app/controllers/ChapterController.js");
-const { verifyAccessToken, authorizeRole } = require("../middlewares/jwt.js");
+const {
+  verifyAccessToken,
+  optionalAccessToken,
+  authorizeRole,
+} = require("../middlewares/jwt.js");
 
 router.get("/list/:mangaId", chapterController.getListChapter);
 
-router.get("/:chapterId", chapterController.getChapterById);
+router.get(
+  "/:chapterId",
+  optionalAccessToken,
+  chapterController.getChapterById
+);
 
 // router.get("/author/:authorId", mangaController.getListMangaByAuthor);
 

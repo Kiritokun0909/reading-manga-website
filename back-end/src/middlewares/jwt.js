@@ -33,6 +33,25 @@ const verifyAccessToken = (req, res, next) => {
   }
 };
 
+const optionalAccessToken = (req, res, next) => {
+  const accessToken = req.header("Authorization")?.replace("Bearer ", "");
+
+  if (accessToken != null) {
+    try {
+      const decoded = jwt.verify(
+        accessToken,
+        process.env.JWT_ACCESS_TOKEN_SECRET
+      );
+      req.user = decoded;
+    } catch (error) {
+      console.log(
+        "No access token provided in optionalAccessToken middleware."
+      );
+    }
+  }
+  next();
+};
+
 const verifyRefreshToken = (req, res, next) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
@@ -69,6 +88,7 @@ const authorizeRole = (requiredRoles) => {
 module.exports = {
   generateToken,
   verifyAccessToken,
+  optionalAccessToken,
   verifyRefreshToken,
   authorizeRole,
 };

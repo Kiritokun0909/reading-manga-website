@@ -104,7 +104,9 @@ export default function PlanModal({ plan, onClose, onSave }) {
 
   const handlePriceChange = (e) => {
     const input = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-    setPrice(input);
+
+    const minPrice = 10000;
+    setPrice(Math.max(minPrice, parseInt(input || 0)));
   };
 
   const formatPrice = (value) => {

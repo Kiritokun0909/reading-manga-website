@@ -1,7 +1,10 @@
-// src/app/controllers/AuthorController.js
+// src/app/controllers/ChapterController.js
 const chapterService = require("../services/ChapterService.js");
+const planService = require("../services/PlanService.js");
+const authService = require("../services/AuthService.js");
 const HandleCode = require("../../utilities/HandleCode.js");
 const { uploadFile } = require("../../utilities/UploadFile.js");
+const { response } = require("express");
 
 class ChapterController {
   //#region get-list-chapter
@@ -25,7 +28,40 @@ class ChapterController {
   //#region get-chapter-by-id
   async getChapterById(req, res) {
     const chapterId = parseInt(req.params.chapterId, 10);
+    const userId = req.user?.id || null;
     try {
+      const response = await chapterService.checkMangaFreeByChapterId(
+        chapterId
+      );
+      const mangaId = response.mangaId;
+      const isFree = response.isFree;
+      if (isFree === HandleCode.MANGA_NOT_FREE) {
+        if (!userId) {
+          res.status(401).json({
+            mangaId: mangaId,
+            message: "Require user to login to read chapter.",
+          });
+          return;
+        }
+
+        const userRoleId = await authService.getUserRole(userId);
+        if (userRoleId !== HandleCode.ROLE_ADMIN) {
+          //Check user bought plan to read this manga
+          const checkUserBoughtManga = await planService.checkUserBoughtManga(
+            userId,
+            mangaId
+          );
+
+          if (!checkUserBoughtManga) {
+            res.status(403).json({
+              mangaId: mangaId,
+              message: "Require user to buy manga to read chapter.",
+            });
+            return;
+          }
+        }
+      }
+
       const result = await chapterService.getChapter(chapterId);
       if (result && result.code == HandleCode.NOT_FOUND) {
         res.status(404).json({ message: "Chapter not found." });

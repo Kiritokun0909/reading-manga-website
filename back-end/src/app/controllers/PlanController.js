@@ -43,7 +43,22 @@ class PlanController {
   }
   //#endregion
 
-  //#region add-subscription
+  //#region get-plan-by-manga-id
+  async getPlanByMangaId(req, res) {
+    const { mangaId } = req.params;
+    try {
+      const result = await PlanService.getPlanByMangaId(mangaId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get plan by manga id:", err);
+      res.status(500).json({
+        message: "Failed to get plan by manga id. Please try again later",
+      });
+    }
+  }
+  //#endregion
+
+  //#region add-plan
   async addPlan(req, res) {
     const {
       planName,
@@ -133,6 +148,59 @@ class PlanController {
       });
     }
   }
+  //#endregion
+
+  //#region buy-plan
+  async buyPlan(req, res) {
+    const { planId } = req.params;
+    const userId = req.user.id;
+    try {
+      const checkBeforeBuy = await PlanService.checkUserCanBoughtPlan(
+        userId,
+        planId
+      );
+      if (!checkBeforeBuy) {
+        res.status(405).json({
+          message:
+            "Plan has been actived. User cannot buy again until it expires",
+        });
+        return;
+      }
+      const planDetail = await PlanService.getPlanById(planId);
+      const result = await PlanService.addUserPlan(
+        userId,
+        planId,
+        planDetail.price
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to buy plan:", err);
+      res.status(500).json({
+        message: "Failed to buy plan. Please try again later",
+      });
+    }
+  }
+  //#endregion
+
+  //#region get-user-plan
+  async getUserPlan(req, res) {
+    const { itemsPerPage, pageNumber } = req.query;
+    const userId = req.user.id;
+    try {
+      const result = await PlanService.getPurchaseHistoryByUserId(
+        parseInt(itemsPerPage),
+        parseInt(pageNumber),
+        userId
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get user plan:", err);
+      res.status(500).json({
+        message: "Failed to get user plan. Please try again later",
+      });
+    }
+  }
+  //#endregion
 }
 
 module.exports = new PlanController();

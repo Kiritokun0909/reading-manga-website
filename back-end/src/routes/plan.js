@@ -7,6 +7,22 @@ const { verifyAccessToken, authorizeRole } = require("../middlewares/jwt.js");
 
 router.get("/list", PlanController.getPlans);
 
+router.get("/list-by-manga/:mangaId", PlanController.getPlanByMangaId);
+
+router.get(
+  "/history",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.USER]),
+  PlanController.getUserPlan
+);
+
+router.get(
+  "/buy/:planId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.USER]),
+  PlanController.buyPlan
+);
+
 router.get("/:planId", PlanController.getPlanById);
 
 router.post(

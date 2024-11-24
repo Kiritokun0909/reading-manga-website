@@ -16,64 +16,64 @@ export default function AdminSidebar() {
   };
 
   return (
-    <div className="flex flex-col w-2/12 bg-gray-800 border-r-4 border-gray-700">
+    <div className="flex flex-col w-2/12 bg-gray-800 pl-2">
       <Link to="#" className="no-underline text-white">
         <div className="flex justify-center p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg font-bold">QUẢN LÝ</span>
+          <span className=" text-lg font-bold">QUẢN LÝ</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-manga" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý truyện</span>
+          <span className=" text-lg">Quản lý truyện</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-genre" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý thể loại</span>
+          <span className=" text-lg">Quản lý thể loại</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-author" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý tác giả</span>
+          <span className=" text-lg">Quản lý tác giả</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-plan" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý gói đăng ký</span>
+          <span className=" text-lg">Quản lý gói đăng ký</span>
         </div>
       </Link>
 
-      <Link to="/admin/manage-feedback" className="no-underline text-white">
+      <Link to="/admin/statistic" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý phản hồi</span>
+          <span className="text-lg">Thống kê</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-document" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý tài liệu</span>
+          <span className=" text-lg">Quản lý tài liệu</span>
         </div>
       </Link>
 
       <Link to="/admin/manage-user" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Quản lý người dùng</span>
+          <span className=" text-lg">Quản lý người dùng</span>
         </div>
       </Link>
 
       <Link to="/admin/profile" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Đổi thông tin</span>
+          <span className=" text-lg">Đổi thông tin</span>
         </div>
       </Link>
 
       <Link to="/admin/password" className="no-underline text-white">
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Đổi mật khẩu</span>
+          <span className=" text-lg">Đổi mật khẩu</span>
         </div>
       </Link>
 
@@ -83,7 +83,7 @@ export default function AdminSidebar() {
         onClick={handleLogoutClick}
       >
         <div className="p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className="pl-4 text-lg">Đăng xuất</span>
+          <span className=" text-lg">Đăng xuất</span>
         </div>
       </Link>
     </div>
