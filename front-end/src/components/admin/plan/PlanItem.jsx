@@ -16,7 +16,7 @@ export default function PlanItem({ plan, onDetailClick, onDeleteClick }) {
           Chi tiết
         </button>
         <button
-          className="p-2 py-1.5 px-3 m-1 text-center bg-red-500 border rounded-md text-white  hover:bg-red-700 hover:text-gray-100 red:text-white-200 dark:bg-red-700"
+          className="p-2 py-1.5 px-3 m-1 text-center font-bold bg-red-500 border rounded-md text-white  hover:bg-red-700 hover:text-gray-100 red:text-white-200 dark:bg-red-700"
           onClick={() => onDeleteClick(plan.planId)}
         >
           Xoá

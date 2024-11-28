@@ -16,6 +16,8 @@ export default function PlanModal({ plan, onClose, onSave }) {
   const [canReadAll, setCanReadAll] = useState(
     plan?.canReadAll === HandleCode.CAN_READ_ALL
   );
+  const updateAt = plan?.updateAt || "";
+  const [isBought, setIsBought] = useState(false);
 
   const [searchName, setSearchName] = useState("");
   const [searchMangas, setSearchMangas] = useState([]);
@@ -45,6 +47,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
       try {
         const data = await getPlanDetail(plan.planId);
         setSelectedMangas(data.mangas);
+        setIsBought(data.isBoughtByUser === true);
         setCanReadAll(data.canReadAll === HandleCode.CAN_READ_ALL);
       } catch (error) {
         toast.error(error.message);
@@ -52,7 +55,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
     };
 
     fetchMangas();
-    console.log(plan);
+    // console.log(plan);
     if (plan) fetchSelectedMangas();
   }, [searchName, plan]);
 
@@ -156,99 +159,126 @@ export default function PlanModal({ plan, onClose, onSave }) {
         </div>
 
         {activeTab === "info" && (
-          <div className="flex flex-col gap-2">
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Tên gói:
-              </label>
-              <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                type="text"
-                value={planName}
-                onChange={(e) => setPlanName(e.target.value)}
-              />
+          <>
+            <div className="flex flex-col">
+              {updateAt && (
+                <div className="text-sm flex flex-row-reverse">
+                  (Cập nhật lúc: {updateAt})
+                </div>
+              )}
             </div>
-
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Giá gói (đvt: VNĐ):
-              </label>
-              <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                type="text"
-                value={formatPrice(price)}
-                onChange={handlePriceChange}
-              />
+            <div className="flex flex-col gap-2">
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Tên gói:
+                </label>
+                <input
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  type="text"
+                  value={planName}
+                  onChange={(e) => setPlanName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Giá gói (đvt: VNĐ):
+                </label>
+                <input
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  type="text"
+                  value={formatPrice(price)}
+                  onChange={handlePriceChange}
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Thời hạn hiệu lực (đvt: ngày):
+                </label>
+                <input
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  type="number"
+                  min="1"
+                  value={duration}
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 0); // Prevent values < 1
+                    setDuration(value);
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Ngày bắt đầu:{" "}
+                  {isBought && (
+                    <span className="text-red-500 text-sm flex justify-center">
+                      (Gói đã có người dùng thanh toán không thể chỉnh sửa ngày
+                      bắt đầu)
+                    </span>
+                  )}
+                </label>
+                <input
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  type="datetime-local"
+                  value={startAt}
+                  onChange={(e) => setStartAt(e.target.value)}
+                  disabled={isBought}
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Ngày kết thúc:
+                </label>
+                <input
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  type="datetime-local"
+                  value={endAt}
+                  onChange={(e) => setEndAt(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-gray-600 dark:text-gray-400">
+                  Mô tả gói:
+                </label>
+                <textarea
+                  className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
             </div>
-
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Thời hạn hiệu lực (đvt: ngày):
-              </label>
-              <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                type="number"
-                min="1"
-                value={duration}
-                onChange={(e) => {
-                  const value = Math.max(1, parseInt(e.target.value) || 0); // Prevent values < 1
-                  setDuration(value);
-                }}
-              />
-            </div>
-
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Ngày bắt đầu:
-              </label>
-              <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                type="datetime-local"
-                value={startAt}
-                onChange={(e) => setStartAt(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Ngày kết thúc:
-              </label>
-              <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                type="datetime-local"
-                value={endAt}
-                onChange={(e) => setEndAt(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-gray-600 dark:text-gray-400">
-                Mô tả gói:
-              </label>
-              <textarea
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-          </div>
+          </>
         )}
 
         {activeTab === "mangas" && (
           <div className="flex flex-col">
+            {isBought && (
+              <span className="text-red-500 text-sm flex justify-center">
+                (Gói đã có người dùng thanh toán không thể chỉnh sửa truyện
+                thuộc gói)
+              </span>
+            )}
+
             {/* Search manga section */}
             <div>
               <input
-                className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                className={`w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none ${
+                  isBought
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
+                }`}
                 type="text"
                 placeholder="Nhập tên truyện muốn tìm..."
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
+                disabled={isBought} // Disable the input if isBought is true
               />
             </div>
 
             {/* Show search manga result */}
-            <div className="h-48 overflow-y-auto">
+            <div
+              className={`h-48 overflow-y-auto ${
+                isBought ? "pointer-events-none opacity-50" : ""
+              }`}
+            >
               {searchMangas
                 .filter(
                   (manga) =>
@@ -290,6 +320,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
                     className="mr-2"
                     checked={canReadAll}
                     onChange={handleSelectCanReadAll}
+                    disabled={isBought} // Disable checkbox if isBought is true
                   />
                   <span className="text-gray-600 dark:text-gray-400">
                     Cho phép đọc tất cả truyện trả phí
@@ -303,7 +334,9 @@ export default function PlanModal({ plan, onClose, onSave }) {
               {selectedMangas.map((manga) => (
                 <div
                   key={manga.mangaId}
-                  className="flex items-center gap-2 p-2 border-b border-slate-200 hover:bg-slate-100 dark:hover:bg-gray-700"
+                  className={`flex items-center gap-2 p-2 border-b border-slate-200 ${
+                    isBought ? "" : "hover:bg-slate-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <img
                     src={manga.coverImageUrl}
@@ -314,6 +347,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
                   <button
                     className="ml-auto px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                     onClick={() => removeFromSelectedMangas(manga.mangaId)}
+                    disabled={isBought} // Disable button if isBought is true
                   >
                     Xóa
                   </button>

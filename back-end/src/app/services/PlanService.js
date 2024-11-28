@@ -6,7 +6,7 @@ const { formatISODate } = require("../../utilities/utils.js");
 module.exports.isBoughtByUser = async (planId) => {
   try {
     const [rows] = await db.query(
-      `SELECT planId FROM user_plans WHERE planId = ?`,
+      `SELECT planId FROM user_plans WHERE planId = ? and paymentStatus = 'completed'`,
       [planId]
     );
 
@@ -21,7 +21,7 @@ module.exports.isBoughtByUser = async (planId) => {
 module.exports.getPlans = async (
   itemsPerPage = 5,
   pageNumber = 1,
-  filter = HandleCode.FILTER_BY_SUBS_UPDATE_DATE_DESC,
+  filter = HandleCode.FILTER_BY_UPDATE_DATE_DESC,
   keyword = ""
 ) => {
   try {
@@ -58,7 +58,7 @@ module.exports.getPlans = async (
 
     const offset = (pageNumber - 1) * itemsPerPage;
     const [rows] = await db.query(
-      `SELECT planId, planName, price, duration, description, startAt, endAt
+      `SELECT planId, planName, price, duration, description, startAt, endAt, updateAt
       FROM plans
       WHERE planName LIKE ?
       ORDER BY ${orderByClause}
@@ -70,6 +70,7 @@ module.exports.getPlans = async (
       ...row,
       startAt: formatISODate(row.startAt),
       endAt: row.endAt ? formatISODate(row.endAt) : null,
+      updateAt: formatISODate(row.updateAt),
     }));
 
     return {
@@ -104,6 +105,8 @@ module.exports.getPlanById = async (planId) => {
       [planId]
     );
 
+    const isBought = await this.isBoughtByUser(planId);
+
     return {
       planId: infoRow[0].planId,
       planName: infoRow[0].planName,
@@ -113,6 +116,7 @@ module.exports.getPlanById = async (planId) => {
       startAt: formatISODate(infoRow[0].startAt),
       endAt: infoRow[0].endAt ? formatISODate(infoRow[0].endAt) : null,
       canReadAll: infoRow[0].canReadAll,
+      isBoughtByUser: isBought,
       mangas: mangas[0],
     };
   } catch (err) {
@@ -280,6 +284,10 @@ module.exports.updatePlanMangas = async (planId, mangaIds) => {
       );
     }
 
+    await db.query(
+      "UPDATE plans SET updateAt = CURRENT_TIMESTAMP() WHERE planId = ?",
+      [planId]
+    );
     return;
   } catch (err) {
     throw err;
