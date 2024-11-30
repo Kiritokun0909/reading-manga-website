@@ -19,12 +19,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="library"
+        name="genre"
         options={{
-          title: "Thư viện",
+          title: "Thể loại",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "library" : "library-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="find"
+        options={{
+          title: "Tìm kiếm",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "search" : "search-outline"}
               color={color}
               size={24}
             />

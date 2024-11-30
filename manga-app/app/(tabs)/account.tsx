@@ -1,9 +1,12 @@
 import { Text, View, StyleSheet } from "react-native";
 
-export default function AccountScreen() {
+export default function AccountPage() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Tài khoản</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Tài khoản</Text>
+      </View>
     </View>
   );
 }
@@ -11,11 +14,17 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#25292e",
-    justifyContent: "center",
-    alignItems: "center",
   },
-  text: {
+  header: {
+    padding: 8,
+    paddingTop: 24,
+    alignItems: "center",
+    borderBottomWidth: 3,
+    borderBottomColor: "gray",
+  },
+  headerText: {
     color: "black",
+    fontSize: 20,
+    fontFamily: "OpenSans-Bold",
   },
 });
