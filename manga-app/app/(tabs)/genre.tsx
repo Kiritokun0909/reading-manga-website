@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { fetchGenres } from "../../api/genreApi";
-import { Link, RelativePathString, router } from "expo-router";
+import { router } from "expo-router";
 
 type Genre = {
   genreId: number;

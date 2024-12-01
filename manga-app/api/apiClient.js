@@ -1,7 +1,6 @@
 // src/api/apiClient.js
 import axios from "axios";
-import { logout } from "../services/authService";
-import { getTokens } from "../services/keychainService";
+import { getItem, saveItem } from "@/services/storageService";
 
 const apiClient = axios.create({
   baseURL: "http://192.168.0.187:5000",
@@ -11,10 +10,10 @@ const REFRESH_TOKEN_URL = "/auth/refresh-token";
 
 apiClient.interceptors.request.use(
   async (config) => {
-    const tokens = await getTokens();
-    // console.log("Tokens:", tokens);
-    if (tokens && tokens.accessToken) {
-      config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+    const accessToken = await getItem("accessToken");
+    if (accessToken) {
+      // console.log("Set authorization header");
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -45,16 +44,16 @@ apiClient.interceptors.response.use(
         isRefreshing = true;
 
         try {
-          const tokens = await getTokens();
-          if (tokens?.refreshToken) {
+          const refreshToken = await getItem("refreshToken");
+          if (refreshToken) {
             const refreshResponse = await axios.post(
               `${apiClient.defaults.baseURL}${REFRESH_TOKEN_URL}`,
-              { refreshToken: tokens.refreshToken }
+              { refreshToken: refreshToken }
             );
 
             if (refreshResponse.data?.accessToken) {
               const newAccessToken = refreshResponse.data.accessToken;
-              await saveTokens(newAccessToken, tokens.refreshToken);
+              await saveItem("accessToken", newAccessToken);
               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
               processQueue(null, newAccessToken);
               isRefreshing = false;

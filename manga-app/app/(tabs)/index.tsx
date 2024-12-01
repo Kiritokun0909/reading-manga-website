@@ -122,16 +122,8 @@ export default function HomePage() {
             }}
           >
             <MaterialIcons name="update" size={20} color="dodgerblue" />
-            <Text style={[styles.text, globalStyles.globalFont]}>
-              Mới cập nhật
-            </Text>
+            <Text style={[styles.text]}>Mới cập nhật</Text>
           </View>
-          {/* <MangaList
-            mangaData={recentlyUpdatedManga}
-            isHorizontal={false}
-            numColumns={2}
-            handelEndReached={() => {}}
-          /> */}
           <FlatList
             data={recentlyUpdatedManga}
             keyExtractor={(item: any) => item.mangaId.toString()}
@@ -177,6 +169,6 @@ const styles = StyleSheet.create({
     color: "dodgerblue",
     fontSize: 20,
     fontWeight: "bold",
-    fontFamily: "OpenSans-Regular",
+    fontFamily: "OpenSans-SemiBold",
   },
 });

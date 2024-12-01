@@ -34,13 +34,13 @@ export default function MangaItem({
 
 const styles = StyleSheet.create({
   mangaCard: {
-    width: 150,
-    height: 220,
+    width: 180,
+    height: 230,
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   mangaImage: {
-    width: 140,
+    width: 150,
     height: 180,
     borderRadius: 4,
   },
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     textAlign: "center",
+    width: 140,
   },
   mangaChapter: {
     fontSize: 12,

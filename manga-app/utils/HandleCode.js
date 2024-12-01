@@ -1,6 +1,10 @@
 module.exports = {
   ITEMS_PER_PAGE: 6,
 
+  //Handle code for document type
+  DOC_TYPE_POLICY: "policy",
+  DOC_TYPE_ABOUT: "about",
+
   // Handle code for manga service
   MANGA_IS_FREE: 1,
   MANGA_NOT_FREE: 0,

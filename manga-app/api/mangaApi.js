@@ -1,6 +1,4 @@
-// src/api/postApi.js
-import axios from "axios";
-
+// src/api/mangaApi.js
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoints";
 import HandleCode from "../utils/HandleCode";

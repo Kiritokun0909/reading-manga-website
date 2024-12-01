@@ -1,6 +1,4 @@
-// src/api/postApi.js
-import axios from "axios";
-
+// src/api/genreApi.js
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoints";
 
