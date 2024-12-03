@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     padding: 8,
     paddingTop: 24,
     alignItems: "center",
-    borderBottomWidth: 3,
+    borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
   headerText: {

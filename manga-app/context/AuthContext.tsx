@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: any) => {
     const tokens = data.tokens;
     await saveItem("accessToken", tokens.accessToken);
     await saveItem("refreshToken", tokens.refreshToken);
-    console.log("save token");
+    // console.log("save token");
     setAuthState({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: any) => {
   const logout = async () => {
     await deleteItem("accessToken");
     await deleteItem("refreshToken");
-    console.log("clear token");
+    // console.log("clear token");
 
     setAuthState({
       accessToken: null,

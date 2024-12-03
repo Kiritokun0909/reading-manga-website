@@ -3,7 +3,7 @@ import axios from "axios";
 import { getItem, saveItem } from "@/services/storageService";
 
 const apiClient = axios.create({
-  baseURL: "http://192.168.0.187:5000",
+  baseURL: "http://192.168.1.124:5000",
 });
 
 const REFRESH_TOKEN_URL = "/auth/refresh-token";

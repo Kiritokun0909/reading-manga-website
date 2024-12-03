@@ -63,6 +63,8 @@ export function RootLayout() {
             headerTitle: `Thể loại: ${route.params?.genreName || "Loading..."}`,
           })}
         />
+
+        {/* Manga detail route */}
         <Stack.Screen
           name="manga/[id]"
           options={{
@@ -70,6 +72,8 @@ export function RootLayout() {
             headerTitle: "Chi tiết truyện",
           }}
         />
+
+        {/* Chapter detail route */}
         <Stack.Screen
           name="chapter/[id]"
           options={{
@@ -77,6 +81,8 @@ export function RootLayout() {
             headerTitle: "Chi tiết chương",
           }}
         />
+
+        {/* Privacy and about route */}
         <Stack.Screen
           name="privacy"
           options={{
@@ -91,6 +97,8 @@ export function RootLayout() {
             headerTitle: "Giới thiệu ứng dụng",
           }}
         />
+
+        {/* Account route */}
         {!authState?.authenticated && (
           <Stack.Screen
             name="sign-in"
@@ -100,6 +108,22 @@ export function RootLayout() {
             }}
           />
         )}
+        <Stack.Screen
+          name="profile"
+          options={{
+            headerShown: true,
+            headerTitle: "Cập nhật thông tin",
+          }}
+        />
+        <Stack.Screen
+          name="password"
+          options={{
+            headerShown: true,
+            headerTitle: "Đổi mật khẩu",
+          }}
+        />
+
+        {/* NotFound route */}
         <Stack.Screen name="+not-found" />
       </Stack>
     </>

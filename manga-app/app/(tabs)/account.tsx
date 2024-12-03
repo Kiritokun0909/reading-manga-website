@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProfile } from "@/api/accountApi";
 import { DEFAULT_AVATAR_URL } from "@/utils/const";
+import Toast from "react-native-toast-message";
 
 type User = {
   avatar: string | null;
@@ -17,6 +18,14 @@ export default function AccountPage() {
     {}
   );
   const [userInfo, setUserInfo] = useState<User | null>(null);
+
+  const showToast = (type: string, title: string, message: string = "") => {
+    Toast.show({
+      type: type,
+      text1: title,
+      text2: message,
+    });
+  };
 
   useEffect(() => {
     if (authState?.authenticated) {
@@ -39,6 +48,11 @@ export default function AccountPage() {
 
   const handlePressOut = (button: string) => {
     setPressedButtons((prev) => ({ ...prev, [button]: false }));
+  };
+
+  const handleLogoutButton = async () => {
+    await onLogout();
+    showToast("success", "Đăng xuất thành công");
   };
 
   return (
@@ -66,7 +80,7 @@ export default function AccountPage() {
 
             {/* Action Buttons */}
             <Pressable
-              onPress={() => console.log("Update Info")}
+              onPress={() => router.push("/profile")}
               onPressIn={() => handlePressIn("updateInfo")}
               onPressOut={() => handlePressOut("updateInfo")}
               style={[
@@ -78,7 +92,7 @@ export default function AccountPage() {
             </Pressable>
 
             <Pressable
-              onPress={() => console.log("Change Password")}
+              onPress={() => router.push("/password")}
               onPressIn={() => handlePressIn("changePassword")}
               onPressOut={() => handlePressOut("changePassword")}
               style={[
@@ -93,7 +107,7 @@ export default function AccountPage() {
           {/* Logout button */}
           <View style={{ paddingHorizontal: 120, alignItems: "center" }}>
             <Pressable
-              onPress={onLogout}
+              onPress={handleLogoutButton}
               onPressIn={() => handlePressIn("logout")}
               onPressOut={() => handlePressOut("logout")}
               style={[styles.button, pressedButtons.logout && styles.isPressed]}

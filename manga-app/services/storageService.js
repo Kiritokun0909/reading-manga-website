@@ -4,12 +4,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const saveItem = async (key, value) => {
   try {
-    if (Platform.OS === "web") {
-      await AsyncStorage.setItem(key, value.toString());
-    } else {
-      // mobile
-      await SecureStore.setItemAsync(key, value.toString());
-    }
+    await AsyncStorage.setItem(key, value.toString());
+
+    // if (Platform.OS === "web") {
+    //   await AsyncStorage.setItem(key, value.toString());
+    // } else {
+    //   // mobile
+    //   await SecureStore.setItemAsync(key, value.toString());
+    // }
   } catch (error) {
     console.error("Error saving data:", error);
   }
@@ -17,21 +19,28 @@ export const saveItem = async (key, value) => {
 
 export const getItem = async (key) => {
   try {
-    if (Platform.OS === "web") {
-      const result = await AsyncStorage.getItem(key);
-      if (result) {
-        return result;
-      } else {
-        return null;
-      }
+    const result = await AsyncStorage.getItem(key);
+    if (result) {
+      return result;
     } else {
-      const result = await SecureStore.getItemAsync(key);
-      if (result) {
-        return result;
-      } else {
-        return null;
-      }
+      return null;
     }
+
+    // if (Platform.OS === "web") {
+    //   const result = await AsyncStorage.getItem(key);
+    //   if (result) {
+    //     return result;
+    //   } else {
+    //     return null;
+    //   }
+    // } else {
+    //   const result = await SecureStore.getItemAsync(key);
+    //   if (result) {
+    //     return result;
+    //   } else {
+    //     return null;
+    //   }
+    // }
   } catch (error) {
     // console.error("Error retrieving data:", error);
     return null;
@@ -40,11 +49,13 @@ export const getItem = async (key) => {
 
 export const deleteItem = async (key) => {
   try {
-    if (Platform.OS === "web") {
-      await AsyncStorage.removeItem(key);
-    } else {
-      await SecureStore.deleteItemAsync(key);
-    }
+    await AsyncStorage.removeItem(key);
+
+    // if (Platform.OS === "web") {
+    //   await AsyncStorage.removeItem(key);
+    // } else {
+    //   await SecureStore.deleteItemAsync(key);
+    // }
   } catch (error) {
     console.error("Error deleting data:", error);
   }

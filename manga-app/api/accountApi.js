@@ -33,8 +33,12 @@ export const updateProfile = async (username, fileAvatar) => {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("avatar", fileAvatar);
+    console.log(fileAvatar);
     const response = await apiClient.put(ENDPOINTS.UPDATE_USER_INFO, formData);
-    return response.data;
+    return {
+      success: true,
+      data: response.data,
+    };
   } catch (error) {
     if (!error?.response) {
       return {
@@ -55,7 +59,10 @@ export const updateEmail = async (email) => {
     const response = await apiClient.put(ENDPOINTS.UPDATE_USER_EMAIL, {
       email,
     });
-    return response.data;
+    return {
+      success: true,
+      data: response.data,
+    };
   } catch (error) {
     if (!error?.response) {
       return {
@@ -78,17 +85,28 @@ export const updateEmail = async (email) => {
   }
 };
 
-export const updatePassword = async (password) => {
+export const updatePassword = async (oldPassword, newPassword) => {
   try {
     const response = await apiClient.put(ENDPOINTS.UPDATE_USER_PASSWORD, {
-      password,
+      oldPassword,
+      newPassword,
     });
-    return response.data;
+    return {
+      success: true,
+      data: response.data,
+    };
   } catch (error) {
     if (!error?.response) {
       return {
         success: false,
         message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    if (error.response && error.response.status === 400) {
+      return {
+        success: false,
+        message: "Mật khẩu cũ không đúng.",
       };
     }
 
