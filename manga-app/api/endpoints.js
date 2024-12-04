@@ -19,4 +19,8 @@ export const ENDPOINTS = {
   UPDATE_USER_INFO: "/account/",
   UPDATE_USER_EMAIL: "/account/change-email",
   UPDATE_USER_PASSWORD: "/account/change-password",
+  GET_LIKE_LIST: "/account/like-list",
+  GET_FOLLOW_LIST: "/account/follow-list",
+  GET_NOTIFICATION: "/account/notification",
+  READ_NOTIFICATION: "/account/read-notification",
 };

@@ -116,3 +116,90 @@ export const updatePassword = async (oldPassword, newPassword) => {
     };
   }
 };
+
+export const fetchLikeList = async (pageNumber, itemsPerPage) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_LIKE_LIST +
+        `?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`
+    );
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      return {
+        success: false,
+        message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Yêu cầu thất bại. Vui lòng thử lại.",
+    };
+  }
+};
+
+export const fetchFollowList = async (pageNumber, itemsPerPage) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_FOLLOW_LIST +
+        `?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`
+    );
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      return {
+        success: false,
+        message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Yêu cầu thất bại. Vui lòng thử lại.",
+    };
+  }
+};
+
+export const fetchNotifications = async (pageNumber, itemsPerPage) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_NOTIFICATION +
+        `?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`
+    );
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      return {
+        success: false,
+        message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Yêu cầu thất bại. Vui lòng thử lại.",
+    };
+  }
+};
+
+export const readNotification = async (notificationId) => {
+  try {
+    const response = await apiClient.put(
+      ENDPOINTS.READ_NOTIFICATION + `/${notificationId}`
+    );
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      return {
+        success: false,
+        message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Yêu cầu thất bại. Vui lòng thử lại.",
+    };
+  }
+};

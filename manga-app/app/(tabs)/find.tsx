@@ -139,7 +139,12 @@ export default function SearchPage() {
 
       {/* Show search result  */}
       <FlatList
-        style={{ flex: 1, padding: 24 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: "center",
+          marginTop: 12,
+        }}
+        style={{ flex: 1, padding: 8 }}
         ref={flatListRef}
         data={mangas}
         keyExtractor={(item: any) => item.mangaId.toString()}

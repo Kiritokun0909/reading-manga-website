@@ -78,7 +78,43 @@ export default function AccountPage() {
               </View>
             </View>
 
-            {/* Action Buttons */}
+            {/* Like list */}
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/like-follow-list",
+                  params: { type: "like" },
+                })
+              }
+              onPressIn={() => handlePressIn("likeList")}
+              onPressOut={() => handlePressOut("likeList")}
+              style={[
+                styles.button,
+                pressedButtons.likeList && styles.isPressed,
+              ]}
+            >
+              <Text style={styles.buttonText}>Danh sách yêu thích</Text>
+            </Pressable>
+
+            {/* Follow list */}
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/like-follow-list",
+                  params: { type: "follow" },
+                })
+              }
+              onPressIn={() => handlePressIn("followList")}
+              onPressOut={() => handlePressOut("followList")}
+              style={[
+                styles.button,
+                pressedButtons.followList && styles.isPressed,
+              ]}
+            >
+              <Text style={styles.buttonText}>Danh sách theo dõi</Text>
+            </Pressable>
+
+            {/* Update profile */}
             <Pressable
               onPress={() => router.push("/profile")}
               onPressIn={() => handlePressIn("updateInfo")}
@@ -91,6 +127,7 @@ export default function AccountPage() {
               <Text style={styles.buttonText}>Cập nhật thông tin</Text>
             </Pressable>
 
+            {/* Change password */}
             <Pressable
               onPress={() => router.push("/password")}
               onPressIn={() => handlePressIn("changePassword")}
@@ -157,7 +194,7 @@ const styles = StyleSheet.create({
     padding: 8,
     paddingTop: 24,
     alignItems: "center",
-    borderBottomWidth: 3,
+    borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
   headerText: {
@@ -180,6 +217,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "gray",
     marginBottom: 16,
+    paddingBottom: 8,
   },
   avatar: {
     width: 60,

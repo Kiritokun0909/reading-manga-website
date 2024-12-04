@@ -122,6 +122,19 @@ export function RootLayout() {
             headerTitle: "Đổi mật khẩu",
           }}
         />
+        <Stack.Screen
+          name="like-follow-list"
+          options={({ route }: any) => ({
+            headerShown: true,
+            headerTitle: `Danh sách truyện ${
+              route.params?.type === "like"
+                ? "yêu thích"
+                : route.params?.type === "follow"
+                ? "theo dõi"
+                : "Loading..."
+            }`,
+          })}
+        />
 
         {/* NotFound route */}
         <Stack.Screen name="+not-found" />
