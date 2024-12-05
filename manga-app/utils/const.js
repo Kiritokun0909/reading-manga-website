@@ -7,6 +7,9 @@ export const OPENSANS_MEDIUM_ITALIC = "OpenSans-Medium-Italic";
 export const OPENSANS_SEMIBOLD = "OpenSans-SemiBold";
 export const OPENSANS_SEMIBOLD_ITALIC = "OpenSans-SemiBold-Italic";
 
+export const DEFAULT_COVER_IMAGE_URL =
+  "https://i.pinimg.com/736x/16/f5/50/16f550820fce1818559e09eb9cdbf964.jpg";
+
 export const DEFAULT_AVATAR_URL =
   "https://i0.wp.com/sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png?ssl=1";
 

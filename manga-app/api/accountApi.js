@@ -203,3 +203,60 @@ export const readNotification = async (notificationId) => {
     };
   }
 };
+
+export const checkUserLikeManga = async (mangaId) => {
+  try {
+    await apiClient.get(ENDPOINTS.CHECK_USER_LIKE + `/${mangaId}`);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const checkUserFollowManga = async (mangaId) => {
+  try {
+    await apiClient.get(ENDPOINTS.CHECK_USER_FOLLOW + `/${mangaId}`);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const likeManga = async (mangaId, isLike = true) => {
+  try {
+    if (isLike) {
+      await apiClient.post(ENDPOINTS.LIKE_MANGA + `/${mangaId}`, { isLike });
+    } else {
+      await apiClient.delete(ENDPOINTS.LIKE_MANGA + `/${mangaId}`);
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const followManga = async (mangaId, isFollow = true) => {
+  try {
+    if (isFollow) {
+      await apiClient.post(ENDPOINTS.FOLLOW_MANGA + `/${mangaId}`, {
+        isFollow,
+      });
+    } else {
+      await apiClient.delete(ENDPOINTS.FOLLOW_MANGA + `/${mangaId}`);
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const postReview = async (mangaId, review) => {
+  try {
+    await apiClient.post(ENDPOINTS.POST_REVIEW + `/${mangaId}`, {
+      context: review,
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};

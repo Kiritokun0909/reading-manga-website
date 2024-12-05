@@ -13,6 +13,11 @@ export const ENDPOINTS = {
   // Manga
   GET_LIST_MANGAS: "/manga/list",
   GET_LIST_MANGAS_BY_GENRE: "/manga/genre",
+  GET_MANGA_INFO: "/manga",
+  GET_MANGA_CHAPTERS: "/chapter/list",
+  GET_MANGA_REVIEWS: "/manga/reviews",
+  CHECK_USER_LIKE: "/account/is-like",
+  CHECK_USER_FOLLOW: "/account/is-follow",
 
   // Account
   GET_USER_INFO: "/account/0",
@@ -23,4 +28,7 @@ export const ENDPOINTS = {
   GET_FOLLOW_LIST: "/account/follow-list",
   GET_NOTIFICATION: "/account/notification",
   READ_NOTIFICATION: "/account/read-notification",
+  LIKE_MANGA: "/account/like",
+  FOLLOW_MANGA: "/account/follow",
+  POST_REVIEW: "/account/add-review",
 };

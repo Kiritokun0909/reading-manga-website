@@ -27,3 +27,29 @@ export const fetchMangasByGenre = async (
   );
   return response.data;
 };
+
+export const fetchMangaInfo = async (mangaId) => {
+  const response = await apiClient.get(
+    ENDPOINTS.GET_MANGA_INFO + `/${mangaId}`
+  );
+  return response.data;
+};
+
+export const fetchMangaChapters = async (mangaId) => {
+  const response = await apiClient.get(
+    ENDPOINTS.GET_MANGA_CHAPTERS + `/${mangaId}`
+  );
+  return response.data;
+};
+
+export const fetchMangaReviews = async (
+  mangaId,
+  pageNumber = 1,
+  itemsPerPage = 5
+) => {
+  const response = await apiClient.get(
+    ENDPOINTS.GET_MANGA_REVIEWS +
+      `/${mangaId}?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`
+  );
+  return response.data;
+};

@@ -1,3 +1,4 @@
+import { DEFAULT_COVER_IMAGE_URL } from "@/utils/const";
 import { Link, RelativePathString } from "expo-router";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -22,7 +23,10 @@ export default function MangaItem({
   return (
     <Link href={mangaLinkUrl}>
       <View style={styles.mangaCard}>
-        <Image source={{ uri: imageUrl }} style={styles.mangaImage} />
+        <Image
+          source={{ uri: imageUrl || DEFAULT_COVER_IMAGE_URL }}
+          style={styles.mangaImage}
+        />
         <Text style={styles.mangaTitle} numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>
