@@ -166,10 +166,6 @@ export const getChapterDetail = async (chapterId) => {
 
     const mangaId = error.response?.data?.mangaId || null;
 
-    if (error.response && error.response.status === 401) {
-      throw new MangaError("Yêu cầu đăng nhập và mua gói để đọc.", mangaId);
-    }
-
     if (error.response && error.response.status === 403) {
       throw new MangaError("Yêu cầu mua gói để đọc.", mangaId);
     }

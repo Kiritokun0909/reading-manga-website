@@ -53,3 +53,35 @@ export const fetchMangaReviews = async (
   );
   return response.data;
 };
+
+export const fetchChapterDetail = async (chapterId) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_CHAPTER_DETAIL + `/${chapterId}`
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (!error?.response) {
+      return {
+        success: false,
+        message: "Hệ thống không phản hồi.",
+      };
+    }
+
+    if (error.response && error.response.status === 403) {
+      return {
+        success: false,
+        message: "Yêu cầu mua gói để đọc.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Yêu cầu thất bại. Vui lòng thử lại sau.",
+    };
+  }
+};

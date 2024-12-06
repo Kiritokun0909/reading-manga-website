@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   mangaImage: {
     width: 150,
-    height: 180,
+    height: 190,
     borderRadius: 4,
   },
   mangaTitle: {

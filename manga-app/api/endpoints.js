@@ -18,6 +18,7 @@ export const ENDPOINTS = {
   GET_MANGA_REVIEWS: "/manga/reviews",
   CHECK_USER_LIKE: "/account/is-like",
   CHECK_USER_FOLLOW: "/account/is-follow",
+  GET_CHAPTER_DETAIL: "/chapter",
 
   // Account
   GET_USER_INFO: "/account/0",

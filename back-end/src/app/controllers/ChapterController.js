@@ -37,7 +37,7 @@ class ChapterController {
       const isFree = response.isFree;
       if (isFree === HandleCode.MANGA_NOT_FREE) {
         if (!userId) {
-          res.status(401).json({
+          res.status(403).json({
             mangaId: mangaId,
             message: "Require user to login to read chapter.",
           });

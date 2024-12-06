@@ -96,6 +96,7 @@ export const updatePassword = async (oldPassword, newPassword) => {
       data: response.data,
     };
   } catch (error) {
+    console.log(error);
     if (!error?.response) {
       return {
         success: false,

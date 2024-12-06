@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import {
   OPENSANS_BOLD,
@@ -19,17 +20,17 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   return (
-    <>
+    <GestureHandlerRootView>
       <AuthProvider>
         <RootLayout />
       </AuthProvider>
       <Toast visibilityTime={2000} />
-    </>
+    </GestureHandlerRootView>
   );
 }
 
 export function RootLayout() {
-  const { authState, onLogout } = useAuth();
+  const { authState } = useAuth();
 
   // Font config
   const [loaded, error] = useFonts({
@@ -65,6 +66,13 @@ export function RootLayout() {
         />
 
         {/* Manga detail route */}
+        <Stack.Screen
+          name="manga/chapters"
+          options={{
+            headerShown: true,
+            headerTitle: "Danh sách các chương",
+          }}
+        />
         <Stack.Screen
           name="manga/[id]"
           options={{

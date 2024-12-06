@@ -3,10 +3,14 @@ import axios from "axios";
 import { getItem, saveItem } from "@/services/storageService";
 
 const apiClient = axios.create({
-  baseURL: "http://192.168.0.101:5000",
+  baseURL: "http://192.168.1.126:5000",
 });
 
 const REFRESH_TOKEN_URL = "/auth/refresh-token";
+
+// Flag to prevent multiple token refresh requests
+let isRefreshing = false;
+let failedQueue = [];
 
 apiClient.interceptors.request.use(
   async (config) => {
@@ -61,11 +65,11 @@ apiClient.interceptors.response.use(
             }
           }
         } catch (refreshError) {
-          await logout();
           processQueue(refreshError, null);
           isRefreshing = false;
-          console.error("Token refresh failed. Logging out...");
-          return Promise.reject(refreshError);
+
+          // Return the original error response if refresh fails
+          return error.response;
         }
       }
 
@@ -77,9 +81,13 @@ apiClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return apiClient(originalRequest);
         })
-        .catch((queueError) => Promise.reject(queueError));
+        .catch(() => {
+          // Return the original error response if waiting fails
+          return error.response;
+        });
     }
 
+    // If not a token-related error, reject the error as usual
     return Promise.reject(error);
   }
 );

@@ -155,6 +155,7 @@ module.exports.getChapter = async (chapterId) => {
         FROM chapters
         WHERE MangaId = ?
         ORDER BY 
+          volumeNumber DESC,
           chapterNumber DESC
         ;
     `,

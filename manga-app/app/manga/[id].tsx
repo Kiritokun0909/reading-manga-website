@@ -13,38 +13,21 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_COVER_IMAGE_URL } from "@/utils/const";
 import { ITEMS_PER_PAGE } from "@/utils/HandleCode";
+import { FontAwesome } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  FlatList,
   Image,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
-
-type Manga = {
-  mangaId: number | null;
-  mangaName: string | null;
-  otherName: string | null;
-  coverImageUrl: string | null;
-  publishedYear: number | null;
-  description: string | null;
-  ageLimit: number | null;
-  isManga: number | null;
-  isFree: number | null;
-  numChapters: number | null;
-  numViews: number | null;
-  numLikes: number | null;
-  numFollows: number | null;
-  createAt: any;
-  updateAt: any;
-  authorId: any;
-  authorName: string;
-};
 
 export default function MangaPage() {
   const { id } = useLocalSearchParams();
@@ -53,7 +36,6 @@ export default function MangaPage() {
 
   const [manga, setManga] = useState<any>({});
   const [mangaGenres, setMangaGenres] = useState<any>([]);
-  const [chapters, setChapters] = useState<any>([]);
 
   const [isLike, setIsLike] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
@@ -76,18 +58,8 @@ export default function MangaPage() {
 
   // Fetch manga info, list chapter and first review page
   useEffect(() => {
-    const firstGetReviews = async () => {
-      try {
-        const data = await fetchMangaReviews(id, 1, ITEMS_PER_PAGE);
-        setReviews(data.reviews);
-        setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     getMangaInfo();
-    firstGetReviews();
+    getReviews(1);
 
     if (!authState?.authenticated) return;
     getLikeStatus();
@@ -99,9 +71,6 @@ export default function MangaPage() {
       const data = await fetchMangaInfo(id);
       setManga(data.mangaInfo);
       setMangaGenres(data.mangaInfo.genres);
-
-      const chapterData = await fetchMangaChapters(id);
-      setChapters(chapterData.chapters);
     } catch (error) {
       console.log(error);
     }
@@ -120,7 +89,8 @@ export default function MangaPage() {
   const getReviews = async (pageNumber: number) => {
     try {
       const data = await fetchMangaReviews(id, pageNumber, ITEMS_PER_PAGE);
-      setReviews([...reviews, ...data.reviews]);
+      if (pageNumber === 1) setReviews(data.reviews);
+      else setReviews([...reviews, ...data.reviews]);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error(error);
@@ -176,11 +146,12 @@ export default function MangaPage() {
   };
 
   const handleSubmitReview = async () => {
-    if (!checkIsSignIn()) return;
+    if (!checkIsSignIn() || !validateReview()) return;
     try {
       const success = await postReview(id, newReview);
       if (success) showToast("success", "Gửi đánh giá thành công!");
       setNewReview("");
+      getReviews(1);
     } catch (error) {
       console.error(error);
     }
@@ -199,7 +170,7 @@ export default function MangaPage() {
         >
           <Image
             source={{ uri: manga.coverImageUrl || DEFAULT_COVER_IMAGE_URL }}
-            style={{ width: 150, height: 250, marginTop: 10 }}
+            style={{ width: 180, height: 250, marginTop: 10 }}
           />
           <Text style={styles.mangaName}>{manga.mangaName}</Text>
         </View>
@@ -239,13 +210,17 @@ export default function MangaPage() {
 
         {/* Manga info (other name, author, etc...) */}
         <View style={styles.infoSection}>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Tên khác:</Text>
+          <View style={[styles.infoRow, { width: "85%" }]}>
+            <View>
+              <Text style={styles.infoLabel}>Tên khác:</Text>
+            </View>
             <Text style={styles.infoText}>{manga.otherName}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Tác giả:</Text>
-            <Text style={styles.infoText}>{manga.authorName}</Text>
+            <Text style={styles.infoText}>
+              {manga.authorName ? manga.authorName : "Đang cập nhật"}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Loại truyện:</Text>
@@ -280,7 +255,7 @@ export default function MangaPage() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Cập nhật lúc:</Text>
             <Text style={styles.infoText}>
-              <i>{!manga.updateAt ? "" : manga.updateAt}</i>
+              {!manga.updateAt ? "" : manga.updateAt}
             </Text>
           </View>
           <View style={styles.infoRow}>
@@ -299,7 +274,8 @@ export default function MangaPage() {
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                gap: 4,
+                gap: 5,
+                width: "75%",
               }}
             >
               {mangaGenres.map((genre: any) => (
@@ -337,7 +313,7 @@ export default function MangaPage() {
         {/* Description */}
         <View style={{ paddingHorizontal: 12 }}>
           <Text style={styles.infoLabel}>Mô tả:</Text>
-          <View>
+          <View style={{ marginTop: 4 }}>
             {!manga.description ? (
               <Text>Đang cập nhật</Text>
             ) : (
@@ -358,8 +334,136 @@ export default function MangaPage() {
         </View>
       </View>
 
-      {/* <Text>Manga post: {id}</Text> */}
-      {/* <Link href="/chapter/1">Go to chapter!</Link> */}
+      {/* Chapter section */}
+      <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={{ fontSize: 20, fontFamily: "OpenSans-SemiBold" }}>
+            Danh sách chương
+          </Text>
+          <TouchableOpacity
+            style={{ padding: 8, backgroundColor: "orange", borderRadius: 4 }}
+            onPress={() =>
+              router.push({
+                pathname: `/manga/chapters`,
+                params: {
+                  mangaId: id,
+                },
+              })
+            }
+          >
+            <Text style={{ color: "black", fontFamily: "OpenSans-SemiBold" }}>
+              Xem các chương
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Review section */}
+      <View style={{ marginTop: 24 }}>
+        <View style={{ alignItems: "center" }}>
+          <Text style={{ fontSize: 20, fontFamily: "OpenSans-SemiBold" }}>
+            Đánh giá truyện
+          </Text>
+        </View>
+        {/* Input for adding a new review */}
+        <View
+          style={{
+            flexDirection: "column",
+            paddingHorizontal: 12,
+            marginTop: 12,
+          }}
+        >
+          <View>
+            <TextInput
+              multiline
+              style={{
+                width: "100%",
+                height: 80,
+                borderWidth: 1,
+                borderColor: "gray",
+                borderRadius: 4,
+                padding: 15,
+                backgroundColor: "white",
+              }}
+              placeholder="Viết đánh giá..."
+              value={newReview}
+              onChangeText={setNewReview}
+            />
+          </View>
+
+          <View style={{ alignItems: "flex-end", marginTop: 6 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "darkcyan",
+                padding: 8,
+                borderRadius: 4,
+              }}
+              onPress={() => handleSubmitReview()}
+            >
+              <Text style={{ fontFamily: "OpenSans-SemiBold", color: "white" }}>
+                Gửi đánh giá
+                <FontAwesome
+                  style={{ marginLeft: 6 }}
+                  name="send"
+                  size={16}
+                  color="white"
+                />
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Review List */}
+        <FlatList
+          contentContainerStyle={{ flexDirection: "column", padding: 12 }}
+          data={reviews}
+          keyExtractor={(item) => item.reviewId.toString()}
+          horizontal={false}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                width: "100%",
+                borderBottomWidth: 1,
+                borderColor: "gray",
+                padding: 10,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={{ fontWeight: "bold" }}>{item.username}</Text>
+                <Text>{new Date(item.createAt).toLocaleString()}</Text>
+              </View>
+              <View style={{ marginTop: 10 }}>
+                <Text>
+                  {item.context === ""
+                    ? "Bình luận này đã bị ẩn"
+                    : item.context}
+                </Text>
+              </View>
+            </View>
+          )}
+          onEndReached={() => {}}
+          onEndReachedThreshold={0.5}
+        />
+        <View style={{ alignItems: "center", marginTop: 6 }}>
+          {currentPage < totalPages && (
+            <TouchableOpacity
+              onPress={() => {
+                handleNextReviewPage();
+              }}
+            >
+              <Text style={styles.toggleText}>Xem thêm</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      <View style={{ height: 50 }}></View>
     </ScrollView>
   );
 }
@@ -396,7 +500,8 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans-Regular",
   },
   likeButton: {
-    padding: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderWidth: 1,
     borderRadius: 4,
     marginTop: 8,
@@ -407,8 +512,17 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans-SemiBold",
   },
   toggleText: {
-    marginTop: 4,
     fontSize: 14,
     fontFamily: "OpenSans-SemiBold",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  reviewItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
 });

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "manga-app",
     "slug": "manga-app",
     "version": "1.0.0",
