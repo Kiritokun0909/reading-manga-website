@@ -12,12 +12,15 @@ import {
 } from "../../api/StatisticService";
 
 export default function StatisticPage() {
-  const [monthRevenue, setMonthRevenue] = useState(10000000);
+  const [monthRevenue, setMonthRevenue] = useState(0);
   const [totalManga, setTotalManga] = useState(15);
   const [totalActivePlan, setTotalActivePlan] = useState(0);
   const [totalActiveUser, setTotalActiveUser] = useState(0);
 
   const currentDate = new Date();
+  const firstDayOfMonth = `${currentDate.getFullYear()}-${String(
+    currentDate.getMonth() + 1
+  ).padStart(2, "0")}-01`;
   const day = currentDate.getTime() - 7 * 24 * 60 * 60 * 1000;
   const [dateTo, setDateTo] = useState(new Date().toISOString().split("T")[0]);
   const [dateFrom, setDateFrom] = useState(
@@ -33,11 +36,6 @@ export default function StatisticPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const currentDate = new Date(); // Get current date
-      const firstDayOfMonth = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}-01`;
-
       try {
         const totalActiveUserData = await getTotalActiveUser();
         const totalMangaData = await getTotalManga();
@@ -47,11 +45,11 @@ export default function StatisticPage() {
         setTotalManga(totalMangaData.totalManga);
         setTotalActivePlan(totalActivePlanData.totalActivePlan);
 
-        const revenueFromToData = await getRevenueFromTo(
+        const totalRevenueData = await getRevenueFromTo(
           firstDayOfMonth,
           currentDate.toISOString().split("T")[0]
         );
-        const totalRevenue = Object.values(revenueFromToData).reduce(
+        const totalRevenue = Object.values(totalRevenueData).reduce(
           (sum, revenue) => sum + parseFloat(revenue), // Ensure revenue is treated as a number
           0 // Initial value for the sum
         );

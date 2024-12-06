@@ -16,7 +16,7 @@ export const getTotalActiveUser = async () => {
 export const getRevenueFromTo = async (startDate, endDate) => {
   try {
     const response = await axios.get(
-      `/statistic/revenue?startDate=${startDate}&endDate=${endDate}`
+      `/statistic/revenue?startDate=${startDate}&endDate=${endDate} + 23:59:59`
     );
     return response.data;
   } catch (error) {
