@@ -53,7 +53,7 @@ export default function PlanPage() {
           {plans.map((plan) => (
             <div
               className="flex flex-col pl-4 pr-2 py-2 rounded-lg bg-gray-300 border-1 w-96"
-              key={plan.planId}
+              key={plan.startAt}
             >
               <div className="flex flex-row justify-between">
                 <div className="flex">

@@ -143,6 +143,13 @@ export function RootLayout() {
             }`,
           })}
         />
+        <Stack.Screen
+          name="plan"
+          options={{
+            headerShown: true,
+            headerTitle: "Các gói đã mua",
+          }}
+        />
 
         {/* NotFound route */}
         <Stack.Screen name="+not-found" />

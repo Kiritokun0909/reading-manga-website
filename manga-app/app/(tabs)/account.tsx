@@ -114,6 +114,23 @@ export default function AccountPage() {
               <Text style={styles.buttonText}>Danh sách theo dõi</Text>
             </Pressable>
 
+            {/* Purchased plan list */}
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/plan",
+                })
+              }
+              onPressIn={() => handlePressIn("planList")}
+              onPressOut={() => handlePressOut("planList")}
+              style={[
+                styles.button,
+                pressedButtons.planList && styles.isPressed,
+              ]}
+            >
+              <Text style={styles.buttonText}>Danh sách các gói đã mua</Text>
+            </Pressable>
+
             {/* Update profile */}
             <Pressable
               onPress={() => router.push("/profile")}

@@ -261,3 +261,15 @@ export const postReview = async (mangaId, review) => {
     return false;
   }
 };
+
+export const fetchPurchasedPlans = async (pageNumber, itemsPerPage) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_PURCHASED_PLANS +
+        `?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}`
+    );
+    return response.data;
+  } catch (error) {
+    return { success: false, message: "Yêu cầu thất bại. Vui lòng thử lại." };
+  }
+};

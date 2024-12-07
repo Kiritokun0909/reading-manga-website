@@ -32,4 +32,9 @@ export const ENDPOINTS = {
   LIKE_MANGA: "/account/like",
   FOLLOW_MANGA: "/account/follow",
   POST_REVIEW: "/account/add-review",
+  GET_PURCHASED_PLANS: "/plan/history",
+
+  // Plan
+  GET_PLAN_INFO: "/plan",
+  BUY_PLAN: "/plan/buy",
 };
