@@ -5,11 +5,8 @@ import {
   likeManga,
   postReview,
 } from "@/api/accountApi";
-import {
-  fetchMangaChapters,
-  fetchMangaInfo,
-  fetchMangaReviews,
-} from "@/api/mangaApi";
+import { fetchMangaInfo, fetchMangaReviews } from "@/api/mangaApi";
+import PlanList from "@/components/plan/PlanList";
 import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_COVER_IMAGE_URL } from "@/utils/const";
 import { ITEMS_PER_PAGE } from "@/utils/HandleCode";
@@ -332,6 +329,19 @@ export default function MangaPage() {
             )}
           </View>
         </View>
+      </View>
+
+      {/* Plan section */}
+      <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
+        {manga.isFree === 0 && (
+          <View>
+            <Text style={{ fontSize: 20, fontFamily: "OpenSans-SemiBold" }}>
+              Danh sách gói
+            </Text>
+
+            <PlanList mangaId={id.toString()} />
+          </View>
+        )}
       </View>
 
       {/* Chapter section */}

@@ -3,6 +3,24 @@ import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoints";
 import HandleCode from "../utils/HandleCode";
 
+export const fetchPlans = async (mangaId) => {
+  try {
+    const response = await apiClient.get(
+      ENDPOINTS.GET_LIST_PLANS + `/${mangaId}`
+    );
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (!error?.response) {
+      return { success: false, message: "Hệ thống không phản hồi." };
+    }
+
+    return { success: false, message: "Yêu cầu thất bại. Vui lòng thử lại." };
+  }
+};
+
 export const fetchPlanInfo = async (planId) => {
   try {
     const response = await apiClient.get(

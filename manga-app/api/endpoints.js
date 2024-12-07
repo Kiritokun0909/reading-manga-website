@@ -35,6 +35,7 @@ export const ENDPOINTS = {
   GET_PURCHASED_PLANS: "/plan/history",
 
   // Plan
+  GET_LIST_PLANS: "/plan/list-by-manga",
   GET_PLAN_INFO: "/plan",
   BUY_PLAN: "/plan/buy",
 };

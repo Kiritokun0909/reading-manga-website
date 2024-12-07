@@ -45,7 +45,6 @@ export default function PlanModal({
   const { authState } = useAuth();
 
   const [plan, setPlan] = useState<Plan | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const showToast = (type: string, title: string, message: string = "") => {
     Toast.show({
@@ -128,11 +127,11 @@ export default function PlanModal({
               </View>
             </View>
 
-            <View style={styles.mangaList}>
+            <View style={styles.mangaListSection}>
               <View style={styles.mangaListHeader}>
                 <Text style={styles.mangaListHeaderText}>Danh sách truyện</Text>
               </View>
-              <View>
+              <View style={styles.mangaList}>
                 {plan?.canReadAll === 1 && (
                   <Text>Cho phép đọc tất cả các truyện trả phí</Text>
                 )}
@@ -142,7 +141,9 @@ export default function PlanModal({
                       source={{ uri: manga.coverImageUrl }}
                       style={styles.mangaCover}
                     />
-                    <Text style={styles.mangaName}>{manga.mangaName}</Text>
+                    <View style={{ width: 200 }}>
+                      <Text style={styles.mangaName}>{manga.mangaName}</Text>
+                    </View>
                   </View>
                 ))}
               </View>
@@ -219,12 +220,15 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans-Regular",
   },
 
-  mangaList: {
+  mangaListSection: {
     flexDirection: "column",
   },
   mangaListHeader: {
     padding: 12,
     alignItems: "center",
+  },
+  mangaList: {
+    gap: 10,
   },
   mangaListHeaderText: {
     fontSize: 16,
