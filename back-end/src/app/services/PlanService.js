@@ -435,3 +435,37 @@ module.exports.getPurchaseHistoryByUserId = async (
   }
 };
 //#endregion
+
+//#region confirm-payment
+module.exports.updateUserPlanPaymentSuccess = async (userPlanId) => {
+  try {
+    // Fetch the duration from the database
+    const [durationResult] = await db.query(
+      `SELECT p.duration
+       FROM user_plans up 
+       JOIN plans p ON p.planId = up.planId
+       WHERE up.userPlanId = ?`,
+      [userPlanId]
+    );
+
+    if (durationResult.length === 0) {
+      throw new Error("Invalid orderId or plan not found.");
+    }
+
+    const { duration } = durationResult[0]; // Assume duration is in days
+
+    // Update PaymentStatus, StartAt, and calculate EndAt
+    const [updateResult] = await db.query(
+      `UPDATE user_plans 
+       SET PaymentStatus = ?, 
+           StartAt = CURRENT_TIMESTAMP(), 
+           EndAt = DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL ? DAY)
+       WHERE userPlanId = ?`,
+      ["completed", duration, userPlanId]
+    );
+
+    console.log("User plan updated successfully.");
+  } catch (err) {
+    console.error("Error updating user plan:", err.message);
+  }
+};

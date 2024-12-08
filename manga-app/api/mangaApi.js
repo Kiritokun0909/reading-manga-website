@@ -72,10 +72,12 @@ export const fetchChapterDetail = async (chapterId) => {
       };
     }
 
+    const mangaId = error.response?.data?.mangaId || null;
     if (error.response && error.response.status === 403) {
       return {
         success: false,
         message: "Yêu cầu mua gói để đọc.",
+        mangaId: mangaId,
       };
     }
 

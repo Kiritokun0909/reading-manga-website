@@ -71,7 +71,7 @@ export default function HomePage() {
         style={{ flex: 1 }}
       >
         {/* Most Viewed Manga Section */}
-        <View style={{ height: 260 }}>
+        <View style={{ height: 270 }}>
           <View
             style={{
               flexDirection: "row",
@@ -94,7 +94,7 @@ export default function HomePage() {
         </View>
 
         {/* Most Favorite Manga Section */}
-        <View style={{ height: 260 }}>
+        <View style={{ height: 270 }}>
           <View
             style={{
               flexDirection: "row",

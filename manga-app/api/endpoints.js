@@ -38,4 +38,8 @@ export const ENDPOINTS = {
   GET_LIST_PLANS: "/plan/list-by-manga",
   GET_PLAN_INFO: "/plan",
   BUY_PLAN: "/plan/buy",
+
+  //Payment
+  GET_PAYMENT_SHEET: "/payment/payment-sheet",
+  CONFIRM_PAYMENT: "/payment/confirm-payment",
 };

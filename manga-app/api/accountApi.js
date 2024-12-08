@@ -33,7 +33,7 @@ export const updateProfile = async (username, fileAvatar) => {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("avatar", fileAvatar);
-    console.log(fileAvatar);
+    console.log("fileAvatar: ", fileAvatar);
     const response = await apiClient.put(ENDPOINTS.UPDATE_USER_INFO, formData);
     return {
       success: true,

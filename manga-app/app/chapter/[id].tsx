@@ -62,8 +62,10 @@ export default function ChapterPage() {
         calculateImageSize(item.imageUrl || DEFAULT_COVER_IMAGE_URL, index);
       });
     } else {
+      const mangaId = response.mangaId;
       showToast("error", "Lỗi", response.message);
       router.push(`/`); // Redirect to the home page
+      router.push(`/manga/${mangaId}`);
     }
   };
 
@@ -155,6 +157,21 @@ export default function ChapterPage() {
             ))}
           </View>
         )}
+      </View>
+
+      <View style={styles.navigationButtons}>
+        <TouchableOpacity
+          style={styles.navigateButton}
+          onPress={navigatePrevChapter}
+        >
+          <Text style={styles.navigateText}>Chương trước</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navigateButton}
+          onPress={navigateNextChapter}
+        >
+          <Text style={styles.navigateText}>Chương kế</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

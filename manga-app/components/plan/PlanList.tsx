@@ -79,6 +79,7 @@ export default function PlanList({ mangaId }: PlanListProps) {
         planId={selectedPlanId}
         isOpenFromPlanPage={false}
         visible={isShowModal}
+        mangaId={mangaId}
         onClose={() => setIsShowModal(false)}
       />
     </View>

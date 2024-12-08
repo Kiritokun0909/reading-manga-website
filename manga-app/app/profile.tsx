@@ -59,6 +59,17 @@ export default function ProfilePage() {
   };
 
   const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      Toast.show({
+        type: "error",
+        text1: "Permission Denied",
+        text2: "You need to grant permission to access your photos.",
+      });
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -68,6 +79,7 @@ export default function ProfilePage() {
 
     if (!result.canceled) {
       const pickedAsset = result.assets[0]; // Get the first selected asset
+      console.log(">>> Picked asset:", pickedAsset);
       setNewAvatar({
         uri: pickedAsset.uri,
         type: pickedAsset.type || "image/jpeg", // Default to 'image/jpeg' if type is undefined
@@ -97,7 +109,7 @@ export default function ProfilePage() {
         ? {
             uri: newAvatar.uri, // File URI
             type: newAvatar.type, // MIME type (e.g., 'image/jpeg')
-            name: newAvatar.name || "avatar.jpg", // File name
+            name: new Date().getTime() || "avatar.jpg", // File name
           }
         : null;
 
@@ -150,7 +162,7 @@ export default function ProfilePage() {
             }}
             style={styles.avatar}
           />
-          <Text style={styles.changeAvatarText}>Change Avatar</Text>
+          <Text style={styles.changeAvatarText}>Đổi ảnh đại diện</Text>
         </TouchableOpacity>
 
         {/* Username */}

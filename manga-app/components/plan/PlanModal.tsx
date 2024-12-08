@@ -15,11 +15,13 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { ScrollView } from "react-native-gesture-handler";
 import { formatPrice } from "@/utils/utils";
 import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 type PlanItemProps = {
   planId: number;
   isOpenFromPlanPage: boolean;
   visible: boolean;
+  mangaId?: string;
   onClose: () => void;
 };
 
@@ -40,6 +42,7 @@ export default function PlanModal({
   planId,
   isOpenFromPlanPage = false,
   visible,
+  mangaId,
   onClose,
 }: PlanItemProps) {
   const { authState } = useAuth();
@@ -76,6 +79,11 @@ export default function PlanModal({
     const response = await buyPlan(planId);
 
     if (response.success) {
+      const userPlanId = response.data.userPlanId;
+      router.push({
+        pathname: "/confirm-payment",
+        params: { planId: planId, userPlanId: userPlanId, mangaId: mangaId },
+      });
       onClose();
     } else {
       showToast("error", "Mua gói thất bại!", response.message);

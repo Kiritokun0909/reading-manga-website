@@ -7,6 +7,7 @@ const authorRoute = require("./author.js");
 const mangaRoute = require("./manga.js");
 const chapterRoute = require("./chapter.js");
 const planRoute = require("./plan.js");
+const paymentRoute = require("./payment.js");
 const statisticRoute = require("./statistic.js");
 
 const authService = require("../app/services/AuthService.js");
@@ -25,6 +26,7 @@ function route(app) {
     authorizeRole([authService.RoleEnum.ADMIN]),
     adminRoute
   );
+  app.use("/payment", paymentRoute);
   app.use("/statistic", statisticRoute);
   app.use("/plan", planRoute);
   app.use("/chapter", chapterRoute);

@@ -23,6 +23,19 @@ router.get(
   PlanController.buyPlan
 );
 
+router.get(
+  "/check-user-bought-plan/:planId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.USER]),
+  PlanController.checkUserBoughtPlan
+);
+router.get(
+  "/check-user-bought-manga/:mangaId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.USER]),
+  PlanController.checkUserBoughtManga
+);
+
 router.get("/:planId", PlanController.getPlanById);
 
 router.post(

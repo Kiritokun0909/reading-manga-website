@@ -1,4 +1,4 @@
-// src/api/documentApi.js;
+// src/api/planApi.js;
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoints";
 import HandleCode from "../utils/HandleCode";
@@ -38,7 +38,10 @@ export const fetchPlanInfo = async (planId) => {
 export const buyPlan = async (planId) => {
   try {
     const response = await apiClient.get(ENDPOINTS.BUY_PLAN + `/${planId}`);
-    return response.data;
+    return {
+      success: true,
+      data: response.data,
+    };
   } catch (error) {
     if (!error?.response) {
       return { success: false, message: "Hệ thống không phản hồi." };

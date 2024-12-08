@@ -15,14 +15,20 @@ import {
 } from "../utils/const";
 import Toast from "react-native-toast-message";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const publishableKey =
+    "pk_test_51QTGMMGfsVFLJH4QrL7XKlNqRvgFtvKf6XwqzlwikV0CKNCXagayi8x6QowQ0xXBIKgqaPvQpfIRB3eD2P3nc6E60073X1ifev";
+
   return (
     <GestureHandlerRootView>
       <AuthProvider>
-        <RootLayout />
+        <StripeProvider publishableKey={publishableKey}>
+          <RootLayout />
+        </StripeProvider>
       </AuthProvider>
       <Toast visibilityTime={2000} />
     </GestureHandlerRootView>
@@ -148,6 +154,14 @@ export function RootLayout() {
           options={{
             headerShown: true,
             headerTitle: "Các gói đã mua",
+          }}
+        />
+
+        <Stack.Screen
+          name="confirm-payment"
+          options={{
+            headerShown: true,
+            headerTitle: "Xác nhận thanh toán gói",
           }}
         />
 

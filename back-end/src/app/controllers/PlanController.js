@@ -201,6 +201,54 @@ class PlanController {
     }
   }
   //#endregion
+
+  //# region check-user-bought-plan
+  async checkUserBoughtPlan(req, res) {
+    const { planId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await PlanService.checkUserBoughtPlan(userId, planId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to check user bought plan:", err);
+      res.status(500).json({
+        message: "Failed to check user bought plan. Please try again later",
+      });
+    }
+  }
+  //#endregion
+
+  //#region check-user-bought-manga
+  async checkUserBoughtManga(req, res) {
+    const { mangaId } = req.params;
+    const userId = req.user.id;
+    try {
+      const result = await PlanService.checkUserBoughtManga(userId, mangaId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to check user bought manga:", err);
+      res.status(500).json({
+        message: "Failed to check user bought manga. Please try again later",
+      });
+    }
+  }
+  //#endregion
+
+  //#region update-user-plan-payment-success
+  async updateUserPlanPaymentSuccess(req, res) {
+    const { userPlanId } = req.params;
+    try {
+      const result = await PlanService.updateUserPlanPaymentSuccess(userPlanId);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to update user plan payment success:", err);
+      res.status(500).json({
+        message:
+          "Failed to update user plan payment success. Please try again later",
+      });
+    }
+  }
+  //#endregion
 }
 
 module.exports = new PlanController();
