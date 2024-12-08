@@ -32,9 +32,15 @@ export const updateProfile = async (username, fileAvatar) => {
   try {
     const formData = new FormData();
     formData.append("username", username);
-    formData.append("avatar", fileAvatar);
-    console.log("fileAvatar: ", fileAvatar);
-    const response = await apiClient.put(ENDPOINTS.UPDATE_USER_INFO, formData);
+    if (fileAvatar !== null) {
+      formData.append("avatar", fileAvatar);
+    }
+
+    const response = await apiClient.put(ENDPOINTS.UPDATE_USER_INFO, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       success: true,
       data: response.data,

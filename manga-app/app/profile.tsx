@@ -14,6 +14,7 @@ import { fetchProfile, updateProfile, updateEmail } from "@/api/accountApi";
 import { DEFAULT_AVATAR_URL } from "@/utils/const";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
+import mime from "mime";
 
 type User = {
   avatar: string | null;
@@ -71,7 +72,6 @@ export default function ProfilePage() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -79,10 +79,9 @@ export default function ProfilePage() {
 
     if (!result.canceled) {
       const pickedAsset = result.assets[0]; // Get the first selected asset
-      console.log(">>> Picked asset:", pickedAsset);
       setNewAvatar({
         uri: pickedAsset.uri,
-        type: pickedAsset.type || "image/jpeg", // Default to 'image/jpeg' if type is undefined
+        type: pickedAsset.mimeType || "image/jpeg", // Default to 'image/jpeg' if type is undefined
         name: pickedAsset.fileName || "avatar.jpg", // Default to 'avatar.jpg' if fileName is undefined
       });
     }
@@ -108,12 +107,13 @@ export default function ProfilePage() {
       const fileAvatar = newAvatar
         ? {
             uri: newAvatar.uri, // File URI
-            type: newAvatar.type, // MIME type (e.g., 'image/jpeg')
-            name: new Date().getTime() || "avatar.jpg", // File name
+            type: mime.getType(newAvatar.uri), // MIME type (e.g., 'image/jpeg')
+            name: newAvatar.name || "avatar.jpg", // File name
           }
         : null;
 
       if (newUsername !== userInfo?.username || newAvatar) {
+        console.log(">>> fileAvatar", fileAvatar);
         const response = await updateProfile(newUsername, fileAvatar);
 
         if (!response.success) {

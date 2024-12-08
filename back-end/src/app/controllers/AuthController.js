@@ -11,14 +11,14 @@ class AuthController {
     try {
       const result = await authService.login(email, password);
       if (result && result.code == HandleCode.LOGIN_FAILED) {
-        res.status(401).json({
+        res.status(403).json({
           message: "Invalid email or password.",
         });
         return;
       }
 
       if (result && result.code == HandleCode.ACCOUNT_BANNED) {
-        res.status(401).json({
+        res.status(403).json({
           message: "Your account has been banned.",
         });
         return;

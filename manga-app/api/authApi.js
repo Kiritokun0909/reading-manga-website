@@ -54,7 +54,7 @@ export const loginApi = async (email, password) => {
       };
     }
 
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 403) {
       return {
         success: false,
         message: "Tài khoản hoặc mật khẩu không đúng.",

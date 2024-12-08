@@ -14,7 +14,7 @@ export const loginApi = async (email, password) => {
       throw new Error("Hệ thống không phản hồi.");
     }
 
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 403) {
       throw new Error("Tài khoản hoặc mật khẩu không đúng.");
     }
 
