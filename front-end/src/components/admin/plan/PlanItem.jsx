@@ -1,10 +1,12 @@
+import { formatPrice } from "../../../utilities/utils";
+
 export default function PlanItem({ plan, onDetailClick, onDeleteClick }) {
   return (
     <div className="flex flex-col items-center p-3 rounded-lg bg-white w-64">
       <div>
         <strong className="text-lg">{plan.planName}</strong>
       </div>
-      <div>Giá: {plan.price} VND</div>
+      <div>Giá: {formatPrice(plan.price)}</div>
       <div>Thời hạn: {plan.duration} ngày</div>
       <div>Bắt đầu: {plan.startAt}</div>
       <div>Kết thúc: {plan.endAt ? plan.endAt : "Vô thời hạn"}</div>

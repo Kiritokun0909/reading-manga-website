@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, Pressable, Image } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProfile } from "@/api/accountApi";
 import { DEFAULT_AVATAR_URL } from "@/utils/const";
@@ -26,6 +26,14 @@ export default function AccountPage() {
       text2: message,
     });
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (authState?.authenticated) {
+        getUserInfo();
+      }
+    }, [])
+  );
 
   useEffect(() => {
     if (authState?.authenticated) {

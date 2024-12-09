@@ -6,7 +6,7 @@ import { getListManga, getPlanDetail } from "../../../api/SiteService";
 
 export default function PlanModal({ plan, onClose, onSave }) {
   const [planName, setPlanName] = useState(plan?.planName || "Gói mới");
-  const [price, setPrice] = useState(plan?.price || 500);
+  const [price, setPrice] = useState(plan?.price || 50000);
   const [duration, setDuration] = useState(plan?.duration || 14);
   const [description, setDescription] = useState(plan?.description || "");
   const [startAt, setStartAt] = useState(
@@ -72,6 +72,11 @@ export default function PlanModal({ plan, onClose, onSave }) {
       return false;
     }
 
+    if (price < 50000) {
+      toast.error("Giá gói không được thấp hơn 50.000đ.");
+      return false;
+    }
+
     return true;
   };
 
@@ -108,7 +113,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
   const handlePriceChange = (e) => {
     const input = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
 
-    const minPrice = 10000;
+    const minPrice = 50000;
     setPrice(Math.max(minPrice, parseInt(input || 0)));
   };
 

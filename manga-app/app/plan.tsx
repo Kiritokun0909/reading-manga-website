@@ -109,8 +109,10 @@ export default function PlanPage() {
               <Text style={styles.planInfo}>
                 Giá: {formatPrice(item.price)}
               </Text>
-              <Text style={styles.planInfo}>Ngày bắt đầu: {item.startAt}</Text>
-              <Text style={styles.planInfo}>Ngày kết thúc: {item.endAt}</Text>
+              <Text style={styles.planInfo}>
+                Ngày kích hoạt: {item.startAt}
+              </Text>
+              <Text style={styles.planInfo}>Ngày hết hạn: {item.endAt}</Text>
             </View>
           </View>
         )}

@@ -2,17 +2,26 @@ import { Text, View, StyleSheet, ScrollView, FlatList } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import MangaList from "@/components/manga/MangaList";
 import { globalStyles } from "@/utils/const";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchMangas } from "@/api/mangaApi";
 import HandleCode from "@/utils/HandleCode";
 import MangaItem from "@/components/manga/MangaItem";
-import { RelativePathString } from "expo-router";
+import { RelativePathString, useFocusEffect } from "expo-router";
 
 export default function HomePage() {
   const [mostViewedManga, setMostViewedManga] = useState<any>([]);
   const [mostFavoriteManga, setMostFavoriteManga] = useState<any>([]);
   const [recentlyUpdatedManga, setRecentlyUpdatedManga] = useState<any>([]);
+
   const PAGE_NUMBER = 1;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getMostViewedManga();
+      getMostFavoriteManga();
+      getRecentlyUpdatedManga();
+    }, [])
+  );
 
   useEffect(() => {
     getMostViewedManga();

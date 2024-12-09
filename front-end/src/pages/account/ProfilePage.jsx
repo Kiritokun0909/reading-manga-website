@@ -8,13 +8,18 @@ import {
   updateUserInfo,
 } from "../../api/AccountService.js";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loading.jsx";
 
 export default function ProfilePage() {
+  const [oldEmail, setOldEmail] = useState("");
+  const [oldUserName, setOldUserName] = useState("");
+
   const [username, setUsername] = useState("");
   const [avatar, setAvatar] = useState("");
   const [email, setEmail] = useState("");
 
   const [newAvatarFile, setNewAvatarFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchUserInfo();
@@ -29,6 +34,9 @@ export default function ProfilePage() {
       setAvatar(data.avatar);
       setEmail(data.email);
       setUsername(data.username);
+
+      setOldEmail(data.email);
+      setOldUserName(data.username);
     } catch (error) {
       toast.error(error.message);
     }
@@ -47,14 +55,22 @@ export default function ProfilePage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     try {
-      await updateUserInfo(username, newAvatarFile);
-      toast.success("Cập nhật username và avatar thành công");
+      if (username !== oldUserName || newAvatarFile) {
+        await updateUserInfo(username, newAvatarFile);
+        // toast.success("Cập nhật username và avatar thành công");
+      }
 
-      await updateUserEmail(email);
-      toast.success("Cập nhật email thành công");
+      if (email !== oldEmail) {
+        await updateUserEmail(email);
+      }
+
+      toast.success("Cập nhật thành công");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
 
     fetchUserInfo();
@@ -62,6 +78,8 @@ export default function ProfilePage() {
 
   return (
     <div className="flex justify-center mt-10 px-8">
+      {loading && <Loading />}
+
       <form className="max-w-2xl">
         <div className="flex flex-wrap border shadow rounded-lg p-3 dark:bg-gray-600">
           <div className="w-full text-center">

@@ -6,6 +6,7 @@ import LikeFollowPage from "../pages/account/LikeFollowPage";
 import SiteLayout from "../layout/SiteLayout";
 import NotificationPage from "../pages/account/NotificationPage";
 import PlanPage from "../pages/account/PlanPage";
+import PaymentPage from "../pages/account/PaymentPage";
 
 export default function AccountRoute() {
   return (
@@ -17,6 +18,7 @@ export default function AccountRoute() {
         <Route path="/follow-list" element={<LikeFollowPage type="follow" />} />
         <Route path="/notification" element={<NotificationPage />} />
         <Route path="/plan" element={<PlanPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Route>
     </Routes>
   );

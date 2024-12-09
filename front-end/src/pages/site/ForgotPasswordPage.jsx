@@ -5,6 +5,7 @@ import "../../styles/site/Home.css";
 
 import { forgotPassword, resetPassword } from "../../api/AuthService.js";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loading.jsx";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -14,11 +15,13 @@ export default function ForgotPasswordPage() {
   const [isForgot, setIsForgot] = useState(true);
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {}, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    setLoading(true);
     try {
       if (isForgot) {
         await forgotPassword(email);
@@ -31,11 +34,15 @@ export default function ForgotPasswordPage() {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex justify-center mt-20 px-8">
+      {loading && <Loading />}
+
       <form className="max-w-2xl">
         <div className="flex flex-wrap border shadow rounded-lg p-3 dark:bg-gray-600">
           <div className="w-full text-center">

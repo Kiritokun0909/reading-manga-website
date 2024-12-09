@@ -10,13 +10,14 @@ const planController = require("../app/controllers/PlanController.js");
 router.post("/payment-sheet", async (req, res) => {
   const { amount, currency } = req.body;
   console.log(amount, currency);
+
   const customer = await stripe.customers.create();
   const ephemeralKey = await stripe.ephemeralKeys.create(
     { customer: customer.id },
     { apiVersion: "2024-11-20.acacia" }
   );
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: amount * 10 || 100000,
+    amount: amount < 50000 ? 50000 : amount,
     currency: currency || "usd",
     customer: customer.id,
     // In the latest version of the API, specifying the `automatic_payment_methods` parameter

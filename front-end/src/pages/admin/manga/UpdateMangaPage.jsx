@@ -10,6 +10,7 @@ import {
 } from "../../../api/AdminService";
 import HandleCode from "../../../utilities/HandleCode";
 import { useParams } from "react-router-dom";
+import Loading from "../../../components/Loading";
 
 export default function UpdateMangaPage() {
   const mangaId = useParams().mangaId;
@@ -31,6 +32,8 @@ export default function UpdateMangaPage() {
   const [showResults, setShowResults] = useState(false);
   const [authors, setAuthors] = useState([]);
   const [selectedAuthorId, setSelectedAuthorId] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getGenres = async () => {
@@ -166,6 +169,7 @@ export default function UpdateMangaPage() {
       return;
     }
 
+    setLoading(true);
     try {
       await updateManga(
         mangaId,
@@ -184,11 +188,15 @@ export default function UpdateMangaPage() {
       fetchManga();
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col justify-center p-4 pt-2">
+      {loading && <Loading />}
+
       <div className="flex justify-center">
         <h1>Cập nhật truyện</h1>
       </div>

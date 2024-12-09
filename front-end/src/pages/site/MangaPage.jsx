@@ -388,12 +388,13 @@ export default function MangaPage() {
 
       {/* Plans list  */}
       <div className="mt-2">
-        {manga.isFree === HandleCode.MANGA_NOT_FREE && (
-          <div>
-            <h4>Danh sách các gói đăng ký</h4>
-            <PlanList mangaId={mangaId} />
-          </div>
-        )}
+        {manga.isFree === HandleCode.MANGA_NOT_FREE &&
+          parseInt(roleId) !== HandleCode.ROLE_ADMIN && (
+            <div>
+              <h4>Danh sách các gói đăng ký</h4>
+              <PlanList mangaId={mangaId} />
+            </div>
+          )}
       </div>
 
       {/* Review list */}

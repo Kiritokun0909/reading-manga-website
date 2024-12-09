@@ -1,8 +1,8 @@
 import { fetchNotifications, readNotification } from "@/api/accountApi";
 import { useAuth } from "@/context/AuthContext";
 import { ITEMS_PER_PAGE } from "@/utils/HandleCode";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -23,23 +23,31 @@ export default function NotificationPage() {
 
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const firstGetMangas = async () => {
-      try {
-        const data = await fetchNotifications(1, ITEMS_PER_PAGE);
-        setNotifications(data.notifications);
-        setTotalPages(data.totalPages);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      setNotifications([]);
+      if (!authState?.authenticated) return;
+      firstGetNotifications();
+    }, [])
+  );
 
+  useEffect(() => {
     setNotifications([]);
     if (!authState?.authenticated) return;
-    firstGetMangas();
+    firstGetNotifications();
   }, [authState]);
+
+  const firstGetNotifications = async () => {
+    try {
+      const data = await fetchNotifications(1, ITEMS_PER_PAGE);
+      setNotifications(data.notifications);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getNotifications = async (pageNumber: number) => {
     setLoading(true);

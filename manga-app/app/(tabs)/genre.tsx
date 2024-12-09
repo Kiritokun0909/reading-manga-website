@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { fetchGenres } from "../../api/genreApi";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
 type Genre = {
   genreId: number;
@@ -22,20 +22,26 @@ export default function GenrePage() {
   const [error, setError] = useState<string | null>(null);
   const [pressedGenre, setPressedGenre] = useState<number | null>(null);
 
-  useEffect(() => {
-    const loadGenres = async () => {
-      try {
-        const data: Genre[] = await fetchGenres();
-        setGenres(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      loadGenres();
+    }, [])
+  );
 
+  useEffect(() => {
     loadGenres();
   }, []);
+
+  const loadGenres = async () => {
+    try {
+      const data: Genre[] = await fetchGenres();
+      setGenres(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error}</Text>;

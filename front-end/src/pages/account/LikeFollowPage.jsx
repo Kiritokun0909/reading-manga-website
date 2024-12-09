@@ -36,6 +36,14 @@ export default function LikeFollowPage({ type }) {
 
   return (
     <div className="">
+      <div className="flex justify-center align-center">
+        {type === "like" ? (
+          <h1 className="text-2xl font-bold">Danh sách yêu thích</h1>
+        ) : (
+          <h1 className="text-2xl font-bold">Danh sách theo dõi</h1>
+        )}
+      </div>
+
       <MangaList
         mangas={mangas}
         currentPage={currentPage}

@@ -82,8 +82,8 @@ export default function PlanPage() {
               <div>
                 <span className="">Giá: {formatPrice(plan.price)}</span>
               </div>
-              <div>Ngày bắt đầu: {plan.startAt}</div>
-              <div>Ngày kêt thúc: {plan.endAt}</div>
+              <div>Ngày kích hoạt: {plan.startAt}</div>
+              <div>Ngày hết hạn: {plan.endAt}</div>
             </div>
           ))}
         </div>

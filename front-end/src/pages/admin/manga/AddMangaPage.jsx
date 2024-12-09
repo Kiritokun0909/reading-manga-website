@@ -10,6 +10,7 @@ import {
 } from "../../../api/AdminService";
 import HandleCode from "../../../utilities/HandleCode";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../../components/Loading";
 
 export default function AddMangaPage() {
   const [coverImageUrl, setCoverImageUrl] = useState("");
@@ -29,6 +30,8 @@ export default function AddMangaPage() {
   const [showResults, setShowResults] = useState(false);
   const [authors, setAuthors] = useState([]);
   const [selectedAuthorId, setSelectedAuthorId] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -108,6 +111,7 @@ export default function AddMangaPage() {
       return;
     }
 
+    setLoading(true);
     try {
       const data = await addManga(
         coverImageFile,
@@ -125,11 +129,15 @@ export default function AddMangaPage() {
       navigate("/admin/manage-manga");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col justify-center p-4 pt-2">
+      {loading && <Loading />}
+
       <div className="flex justify-center">
         <h1>Thêm truyện mới</h1>
       </div>

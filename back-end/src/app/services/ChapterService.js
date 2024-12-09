@@ -61,7 +61,7 @@ module.exports.addChapter = async (
   try {
     const [insertRow] = await db.query(
       `INSERT INTO chapters (mangaId, volumeNumber, chapterNumber, chapterName, novelContext)
-      VALUES (?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?)`,
       [mangaId, volumeNumber, chapterNumber, chapterName, novelContext]
     );
 

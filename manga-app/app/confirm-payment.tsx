@@ -45,7 +45,8 @@ export default function ConfirmPaymentPage() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const fetchPaymentSheetParams = async () => {
-    const response = await fetchPaymentSheet(plan?.price, "vnd");
+    const amount = plan?.price || 50000;
+    const response = await fetchPaymentSheet(amount, "vnd");
     const { paymentIntent, ephemeralKey, customer } = response.data;
 
     return {

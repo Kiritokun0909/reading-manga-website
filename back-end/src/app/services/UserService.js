@@ -267,7 +267,8 @@ module.exports.getListMangaUserLike = async (
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(UserId) as total FROM favorites"
+      "SELECT COUNT(UserId) as total FROM favorites WHERE userId = ?",
+      [userId]
     );
     const totalMangas = totalRows[0].total;
 
@@ -307,7 +308,8 @@ module.exports.getListMangaUserFollow = async (
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(UserId) as total FROM following"
+      "SELECT COUNT(UserId) as total FROM following WHERE userId = ?",
+      [userId]
     );
     const totalMangas = totalRows[0].total;
 

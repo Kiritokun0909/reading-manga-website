@@ -1,3 +1,5 @@
+import apiClient from "./ApiClient";
+
 const CREATE_PAYMENT_URL = "http://localhost:8888/order/create_payment_url";
 
 //#region create-payment-url
@@ -35,6 +37,23 @@ export const createPaymentUrl = async (orderId, amount, planName) => {
         ? "Yêu cầu thất bại. Vui lòng thử lại."
         : "Hệ thống không phản hồi."
     );
+  }
+};
+//#endregion
+
+//#region confirm-payment
+export const confirmPayment = async (userPlanId) => {
+  try {
+    await apiClient.get(`/payment/confirm-payment/${userPlanId}`);
+    return {
+      success: true,
+    };
+  } catch (error) {
+    if (!error?.response) {
+      return { success: false, message: "Hệ thống không phản hồi." };
+    }
+
+    return { success: false, message: "Yêu cầu thất bại. Vui lòng thử lại." };
   }
 };
 //#endregion
