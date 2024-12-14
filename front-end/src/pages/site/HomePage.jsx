@@ -40,7 +40,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <div className="p-2">
+      <div className="px-2">
         <div className="flex justify-between">
           <h4>Truyện được xem nhiều</h4>
           <Link
@@ -56,8 +56,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <br></br>
-      <div className="p-2">
+      <div className="px-2">
         <div className="flex justify-between">
           <h4>Truyện mới cập nhật</h4>
           <Link

@@ -309,6 +309,13 @@ export default function MangaPage() {
             >
               Xoá truyện
             </button>
+
+            <button
+              className="bg-purple-500 rounded-lg mx-2 my-1 px-2 text-white font-semibold hover:bg-purple-600"
+              onClick={() => {}}
+            >
+              Ẩn truyện
+            </button>
           </div>
         )}
       </div>

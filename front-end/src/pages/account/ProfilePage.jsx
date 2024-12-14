@@ -87,7 +87,7 @@ export default function ProfilePage() {
               Thông tin tài khoản
             </h2>
             <img
-              className="w-20 h-20 rounded-full mx-auto"
+              className="w-36 h-36 rounded-md mx-auto"
               src={avatar}
               alt="Avatar"
             />
@@ -95,7 +95,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={handleButtonClick}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
             >
               Chọn ảnh
             </button>

@@ -82,7 +82,7 @@ export default function ConfirmPaymentPage() {
     if (error) {
       showToast("error", "Huỷ thanh toán", "Bạn đã huỷ thanh toán.");
     } else {
-      console.log("mangaId", mangaId);
+      // console.log("mangaId", mangaId);
 
       const response = await confirmPayment(userPlanId);
 
