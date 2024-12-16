@@ -11,8 +11,18 @@ module.exports.getListManga = async (
   keyword = ""
 ) => {
   try {
+    let filterHideManga =
+      filter == HandleCode.FILTER_HIDE_MANGA
+        ? "AND isHide = 1"
+        : "AND isHide = 0";
+
     const [totalRows] = await db.query(
-      "SELECT COUNT(MangaId) as total FROM mangas WHERE mangaName LIKE ? OR otherName LIKE ?",
+      `SELECT 
+          COUNT(MangaId) as total 
+      FROM 
+          mangas 
+      WHERE
+          (mangaName LIKE ? OR otherName LIKE ?) ${filterHideManga}`,
       [`%${keyword}%`, `%${keyword}%`]
     );
     const totalMangas = totalRows[0].total;
@@ -49,7 +59,8 @@ module.exports.getListManga = async (
     const [rows] = await db.query(
       `SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber
         FROM mangas 
-        WHERE mangaName LIKE ? OR otherName LIKE ?
+        WHERE
+          (mangaName LIKE ? OR otherName LIKE ?) ${filterHideManga}
         ORDER BY ${orderByClause} 
         LIMIT ? OFFSET ?`,
       [`%${keyword}%`, `%${keyword}%`, itemsPerPage, offset]
@@ -73,10 +84,13 @@ module.exports.getListMangaByGenreId = async (
   genreId
 ) => {
   try {
+    let filterHideManga = "AND m.isHide = 0";
+
     const [totalRows] = await db.query(
-      `SELECT COUNT(MangaId) as total 
-        FROM manga_genres
-        WHERE GenreId= ?;`,
+      `SELECT COUNT(mg.MangaId) as total 
+        FROM manga_genres mg
+        JOIN (SELECT mangaId, isHide FROM mangas) as m ON mg.mangaId = m.mangaId
+        WHERE GenreId= ? ${filterHideManga};`,
       [genreId]
     );
     const totalMangas = totalRows[0].total;
@@ -99,8 +113,8 @@ module.exports.getListMangaByGenreId = async (
     const [rows] = await db.query(
       `SELECT m.mangaId, m.mangaName, m.coverImageUrl, m.newestChapterNumber
         FROM manga_genres mg
-            JOIN (SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber FROM mangas) as m ON mg.mangaId = m.mangaId
-        WHERE genreId = ?
+          JOIN (SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber, isHide FROM mangas) as m ON mg.mangaId = m.mangaId
+        WHERE genreId = ? ${filterHideManga}
         LIMIT ? OFFSET ?;`,
       [genreId, itemsPerPage, offset]
     );
@@ -125,10 +139,12 @@ module.exports.getListMangaByAuthorId = async (
   authorId
 ) => {
   try {
+    let filterHideManga = "AND isHide = 0";
+
     const [totalRows] = await db.query(
       `SELECT COUNT(MangaId) as total 
         FROM mangas
-        WHERE authorId= ?;`,
+        WHERE authorId= ? ${filterHideManga};`,
       [authorId]
     );
     const totalMangas = totalRows[0].total;
@@ -153,7 +169,7 @@ module.exports.getListMangaByAuthorId = async (
     const [rows] = await db.query(
       `SELECT m.mangaId, m.coverImageUrl, m.mangaName, m.newestChapterNumber
         FROM mangas m
-        WHERE authorId = ?
+        WHERE authorId = ? ${filterHideManga}
         LIMIT ? OFFSET ?;`,
       [authorId, itemsPerPage, offset]
     );

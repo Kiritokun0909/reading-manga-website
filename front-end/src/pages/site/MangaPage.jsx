@@ -55,10 +55,16 @@ export default function MangaPage() {
         setIsHide(data.isHide);
         setMangaGenres(data.genres);
 
+        if (parseInt(roleId) != HandleCode.ROLE_ADMIN && data.isHide) {
+          // toast.error("Truyện đang bị ẩn");
+          navigate(`/`);
+        }
+
         const responseChapter = await getListChapter(mangaId);
         setChapters(responseChapter.chapters);
       } catch (error) {
         toast.error(error.message);
+        navigate(`/`);
       }
     };
 

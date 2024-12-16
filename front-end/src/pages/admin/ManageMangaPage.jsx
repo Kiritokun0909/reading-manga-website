@@ -94,6 +94,7 @@ export default function ManageMangaPage() {
             <option value={HandleCode.FILTER_BY_MANGA_VIEW_ASC}>
               Lượt thích giảm dần
             </option>
+            <option value={HandleCode.FILTER_HIDE_MANGA}>Truyện bị ẩn</option>
           </select>
         </div>
 

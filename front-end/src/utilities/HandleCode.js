@@ -63,6 +63,7 @@ module.exports = {
   FILTER_BY_MANGA_LIKE_DESC: 5007,
   FILTER_BY_MANGA_CREATE_DATE_DESC: 5008,
   FILTER_BY_MANGA_CREATE_DATE_ASC: 5009,
+  FILTER_HIDE_MANGA: 5010,
 
   // Handle code for subscription service
   CAN_READ_ALL: 1,
