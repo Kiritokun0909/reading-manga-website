@@ -33,6 +33,13 @@ router.put(
 router.get("/:mangaId", mangaController.getMangaInfo);
 
 router.put(
+  "/hide-manga/:mangaId",
+  verifyAccessToken,
+  authorizeRole([authService.RoleEnum.ADMIN]),
+  mangaController.hideManga
+);
+
+router.put(
   "/:mangaId",
   upload.single("coverImage"),
   verifyAccessToken,

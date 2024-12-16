@@ -214,6 +214,22 @@ class AuthorController {
     }
   }
   //#endregion
+
+  //#region hide-manga
+  async hideManga(req, res) {
+    const { mangaId } = req.params;
+    const { isHide } = req.body;
+    try {
+      const result = await mangaService.updateMangaHideStatus(mangaId, isHide);
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to hide manga:", err);
+      res
+        .status(500)
+        .json({ message: "Failed to hide manga. Please try again later." });
+    }
+  }
+  //#endregion
 }
 
 module.exports = new AuthorController();

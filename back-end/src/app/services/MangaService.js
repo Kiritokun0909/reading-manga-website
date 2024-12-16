@@ -180,7 +180,7 @@ module.exports.getMangaById = async (mangaId) => {
       `SELECT m.mangaId, m.mangaName, m.otherName, m.coverImageUrl, 
               m.publishedYear, m.description, m.ageLimit, m.isManga, m.isFree,
               m.numChapters, m.numViews, m.numLikes, m.numFollows,
-              m.createAt, m.updateAt, m.authorId, a.authorName
+              m.createAt, m.updateAt, m.isHide, m.authorId, a.authorName
        FROM mangas m
        LEFT JOIN authors a ON m.authorId = a.authorId
        WHERE m.mangaId = ?`,
@@ -209,6 +209,7 @@ module.exports.getMangaById = async (mangaId) => {
       ...rows[0],
       createAt: formatCreateAt,
       updateAt: formatUpdateAt,
+      isHide: rows[0].isHide == HandleCode.IS_HIDE,
       authorName: rows[0].authorName || "", // Default value if null
       genres: genreRows,
     };
@@ -451,6 +452,23 @@ module.exports.removeManga = async (mangaId) => {
     const [rows] = await db.query("DELETE FROM mangas WHERE mangaId = ?", [
       mangaId,
     ]);
+    if (rows.affectedRows === 0) {
+      return { code: HandleCode.NOT_FOUND };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+//#endregion
+
+//#region update-manga-hide-status
+module.exports.updateMangaHideStatus = async (mangaId, isHidden = true) => {
+  const isHide = isHidden ? HandleCode.IS_HIDE : HandleCode.NOT_HIDE;
+  try {
+    const [rows] = await db.query(
+      `UPDATE mangas SET isHide = ? WHERE mangaId = ?`,
+      [isHide, mangaId]
+    );
     if (rows.affectedRows === 0) {
       return { code: HandleCode.NOT_FOUND };
     }

@@ -70,6 +70,8 @@ module.exports = {
   // Handle code for manga service
   MANGA_IS_FREE: 1,
   MANGA_NOT_FREE: 0,
+  IS_HIDE: 1,
+  NOT_HIDE: 0,
   FILTER_BY_MANGA_UPDATE_DATE_DESC: 5000,
   FILTER_BY_MANGA_UPDATE_DATE_ASC: 5001,
   FILTER_BY_MANGA_VIEW_ASC: 5004,

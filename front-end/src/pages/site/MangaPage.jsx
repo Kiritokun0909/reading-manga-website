@@ -20,6 +20,7 @@ import {
   followManga,
   addReview,
 } from "../../api/AccountService";
+import { hideManga } from "../../api/MangaService";
 import PlanList from "../../components/site/plan/PlanList";
 
 export default function MangaPage() {
@@ -27,6 +28,7 @@ export default function MangaPage() {
   const { isLoggedIn, roleId } = useContext(AuthContext);
 
   const [manga, setManga] = useState({});
+  const [isHide, setIsHide] = useState(false);
   const [mangaGenres, setMangaGenres] = useState([]);
   const [chapters, setChapters] = useState([]);
 
@@ -50,6 +52,7 @@ export default function MangaPage() {
         const response = await getDetailManga(mangaId);
         const data = response.mangaInfo;
         setManga(data);
+        setIsHide(data.isHide);
         setMangaGenres(data.genres);
 
         const responseChapter = await getListChapter(mangaId);
@@ -151,16 +154,6 @@ export default function MangaPage() {
     setIsExpanded(!isExpanded);
   };
 
-  const handleDeleteClick = async () => {
-    try {
-      await deleteManga(mangaId);
-      toast.success("Xoá thành công truyện");
-      navigate("/admin/manage-manga");
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
   const handlePageClick = (event) => {
     const page = event.selected + 1;
     setCurrentPage(page);
@@ -197,6 +190,30 @@ export default function MangaPage() {
       );
       toast.success("Ẩn/Hiện bình luận thành công!");
       fetchReviews();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      await deleteManga(mangaId);
+      toast.success("Xoá thành công truyện");
+      navigate("/admin/manage-manga");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleHideClick = async () => {
+    try {
+      await hideManga(mangaId, !isHide);
+      if (!isHide) {
+        toast.success("Ẩn truyện thành công");
+      } else {
+        toast.success("Huỷ ẩn truyện thành công");
+      }
+      setIsHide(!isHide);
     } catch (error) {
       toast.error(error.message);
     }
@@ -312,9 +329,9 @@ export default function MangaPage() {
 
             <button
               className="bg-purple-500 rounded-lg mx-2 my-1 px-2 text-white font-semibold hover:bg-purple-600"
-              onClick={() => {}}
+              onClick={() => handleHideClick()}
             >
-              Ẩn truyện
+              {isHide ? "Huỷ ẩn truyện" : "Ẩn truyện"}
             </button>
           </div>
         )}
