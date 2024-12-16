@@ -10,6 +10,7 @@ import {
   getTotalActiveUser,
   getTotalManga,
 } from "../../api/StatisticService";
+import { Link } from "react-router-dom";
 
 export default function StatisticPage() {
   const [monthRevenue, setMonthRevenue] = useState(0);
@@ -17,11 +18,7 @@ export default function StatisticPage() {
   const [totalActivePlan, setTotalActivePlan] = useState(0);
   const [totalActiveUser, setTotalActiveUser] = useState(0);
 
-  const currentDate = new Date();
-  const firstDayOfMonth = `${currentDate.getFullYear()}-${String(
-    currentDate.getMonth() + 1
-  ).padStart(2, "0")}-01`;
-  const day = currentDate.getTime() - 7 * 24 * 60 * 60 * 1000;
+  const day = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
   const [dateTo, setDateTo] = useState(new Date().toISOString().split("T")[0]);
   const [dateFrom, setDateFrom] = useState(
     new Date(day).toISOString().split("T")[0]
@@ -45,6 +42,11 @@ export default function StatisticPage() {
         setTotalManga(totalMangaData.totalManga);
         setTotalActivePlan(totalActivePlanData.totalActivePlan);
 
+        const currentDate = new Date();
+        const firstDayOfMonth = `${currentDate.getFullYear()}-${String(
+          currentDate.getMonth() + 1
+        ).padStart(2, "0")}-01`;
+
         const totalRevenueData = await getRevenueFromTo(
           firstDayOfMonth,
           currentDate.toISOString().split("T")[0]
@@ -62,7 +64,7 @@ export default function StatisticPage() {
     fetchData();
   }, []);
 
-  // Fetch data get reveneu from day to day
+  // Fetch data get revenue from day to day
   useEffect(() => {
     const fetchRevenueFromTo = async (from, to) => {
       try {
@@ -73,7 +75,13 @@ export default function StatisticPage() {
         ); // Convert revenue strings to numbers
 
         setRevenueFromToLabels(labels);
-        setRevenueFromToDatas(data);
+        setRevenueFromToDatas([
+          {
+            label: "Doanh thu",
+            borderColor: "rgb(2, 41, 184)",
+            data: data,
+          },
+        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -150,7 +158,12 @@ export default function StatisticPage() {
       <div className="flex flex-col my-2">
         <div className="flex justify-between gap-2">
           <div className="flex flex-col mb-2">
-            <h4 className="mb-0">Doanh thu theo ngày</h4>
+            <div className="flex flex-row gap-2">
+              <h4 className="mb-0">Doanh thu theo ngày</h4>
+              <Link className="pt-1" to="/admin/detail-revenue">
+                Xem chi tiết {">>"}
+              </Link>
+            </div>
             <span className="font-xs">
               <i>(đơn vị tính: VNĐ)</i>
             </span>
@@ -173,7 +186,6 @@ export default function StatisticPage() {
           </div>
         </div>
         <LineGraph labels={revenueFromToLabels} datas={revenueFromToDatas} />
-        {/* <BarGraph labels={revenueFromToLabels} datas={revenueFromToDatas} /> */}
       </div>
       <hr />
 

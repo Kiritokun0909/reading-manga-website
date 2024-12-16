@@ -13,4 +13,8 @@ router.get("/revenue", statisticController.getRevenueFromTo);
 
 router.get("/top-plan", statisticController.getTopPlans);
 
+router.get("/revenue-detail", statisticController.getRevenueDetail);
+
+router.get("/revenue-by-plan", statisticController.getRevenueByPlan);
+
 module.exports = router;

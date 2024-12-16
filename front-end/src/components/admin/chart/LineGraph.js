@@ -20,13 +20,13 @@ ChartJS.register(
   Legend
 );
 
-export const LineGraph = ({ labels, datas }) => {
+export const LineGraph = ({ labels, datas, showLegend = false }) => {
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: "right",
-        display: false,
+        position: "bottom",
+        display: showLegend,
       },
       title: {
         display: false,
@@ -38,21 +38,22 @@ export const LineGraph = ({ labels, datas }) => {
   const data = {
     labels: labels
       ? labels
-      : ["10/12", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Doanh thu",
-        backgroundColor: "rgb(2, 41, 184)",
-        borderColor: "rgb(2, 41, 184)",
-        data: datas ? datas : [0, 10, 5, 2, 20, 30, 45],
-      },
-      // {
-      //   label: "Goi 2",
-      //   backgroundColor: "rgb(99, 107, 255)",
-      //   borderColor: "rgb(99, 107, 255)",
-      //   data: [10, 2, 20, 10, 5, 45, 30],
-      // },
-    ],
+      : ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: datas,
+    // [
+    //   // {
+    //   //   label: "Doanh thu",
+    //   //   backgroundColor: "rgb(2, 41, 184)",
+    //   //   borderColor: "rgb(2, 41, 184)",
+    //   //   data: datas ? datas : [0, 10, 5, 2, 20, 30, 45],
+    //   // },
+    //   // {
+    //   //   label: "Goi 2",
+    //   //   backgroundColor: "rgb(99, 107, 255)",
+    //   //   borderColor: "rgb(99, 107, 255)",
+    //   //   data: [10, 2, 20, 10, 5, 45, 30],
+    //   // },
+    // ],
   };
 
   return <Line options={options} data={data} />;

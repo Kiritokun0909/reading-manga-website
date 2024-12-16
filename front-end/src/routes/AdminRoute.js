@@ -16,6 +16,7 @@ import ManageUserPage from "../pages/admin/ManageUserPage";
 import ManageDocumentPage from "../pages/admin/ManageDocumentPage";
 import ManagePlanPage from "../pages/admin/ManagePlanPage";
 import StatisticPage from "../pages/admin/StatisticPage";
+import RevenuePage from "../pages/admin/RevenuePage";
 
 export default function AdminRoute() {
   return (
@@ -39,6 +40,7 @@ export default function AdminRoute() {
         <Route path="/manage-document" element={<ManageDocumentPage />} />
         <Route path="/manage-plan" element={<ManagePlanPage />} />
         <Route path="/statistic" element={<StatisticPage />} />
+        <Route path="/detail-revenue" element={<RevenuePage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Route>
     </Routes>

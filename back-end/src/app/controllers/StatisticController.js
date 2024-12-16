@@ -69,6 +69,40 @@ class StatisticController {
       });
     }
   }
+
+  async getRevenueDetail(req, res) {
+    const { pageNumber, itemsPerPage, keyword } = req.query;
+    try {
+      const result = await statisticService.getRevenueDetail(
+        parseInt(pageNumber),
+        parseInt(itemsPerPage),
+        keyword
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get revenue detail:", err);
+      res.status(500).json({
+        message: "Failed to get revenue detail. Please try again later",
+      });
+    }
+  }
+
+  async getRevenueByPlan(req, res) {
+    const { startDate, endDate, planId } = req.query;
+    try {
+      const result = await statisticService.getRevenueFromToByPlanId(
+        planId,
+        startDate,
+        endDate
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("Failed to get revenue by plan:", err);
+      res.status(500).json({
+        message: "Failed to get revenue by plan. Please try again later",
+      });
+    }
+  }
 }
 
 module.exports = new StatisticController();

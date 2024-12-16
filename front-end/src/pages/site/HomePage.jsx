@@ -9,6 +9,7 @@ import MangaItem from "../../components/site/MangaItem";
 
 export default function HomePage() {
   const [mostViewed, setMostViewed] = useState([]);
+  const [mostLiked, setMostLiked] = useState([]);
   const [recentUploads, setRecentUploads] = useState([]);
   // const navigate = useNavigate();
 
@@ -17,6 +18,7 @@ export default function HomePage() {
 
   useEffect(() => {
     getMostViewed();
+    getMostLiked();
     getRecentUploads();
   }, []);
 
@@ -28,6 +30,14 @@ export default function HomePage() {
     );
     // console.log(data);
     setMostViewed(data.mangas);
+  };
+  const getMostLiked = async () => {
+    const data = await getListManga(
+      PAGE_NUMBER,
+      ITEMS_PER_PAGE,
+      HandleCode.FILTER_BY_MANGA_LIKE_DESC
+    );
+    setMostLiked(data.mangas);
   };
   const getRecentUploads = async () => {
     const data = await getListManga(
@@ -46,7 +56,7 @@ export default function HomePage() {
           <Link
             to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_VIEW_DESC}`}
           >
-            Xem thêm
+            Xem thêm {">>"}
           </Link>
         </div>
         <div className="manga-list">
@@ -58,11 +68,27 @@ export default function HomePage() {
 
       <div className="px-2">
         <div className="flex justify-between">
+          <h4>Truyện được yêu thích</h4>
+          <Link
+            to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_LIKE_DESC}`}
+          >
+            Xem thêm {">>"}
+          </Link>
+        </div>
+        <div className="manga-list">
+          {mostLiked.map((manga) => (
+            <MangaItem key={manga.mangaId} manga={manga} />
+          ))}
+        </div>
+      </div>
+
+      <div className="px-2">
+        <div className="flex justify-between">
           <h4>Truyện mới cập nhật</h4>
           <Link
             to={`/search?keyword=&pageNumber=1&filter=${HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC}`}
           >
-            Xem thêm
+            Xem thêm {">>"}
           </Link>
         </div>
         <div className="manga-list">
