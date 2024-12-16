@@ -59,16 +59,23 @@ export default function MangaPage() {
           // toast.error("Truyện đang bị ẩn");
           navigate(`/`);
         }
-
-        const responseChapter = await getListChapter(mangaId);
-        setChapters(responseChapter.chapters);
       } catch (error) {
         toast.error(error.message);
         navigate(`/`);
       }
     };
 
+    const fetchChapter = async () => {
+      try {
+        const response = await getListChapter(mangaId);
+        setChapters(response.chapters);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
     fetchManga();
+    fetchChapter();
   }, [mangaId, currentPage]);
 
   useEffect(() => {
