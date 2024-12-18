@@ -99,9 +99,8 @@ module.exports.getPlanById = async (planId) => {
     const mangas = await db.query(
       `SELECT m.mangaId, m.mangaName, m.coverImageUrl
       FROM plan_mangas p
-        INNER JOIN mangas m
-      ON p.mangaId = m.mangaId
-      WHERE p.planId = ?`,
+        JOIN mangas m ON p.mangaId = m.mangaId
+      WHERE p.planId = ? AND m.isHide = 0`,
       [planId]
     );
 
