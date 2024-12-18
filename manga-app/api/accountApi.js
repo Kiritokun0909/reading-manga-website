@@ -32,8 +32,12 @@ export const updateProfile = async (username, fileAvatar) => {
   try {
     const formData = new FormData();
     formData.append("username", username);
-    if (fileAvatar !== null) {
-      formData.append("avatar", fileAvatar);
+    if (fileAvatar != null) {
+      formData.append("avatar", {
+        uri: fileAvatar,
+        name: fileAvatar.split("/").pop(),
+        type: "image/jpeg",
+      });
     }
 
     const response = await apiClient.put(ENDPOINTS.UPDATE_USER_INFO, formData, {
@@ -46,6 +50,8 @@ export const updateProfile = async (username, fileAvatar) => {
       data: response.data,
     };
   } catch (error) {
+    // console.log(error);
+
     if (!error?.response) {
       return {
         success: false,

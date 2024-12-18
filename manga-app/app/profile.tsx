@@ -104,16 +104,10 @@ export default function ProfilePage() {
     if (!checkUpdateInfo()) return;
     setIsLoading(true); // Start loading
     try {
-      const fileAvatar = newAvatar
-        ? {
-            uri: newAvatar.uri, // File URI
-            type: mime.getType(newAvatar.uri), // MIME type (e.g., 'image/jpeg')
-            name: newAvatar.name || "avatar.jpg", // File name
-          }
-        : null;
+      const fileAvatar = newAvatar ? newAvatar.uri : null;
 
       if (newUsername !== userInfo?.username || newAvatar) {
-        console.log(">>> fileAvatar", fileAvatar);
+        // console.log(">>> fileAvatar:", fileAvatar);
         const response = await updateProfile(newUsername, fileAvatar);
 
         if (!response.success) {
