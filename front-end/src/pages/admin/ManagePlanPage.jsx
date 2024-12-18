@@ -131,7 +131,7 @@ export default function ManagePlanPage() {
     <>
       {isLoading && <Loading />}
 
-      <div className="flex flex-col p-4 pt-0">
+      <div className="flex flex-col p-4 pt-0 w-full">
         {/* Header */}
         <div className="flex justify-center py-4">
           <h1>Danh sách các gói đăng ký</h1>

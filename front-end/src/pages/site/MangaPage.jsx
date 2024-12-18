@@ -46,6 +46,7 @@ export default function MangaPage() {
 
   const navigate = useNavigate();
 
+  //Fetch manga info
   useEffect(() => {
     const fetchManga = async () => {
       try {
@@ -55,7 +56,7 @@ export default function MangaPage() {
         setIsHide(data.isHide);
         setMangaGenres(data.genres);
 
-        if (parseInt(roleId) != HandleCode.ROLE_ADMIN && data.isHide) {
+        if (parseInt(roleId) !== HandleCode.ROLE_ADMIN && data.isHide) {
           // toast.error("Truyện đang bị ẩn");
           navigate(`/`);
         }
@@ -76,8 +77,9 @@ export default function MangaPage() {
 
     fetchManga();
     fetchChapter();
-  }, [mangaId, currentPage]);
+  }, [mangaId, currentPage, roleId, navigate]);
 
+  //Fetch reviews
   useEffect(() => {
     const fetchReviews = async () => {
       try {

@@ -78,7 +78,7 @@ module.exports.getNotifications = async (
       `SELECT notificationId, message, isRead, n.createAt, n.mangaId, m.coverImageUrl, m.mangaName
       FROM notifications n
       LEFT JOIN mangas m ON n.mangaId = m.mangaId
-      WHERE userId = ?
+      WHERE n.userId = ? AND m.isHide = 0
       ORDER BY n.createAt DESC
       LIMIT ? OFFSET ?`,
       [userId, itemsPerPage, offset]

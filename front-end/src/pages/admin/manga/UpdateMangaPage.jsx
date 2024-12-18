@@ -159,15 +159,15 @@ export default function UpdateMangaPage() {
       return;
     }
 
-    if (otherName.trim().length === 0) {
-      toast.error("Tên khác không được để trống");
-      return;
-    }
+    // if (otherName.trim().length === 0) {
+    //   toast.error("Tên khác không được để trống");
+    //   return;
+    // }
 
-    if (description.trim().length === 0) {
-      toast.error("Mô tả không được để trống");
-      return;
-    }
+    // if (description.trim().length === 0) {
+    //   toast.error("Mô tả không được để trống");
+    //   return;
+    // }
 
     setLoading(true);
     try {

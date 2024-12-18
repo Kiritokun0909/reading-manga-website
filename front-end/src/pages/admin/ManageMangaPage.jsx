@@ -33,7 +33,11 @@ export default function ManageMangaPage() {
         toast.error(error.message);
       }
     };
-    fetchMangas();
+    const delayFetch = setTimeout(() => {
+      fetchMangas();
+    }, 100); // Adjust the delay time (500ms in this example) as needed
+
+    return () => clearTimeout(delayFetch); // Cleanup timeout on dependency change
   }, [currentPage, filter, search]);
 
   const handlePageClick = (event) => {
@@ -46,7 +50,7 @@ export default function ManageMangaPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center p-4 pt-0">
+    <div className="flex flex-col p-4 pt-0 w-full">
       <div className="flex justify-center py-4">
         <h1>Danh sách truyện</h1>
       </div>

@@ -39,7 +39,7 @@ module.exports.getPlans = async (
       return {
         pageNumber,
         totalPages,
-        subscriptions: [],
+        plans: [],
       };
     }
 
