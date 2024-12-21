@@ -19,7 +19,6 @@ export default function PlanModal({ planId, onClose, isFromUser = false }) {
   const [canReadAll, setCanReadAll] = useState("");
 
   const [selectedMangas, setSelectedMangas] = useState([]);
-
   const [activeTab, setActiveTab] = useState("info");
 
   useEffect(() => {
@@ -52,7 +51,7 @@ export default function PlanModal({ planId, onClose, isFromUser = false }) {
 
   const handleBuyPlanClick = async (planId) => {
     if (!isLoggedIn) {
-      toast.error("Vui lớng đăng nhập để mua gói.");
+      toast.error("Vui lòng đăng nhập để mua gói.");
       return;
     }
 
@@ -65,6 +64,14 @@ export default function PlanModal({ planId, onClose, isFromUser = false }) {
     } catch (error) {
       toast.error(error.message);
     }
+  };
+
+  // Check if the current date is greater than the endAt date
+  const isPlanExpired = () => {
+    if (endAt === "Vô thời hạn") return false;
+    const currentDate = new Date();
+    const endDate = new Date(endAt);
+    return currentDate > endDate;
   };
 
   return (
@@ -172,12 +179,14 @@ export default function PlanModal({ planId, onClose, isFromUser = false }) {
           >
             Đóng
           </button>
-          <button
-            className="p-2 py-1.5 px-3 bg-violet-700 text-white rounded-md hover:bg-violet-500"
-            onClick={() => handleBuyPlanClick(planId)}
-          >
-            {isFromUser ? "Mua lại" : "Mua ngay"}
-          </button>
+          {!isPlanExpired() && (
+            <button
+              className="p-2 py-1.5 px-3 bg-violet-700 text-white rounded-md hover:bg-violet-500"
+              onClick={() => handleBuyPlanClick(planId)}
+            >
+              {isFromUser ? "Mua lại" : "Mua ngay"}
+            </button>
+          )}
         </div>
       </div>
     </div>

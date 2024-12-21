@@ -9,7 +9,7 @@ export default function AdminLayout() {
     <div className="flex flex-col">
       <div className="flex justify-center bg-[#343a40] p-4 row-manager">
         <Link to="/admin/" className="font-bold text-2xl">
-          Admin dashboard
+          Trang quản lý
         </Link>
       </div>
       <div className="flex flex-row h-4/5">

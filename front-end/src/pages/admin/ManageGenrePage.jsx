@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getListGenres } from "../../api/SiteService";
 import { addGenre, updateGenre, deleteGenre } from "../../api/AdminService";
 import { toast } from "react-toastify";
+import ConfirmationBox from "../../components/ConfirmationBox";
 
 export default function ManageGenrePage() {
   const [genres, setGenres] = useState([]);
@@ -9,6 +10,8 @@ export default function ManageGenrePage() {
   const [selectedDeleteGenres, setSelectedDeleteGenres] = useState([]);
   const [newGenreName, setNewGenreName] = useState("");
   const [updatedGenreName, setUpdatedGenreName] = useState("");
+
+  const [showConfirmBox, setShowConfirmBox] = useState(false);
 
   useEffect(() => {
     getGenres();
@@ -89,7 +92,17 @@ export default function ManageGenrePage() {
       getGenres();
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setShowConfirmBox(false);
     }
+  };
+
+  const openConfirmationBox = () => {
+    setShowConfirmBox(true);
+  };
+
+  const closeConfirmationBox = () => {
+    setShowConfirmBox(false);
   };
 
   return (
@@ -171,7 +184,7 @@ export default function ManageGenrePage() {
           <button
             type="button"
             className="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-500 hover:text-gray-100 dark:text-gray-200 dark:bg-violet-700"
-            onClick={handleDeleteGenres}
+            onClick={openConfirmationBox}
           >
             Xoá
           </button>
@@ -200,6 +213,15 @@ export default function ManageGenrePage() {
           ))}
         </div>
       </div>
+
+      {showConfirmBox && (
+        <ConfirmationBox
+          title="Xác nhận xoá"
+          message="Bạn có chắc muốn xoá các thể loại đã chọn?"
+          onClose={closeConfirmationBox}
+          onConfirm={handleDeleteGenres}
+        />
+      )}
     </div>
   );
 }

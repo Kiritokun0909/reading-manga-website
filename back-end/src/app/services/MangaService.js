@@ -11,10 +11,16 @@ module.exports.getListManga = async (
   keyword = ""
 ) => {
   try {
-    let filterHideManga =
-      filter == HandleCode.FILTER_HIDE_MANGA
-        ? "AND isHide = 1"
-        : "AND isHide = 0";
+    // console.log("filter:", filter);
+    let filterManga = "";
+
+    if (filter == HandleCode.FILTER_HIDE_MANGA) {
+      filterManga = "AND isHide = 1";
+    } else if (filter == HandleCode.FILTER_PAID_MANGA) {
+      filterManga = "AND isFree = 0 AND isHide = 0";
+    } else {
+      filterManga = "AND isHide = 0";
+    }
 
     const [totalRows] = await db.query(
       `SELECT 
@@ -22,7 +28,7 @@ module.exports.getListManga = async (
       FROM 
           mangas 
       WHERE
-          (mangaName LIKE ? OR otherName LIKE ?) ${filterHideManga}`,
+          (mangaName LIKE ? OR otherName LIKE ?) ${filterManga}`,
       [`%${keyword}%`, `%${keyword}%`]
     );
     const totalMangas = totalRows[0].total;
@@ -60,7 +66,7 @@ module.exports.getListManga = async (
       `SELECT mangaId, mangaName, coverImageUrl, newestChapterNumber
         FROM mangas 
         WHERE
-          (mangaName LIKE ? OR otherName LIKE ?) ${filterHideManga}
+          (mangaName LIKE ? OR otherName LIKE ?) ${filterManga}
         ORDER BY ${orderByClause} 
         LIMIT ? OFFSET ?`,
       [`%${keyword}%`, `%${keyword}%`, itemsPerPage, offset]
@@ -392,10 +398,10 @@ module.exports.updateMangaInfo = async (
       fields.push("mangaName = ?");
       values.push(mangaName);
     }
-    if (otherName) {
-      fields.push("otherName = ?");
-      values.push(otherName);
-    }
+    fields.push("otherName = ?");
+    values.push(otherName);
+    fields.push("description = ?");
+    values.push(description);
     if (coverImageUrl && coverImageUrl.trim().length > 0) {
       fields.push("coverImageUrl = ?");
       values.push(coverImageUrl);
@@ -403,10 +409,6 @@ module.exports.updateMangaInfo = async (
     if (publishedYear) {
       fields.push("publishedYear = ?");
       values.push(publishedYear);
-    }
-    if (description) {
-      fields.push("description = ?");
-      values.push(description);
     }
     if (ageLimit) {
       fields.push("ageLimit = ?");

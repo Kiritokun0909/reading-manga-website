@@ -7,6 +7,7 @@ import { addPlan, deletePlan, updatePlan } from "../../api/AdminService";
 import { getListPlan } from "../../api/SiteService";
 import Loading from "../../components/Loading";
 import PlanList from "../../components/admin/plan/PlanList";
+import ConfirmationBox from "../../components/ConfirmationBox";
 
 export default function ManagePlanPage() {
   const [plans, setPlans] = useState([]);
@@ -22,6 +23,9 @@ export default function ManagePlanPage() {
   const [isShowModal, setIsShowModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [deletePlanId, setDeletePlanId] = useState(null);
+  const [showConfirmBox, setShowConfirmBox] = useState(false);
 
   const ITEMS_PER_PAGE = 6;
 
@@ -117,14 +121,25 @@ export default function ManagePlanPage() {
     setIsLoading(false);
   };
 
-  const onDeletePlan = async (planId) => {
+  const onDeletePlan = async () => {
     try {
-      await deletePlan(planId);
+      await deletePlan(deletePlanId);
       toast.success("Xóa gói đăng ký thành công.");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setShowConfirmBox(false);
     }
     fetchPlans();
+  };
+
+  const openConfirmationBox = (planId) => {
+    setDeletePlanId(planId);
+    setShowConfirmBox(true);
+  };
+
+  const closeConfirmationBox = () => {
+    setShowConfirmBox(false);
   };
 
   return (
@@ -190,7 +205,7 @@ export default function ManagePlanPage() {
             totalPages={totalPages}
             onPageChange={handlePageClick}
             onDetailClick={handleEditClick}
-            onDeleteClick={onDeletePlan}
+            onDeleteClick={openConfirmationBox}
           />
         </div>
 
@@ -199,6 +214,15 @@ export default function ManagePlanPage() {
             plan={selectedPlan}
             onClose={() => setIsShowModal(false)}
             onSave={onSavePlan}
+          />
+        )}
+
+        {showConfirmBox && (
+          <ConfirmationBox
+            title="Xác nhận xoá"
+            message="Bạn có chắc muốn xoá gói đọc truyện đã chọn?"
+            onClose={closeConfirmationBox}
+            onConfirm={onDeletePlan}
           />
         )}
       </div>

@@ -118,7 +118,7 @@ export default function Header() {
             onMouseLeave={rankingDropdown.hide}
             ref={rankingDropdown.buttonRef}
           >
-            <Link to="#">Xếp hạng</Link>
+            <Link to="#">Lọc truyện</Link>
             {rankingDropdown.isVisible && (
               <ul className="sub-menu" ref={rankingDropdown.subMenuRef}>
                 <li>

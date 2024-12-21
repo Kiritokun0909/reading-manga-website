@@ -239,7 +239,7 @@ module.exports.updatePlanInfo = async (
 };
 //#endregion
 
-//#region delete-subscription
+//#region delete-plan
 module.exports.deletePlanbyId = async (planId) => {
   try {
     // Check if the subscription is bought by any user

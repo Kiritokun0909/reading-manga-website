@@ -18,8 +18,8 @@ export default function AdminSidebar() {
   return (
     <div className="flex flex-col w-2/12 bg-gray-800 pl-2">
       <Link to="#" className="no-underline text-white">
-        <div className="flex justify-center p-2 border-b border-gray-700 row-manager hover:bg-gray-600 hover:text-orange-500">
-          <span className=" text-lg font-bold">QUẢN LÝ</span>
+        <div className="flex justify-center p-2 border-b border-gray-700 row-manager">
+          <span className=" text-lg font-bold">CHỨC NĂNG</span>
         </div>
       </Link>
 

@@ -34,7 +34,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
         const data = await getListManga(
           PAGE_NUMBER,
           ITEMS_PER_PAGE,
-          HandleCode.FILTER_BY_MANGA_UPDATE_DATE_DESC,
+          HandleCode.FILTER_PAID_MANGA,
           searchName
         );
         setSearchMangas(data.mangas);
@@ -297,7 +297,10 @@ export default function PlanModal({ plan, onClose, onSave }) {
                     className="flex items-center gap-2 p-2 border-b border-slate-200 hover:bg-slate-100 dark:hover:bg-gray-700"
                   >
                     <img
-                      src={manga.coverImageUrl}
+                      src={
+                        manga.coverImageUrl ||
+                        "https://i.pinimg.com/736x/16/f5/50/16f550820fce1818559e09eb9cdbf964.jpg"
+                      }
                       alt={manga.mangaName}
                       className="w-16 h-20 rounded-md"
                     />
@@ -344,7 +347,10 @@ export default function PlanModal({ plan, onClose, onSave }) {
                   }`}
                 >
                   <img
-                    src={manga.coverImageUrl}
+                    src={
+                      manga.coverImageUrl ||
+                      "https://i.pinimg.com/736x/16/f5/50/16f550820fce1818559e09eb9cdbf964.jpg"
+                    }
                     alt={manga.mangaName}
                     className="w-16 h-20 rounded-md"
                   />

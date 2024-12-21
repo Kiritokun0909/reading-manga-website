@@ -12,6 +12,7 @@ import {
 } from "../../api/AdminService";
 import { toast } from "react-toastify";
 import HandleCode from "../../utilities/HandleCode";
+import ConfirmationBox from "../../components/ConfirmationBox";
 
 export default function ManageAuthorPage() {
   const [authors, setAuthors] = useState([]);
@@ -23,6 +24,9 @@ export default function ManageAuthorPage() {
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [isUpdated, setIsUpdated] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const [authorIdToDelete, setAuthorIdToDelete] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const ITEMS_PER_PAGE = 12;
 
@@ -106,15 +110,24 @@ export default function ManageAuthorPage() {
   };
 
   const handleDeleteAuthor = async (authorId) => {
-    // console.log(">>> call delete authorId");
-    // console.log(authorId);
+    setAuthorIdToDelete(authorId);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await deleteAuthor(authorId);
+      await deleteAuthor(authorIdToDelete);
       toast.success("Xoá tác giả thành công");
       fetchAuthors();
     } catch (error) {
-      toast.error(error);
+      toast.error("Đã có lỗi xảy ra! Vui lòng thử lại sau ít phút.");
+    } finally {
+      setShowConfirm(false);
     }
+  };
+
+  const closeConfirmationBox = () => {
+    setShowConfirm(false);
   };
 
   return (
@@ -184,6 +197,15 @@ export default function ManageAuthorPage() {
           author={selectedAuthor}
           onClose={() => setShowModal(false)}
           onSave={handleSaveAuthor}
+        />
+      )}
+
+      {showConfirm && (
+        <ConfirmationBox
+          title="Xác nhận"
+          message="Bạn có chắc muốn xoá tác giả này?"
+          onConfirm={confirmDelete}
+          onClose={closeConfirmationBox}
         />
       )}
     </div>

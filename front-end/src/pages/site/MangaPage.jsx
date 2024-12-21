@@ -22,6 +22,7 @@ import {
 } from "../../api/AccountService";
 import { hideManga } from "../../api/MangaService";
 import PlanList from "../../components/site/plan/PlanList";
+import ConfirmationBox from "../../components/ConfirmationBox";
 
 export default function MangaPage() {
   const mangaId = useParams().mangaId;
@@ -43,6 +44,8 @@ export default function MangaPage() {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const maxLength = 100; // Maximum characters to show when collapsed
+
+  const [showConfirmBox, setShowConfirmBox] = useState(false);
 
   const navigate = useNavigate();
 
@@ -210,6 +213,14 @@ export default function MangaPage() {
     }
   };
 
+  const openConfirmationBox = () => {
+    setShowConfirmBox(true);
+  };
+
+  const closeConfirmationBox = () => {
+    setShowConfirmBox(false);
+  };
+
   const handleDeleteClick = async () => {
     try {
       await deleteManga(mangaId);
@@ -217,6 +228,8 @@ export default function MangaPage() {
       navigate("/admin/manage-manga");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setShowConfirmBox(false);
     }
   };
 
@@ -337,7 +350,7 @@ export default function MangaPage() {
             </Link>
             <button
               className="bg-red-500 rounded-lg my-1 px-2 text-white font-semibold hover:bg-red-600"
-              onClick={handleDeleteClick}
+              onClick={openConfirmationBox}
             >
               Xoá truyện
             </button>
@@ -351,6 +364,15 @@ export default function MangaPage() {
           </div>
         )}
       </div>
+
+      {showConfirmBox && (
+        <ConfirmationBox
+          title="Xác nhận"
+          message="Bạn có chắc muốn xoá truyện này?"
+          onClose={closeConfirmationBox}
+          onConfirm={handleDeleteClick}
+        />
+      )}
 
       <div className="mt-2">
         <label className="font-bold text-base mr-2">Yêu cầu trả phí:</label>
