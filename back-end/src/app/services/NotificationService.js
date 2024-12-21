@@ -59,7 +59,10 @@ module.exports.getNotifications = async (
 ) => {
   try {
     const [totalRows] = await db.query(
-      "SELECT COUNT(notificationId) as total FROM notifications WHERE userId = ?",
+      `SELECT COUNT(n.notificationId) as total 
+      FROM notifications n
+        LEFT JOIN mangas m ON n.mangaId = m.mangaId
+      WHERE userId = ? AND m.isHide = 0`,
       [userId]
     );
 
