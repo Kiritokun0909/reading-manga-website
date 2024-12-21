@@ -41,6 +41,7 @@ export default function NotificationPage() {
     try {
       const data = await fetchNotifications(1, ITEMS_PER_PAGE);
       setNotifications(data.notifications);
+      setCurrentPage(1);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.log(error);
