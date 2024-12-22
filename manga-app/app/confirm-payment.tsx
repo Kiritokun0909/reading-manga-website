@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import { confirmPayment, fetchPaymentSheet } from "@/api/paymentApi";
 import { useStripe } from "@stripe/stripe-react-native";
 import { formatPrice } from "@/utils/utils";
+import { STRIPE_RETURN_URL } from "@/utils/const";
 
 interface Plan {
   planId: number;
@@ -71,7 +72,7 @@ export default function ConfirmPaymentPage() {
       defaultBillingDetails: {
         name: "Jane Doe",
       },
-      returnURL: "expo://",
+      returnURL: STRIPE_RETURN_URL,
     });
   };
 
@@ -90,7 +91,7 @@ export default function ConfirmPaymentPage() {
         showToast(
           "success",
           "Thanh toán thành công!",
-          "Bạn có thể quay lại để đọc truyện."
+          "Bạn có thể đọc truyện."
         );
       }
 

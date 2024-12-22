@@ -1,9 +1,10 @@
 // src/api/apiClient.js
 import axios from "axios";
 import { getItem, saveItem } from "@/services/storageService";
+import { BASE_URL } from "@/utils/const";
 
 const apiClient = axios.create({
-  baseURL: "http://192.168.0.105:5000",
+  baseURL: BASE_URL,
 });
 
 const REFRESH_TOKEN_URL = "/auth/refresh-token";

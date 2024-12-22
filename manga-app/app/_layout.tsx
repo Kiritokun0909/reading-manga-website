@@ -57,117 +57,115 @@ export function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
-    <>
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false, headerTitle: "" }}
-        />
-        <Stack.Screen
-          name="genre/[id]"
-          options={({ route }: any) => ({
-            headerShown: true,
-            headerTitle: `Thể loại: ${route.params?.genreName || "Loading..."}`,
-          })}
-        />
+    <Stack>
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="genre/[id]"
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: `Thể loại: ${route.params?.genreName || "Loading..."}`,
+        })}
+      />
 
-        {/* Manga detail route */}
-        <Stack.Screen
-          name="manga/chapters"
-          options={{
-            headerShown: true,
-            headerTitle: "Danh sách các chương",
-          }}
-        />
-        <Stack.Screen
-          name="manga/[id]"
-          options={{
-            headerShown: true,
-            headerTitle: "Chi tiết truyện",
-          }}
-        />
+      {/* Manga detail route */}
+      <Stack.Screen
+        name="manga/chapters"
+        options={{
+          headerShown: true,
+          headerTitle: "Danh sách các chương",
+        }}
+      />
+      <Stack.Screen
+        name="manga/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: "Chi tiết truyện",
+        }}
+      />
 
-        {/* Chapter detail route */}
-        <Stack.Screen
-          name="chapter/[id]"
-          options={{
-            headerShown: true,
-            headerTitle: "Chi tiết chương",
-          }}
-        />
+      {/* Chapter detail route */}
+      <Stack.Screen
+        name="chapter/[id]"
+        options={{
+          headerShown: true,
+          headerTitle: "Chi tiết chương",
+        }}
+      />
 
-        {/* Privacy and about route */}
-        <Stack.Screen
-          name="privacy"
-          options={{
-            headerShown: true,
-            headerTitle: "Chính sách và điều khoản",
-          }}
-        />
-        <Stack.Screen
-          name="about"
-          options={{
-            headerShown: true,
-            headerTitle: "Giới thiệu ứng dụng",
-          }}
-        />
+      {/* Privacy and about route */}
+      <Stack.Screen
+        name="privacy"
+        options={{
+          headerShown: true,
+          headerTitle: "Chính sách và điều khoản",
+        }}
+      />
+      <Stack.Screen
+        name="about"
+        options={{
+          headerShown: true,
+          headerTitle: "Giới thiệu ứng dụng",
+        }}
+      />
 
-        {/* Account route */}
-        {!authState?.authenticated && (
-          <Stack.Screen
-            name="sign-in"
-            options={{
-              headerShown: true,
-              headerTitle: "Trang đăng nhập",
-            }}
-          />
-        )}
+      {/* Account route */}
+      {!authState?.authenticated && (
         <Stack.Screen
-          name="profile"
+          name="sign-in"
           options={{
             headerShown: true,
-            headerTitle: "Cập nhật thông tin",
+            headerTitle: "Trang đăng nhập",
           }}
         />
-        <Stack.Screen
-          name="password"
-          options={{
-            headerShown: true,
-            headerTitle: "Đổi mật khẩu",
-          }}
-        />
-        <Stack.Screen
-          name="like-follow-list"
-          options={({ route }: any) => ({
-            headerShown: true,
-            headerTitle: `Danh sách truyện ${
-              route.params?.type === "like"
-                ? "yêu thích"
-                : route.params?.type === "follow"
-                ? "theo dõi"
-                : "Loading..."
-            }`,
-          })}
-        />
-        <Stack.Screen
-          name="plan"
-          options={{
-            headerShown: true,
-            headerTitle: "Các gói đã mua",
-          }}
-        />
+      )}
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerShown: true,
+          headerTitle: "Cập nhật thông tin",
+        }}
+      />
+      <Stack.Screen
+        name="password"
+        options={{
+          headerShown: true,
+          headerTitle: "Đổi mật khẩu",
+        }}
+      />
+      <Stack.Screen
+        name="like-follow-list"
+        options={({ route }: any) => ({
+          headerShown: true,
+          headerTitle: `Danh sách truyện ${
+            route.params?.type === "like"
+              ? "yêu thích"
+              : route.params?.type === "follow"
+              ? "theo dõi"
+              : "Loading..."
+          }`,
+        })}
+      />
+      <Stack.Screen
+        name="plan"
+        options={{
+          headerShown: true,
+          headerTitle: "Các gói đã mua",
+        }}
+      />
 
-        <Stack.Screen
-          name="confirm-payment"
-          options={{
-            headerShown: true,
-            headerTitle: "Xác nhận thanh toán gói",
-          }}
-        />
+      <Stack.Screen
+        name="confirm-payment"
+        options={{
+          headerShown: true,
+          headerTitle: "Xác nhận thanh toán gói",
+        }}
+      />
 
-        {/* NotFound route */}
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </>
+      {/* NotFound route */}
+      <Stack.Screen name="+not-found" />
+    </Stack>
   );
 }

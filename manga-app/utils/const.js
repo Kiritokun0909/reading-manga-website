@@ -18,3 +18,6 @@ export const globalStyles = StyleSheet.create({
     fontFamily: OPENSANS_REGULAR,
   },
 });
+
+export const BASE_URL = "http://192.168.0.105:5000";
+export const STRIPE_RETURN_URL = "exp://192.168.0.105:8081";
