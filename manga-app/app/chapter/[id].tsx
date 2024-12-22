@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -13,6 +13,39 @@ import HTMLView from "react-native-htmlview";
 import { DEFAULT_COVER_IMAGE_URL } from "@/utils/const";
 import { fetchChapterDetail } from "@/api/mangaApi";
 import { router, useLocalSearchParams } from "expo-router";
+
+interface NavigationButtonsProps {
+  prevId: number;
+  nextId: number;
+  onPrevPress: () => void;
+  onNextPress: () => void;
+}
+
+const NavigationButtons: React.FC<NavigationButtonsProps> = ({
+  prevId,
+  nextId,
+  onPrevPress,
+  onNextPress,
+}) => {
+  return (
+    <View style={styles.navigationButtons}>
+      <TouchableOpacity
+        style={prevId ? styles.navigateButton : styles.disableButton}
+        onPress={onPrevPress}
+        disabled={!prevId}
+      >
+        <Text style={styles.navigateText}>Chương trước</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={nextId ? styles.navigateButton : styles.disableButton}
+        onPress={onNextPress}
+        disabled={!nextId}
+      >
+        <Text style={styles.navigateText}>Chương kế</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export default function ChapterPage() {
   const { id } = useLocalSearchParams();
@@ -39,8 +72,16 @@ export default function ChapterPage() {
     });
   };
 
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  };
+
   useEffect(() => {
     fetchChapter();
+    scrollToTop();
   }, [id]);
 
   const fetchChapter = async () => {
@@ -88,7 +129,7 @@ export default function ChapterPage() {
 
   const navigatePrevChapter = () => {
     if (!prevId) {
-      showToast("error", "Không còn chương nào trước đó.");
+      showToast("error", "Bạn đang đọc chương cũ nhất.");
       return;
     }
     router.push({
@@ -99,7 +140,7 @@ export default function ChapterPage() {
 
   const navigateNextChapter = () => {
     if (!nextId) {
-      showToast("error", "Bạn đã đọc chương mới nhất.");
+      showToast("error", "Bạn đang đọc chương mới nhất.");
       return;
     }
     router.push({
@@ -109,75 +150,66 @@ export default function ChapterPage() {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.chapterHeader}>
-        <Text style={styles.title}>{mangaName}</Text>
-        <Text>
-          Vol {volumeNumber} - Chapter {chapterNumber}
-        </Text>
-        {chapterName && <Text>{chapterName}</Text>}
-      </View>
+    <ScrollView ref={scrollViewRef}>
+      <View style={styles.container}>
+        <View style={styles.chapterHeader}>
+          <Text style={styles.title}>{mangaName}</Text>
+          <Text>
+            Vol {volumeNumber} - Chapter {chapterNumber}
+          </Text>
+          {chapterName && <Text>{chapterName}</Text>}
+        </View>
 
-      <View style={styles.navigationButtons}>
-        <TouchableOpacity
-          style={styles.navigateButton}
-          onPress={navigatePrevChapter}
-        >
-          <Text style={styles.navigateText}>Chương trước</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navigateButton}
-          onPress={navigateNextChapter}
-        >
-          <Text style={styles.navigateText}>Chương kế</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Use NavigationButtons component here */}
+        <NavigationButtons
+          prevId={prevId}
+          nextId={nextId}
+          onPrevPress={navigatePrevChapter}
+          onNextPress={navigateNextChapter}
+        />
 
-      <View style={styles.chapterContent}>
-        {!isManga ? (
-          <View style={{ padding: 12 }}>
-            <HTMLView value={novelContext} />
-          </View>
-        ) : (
-          <View>
-            {chapterImages.map((item: any, index: number) => (
-              <View key={item.pageNumber}>
-                {imageSizes[index] && (
-                  <Image
-                    source={{
-                      uri: item.imageUrl || DEFAULT_COVER_IMAGE_URL,
-                    }}
-                    style={{
-                      width: imageSizes[index].width,
-                      height: imageSizes[index].height,
-                    }}
-                  />
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
+        <View style={styles.chapterContent}>
+          {!isManga ? (
+            <View style={{ padding: 12 }}>
+              <HTMLView value={novelContext} />
+            </View>
+          ) : (
+            <View>
+              {chapterImages.map((item: any, index: number) => (
+                <View key={item.pageNumber}>
+                  {imageSizes[index] && (
+                    <Image
+                      source={{
+                        uri: item.imageUrl || DEFAULT_COVER_IMAGE_URL,
+                      }}
+                      style={{
+                        width: imageSizes[index].width,
+                        height: imageSizes[index].height,
+                      }}
+                    />
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
 
-      <View style={styles.navigationButtons}>
-        <TouchableOpacity
-          style={styles.navigateButton}
-          onPress={navigatePrevChapter}
-        >
-          <Text style={styles.navigateText}>Chương trước</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navigateButton}
-          onPress={navigateNextChapter}
-        >
-          <Text style={styles.navigateText}>Chương kế</Text>
-        </TouchableOpacity>
+        {/* Use NavigationButtons component here */}
+        <NavigationButtons
+          prevId={prevId}
+          nextId={nextId}
+          onPrevPress={navigatePrevChapter}
+          onNextPress={navigateNextChapter}
+        />
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 46,
+  },
   chapterHeader: {
     flexDirection: "column",
     gap: 6,
@@ -205,6 +237,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "OpenSans-SemiBold",
   },
+  disableButton: {
+    backgroundColor: "gray",
+    padding: 6,
+    borderRadius: 5,
+  },
+
   chapterContent: {
     marginTop: 6,
     alignItems: "center",

@@ -46,6 +46,7 @@ export default function ChapterPage() {
     };
 
     fetchChapter();
+    window.scrollTo(0, 0);
     // getComments(currentPage);
   }, [chapterId, navigate]);
 
