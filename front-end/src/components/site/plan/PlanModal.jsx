@@ -124,13 +124,13 @@ export default function PlanModal({ planId, onClose, isFromUser = false }) {
 
             <div>
               <span className="text-gray-600 dark:text-gray-400">
-                Ngày bắt đầu: {startAt}
+                Ngày bắt đầu mở bán gói: {startAt}
               </span>
             </div>
 
             <div>
               <span className="text-gray-600 dark:text-gray-400">
-                Ngày kết thúc: {endAt ? endAt : "Vô thời hạn"}
+                Ngày kết thúc bán gói: {endAt ? endAt : "Vô thời hạn"}
               </span>
             </div>
 

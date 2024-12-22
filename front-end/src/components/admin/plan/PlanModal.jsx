@@ -212,7 +212,7 @@ export default function PlanModal({ plan, onClose, onSave }) {
               </div>
               <div>
                 <label className="text-gray-600 dark:text-gray-400">
-                  Ngày bắt đầu:{" "}
+                  Ngày bắt đầu mở bán gói:{" "}
                   {isBought && (
                     <span className="text-red-500 text-sm flex justify-center">
                       (Gói đã có người dùng thanh toán không thể chỉnh sửa ngày
@@ -226,17 +226,19 @@ export default function PlanModal({ plan, onClose, onSave }) {
                   value={startAt}
                   onChange={(e) => setStartAt(e.target.value)}
                   disabled={isBought}
+                  min={new Date().toISOString().slice(0, 16)}
                 />
               </div>
               <div>
                 <label className="text-gray-600 dark:text-gray-400">
-                  Ngày kết thúc:
+                  Ngày kết thúc bán gói:
                 </label>
                 <input
                   className="w-full py-2 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow dark:bg-gray-600 dark:text-gray-100"
                   type="datetime-local"
                   value={endAt}
                   onChange={(e) => setEndAt(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
                 />
               </div>
               <div>

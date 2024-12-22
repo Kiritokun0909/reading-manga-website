@@ -144,7 +144,7 @@ export default function MangaPage() {
 
   const handleLikeClick = async () => {
     if (!isLoggedIn) {
-      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      toast.error("Vui lòng đăng nhập để sử dụng chức năng này!");
       return;
     }
     try {
@@ -157,7 +157,7 @@ export default function MangaPage() {
 
   const handleFollowClick = async () => {
     if (!isLoggedIn) {
-      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      toast.error("Vui lòng đăng nhập để sử dụng chức năng này!");
       return;
     }
     try {
@@ -179,12 +179,12 @@ export default function MangaPage() {
 
   const handleSubmitReview = async (event) => {
     if (!isLoggedIn) {
-      toast.error("Vui làng đăng nhập để sử dụng chức năng này!");
+      toast.error("Vui lòng đăng nhập để sử dụng chức năng này!");
       return;
     }
 
     if (newReview === "") {
-      toast.error("Vui làng nhập đánh giá trước khi gửi!");
+      toast.error("Vui lòng nhập đánh giá trước khi gửi!");
       return;
     }
 

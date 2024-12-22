@@ -65,9 +65,7 @@ export default function PlanPage() {
                       Còn thời hạn
                     </span>
                   ) : (
-                    <span className="text-red-500 font-bold">
-                      <i>Hết hạn</i>
-                    </span>
+                    <span className="text-red-500 font-bold">Hết hiệu lực</span>
                   )}
                 </div>
                 <div>

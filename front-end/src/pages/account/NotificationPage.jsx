@@ -59,7 +59,7 @@ export default function NotificationPage() {
         >
           <div
             className={`flex flex-row p-2 border-b ${
-              notice.isRead === 1 ? "text-black" : ""
+              notice.isRead === 1 ? "text-black bg-gray-300" : ""
             }`}
           >
             <div>
