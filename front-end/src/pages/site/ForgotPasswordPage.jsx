@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
         navigate("/login");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }

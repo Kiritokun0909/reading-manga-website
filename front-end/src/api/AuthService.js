@@ -48,16 +48,7 @@ export const forgotPassword = async (email) => {
   try {
     const response = await axios.post(`${AUTH_URL}/forgot-password`, {
       email: email,
-    }); // use for dev
-    // const response = await axiosInstance.put(
-    //   `${ACCOUNT_URL}/${userId}/email`,
-    //   { email },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`,
-    //     },
-    //   }
-    // );
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
@@ -77,16 +68,7 @@ export const resetPassword = async (email, otpCode) => {
     const response = await axios.post(`${AUTH_URL}/reset-password`, {
       email: email,
       otpCode: otpCode,
-    }); // use for dev
-    // const response = await axiosInstance.put(
-    //   `${ACCOUNT_URL}/${userId}/email`,
-    //   { email },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`,
-    //     },
-    //   }
-    // );
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
