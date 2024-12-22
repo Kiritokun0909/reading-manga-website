@@ -1,0 +1,7 @@
+Admin account
+email: admin@gmail.com
+password: 123
+
+User account
+email: tester5@gmail.com
+password: 123
