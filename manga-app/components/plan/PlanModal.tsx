@@ -114,11 +114,11 @@ export default function PlanModal({
                 <Text style={styles.planInfoText}>{plan?.duration} ngày</Text>
               </View>
               <View style={styles.planInfoRow}>
-                <Text style={styles.planInfoLabel}>Ngày bắt đầu:</Text>
+                <Text style={styles.planInfoLabel}>Ngày mở bán gói:</Text>
                 <Text style={styles.planInfoText}>{plan?.startAt}</Text>
               </View>
               <View style={styles.planInfoRow}>
-                <Text style={styles.planInfoLabel}>Ngày kết thúc:</Text>
+                <Text style={styles.planInfoLabel}>Ngày kết thúc bán gói:</Text>
                 <Text style={styles.planInfoText}>
                   {plan?.endAt ? plan.endAt : "Vô thời hạn"}
                 </Text>
