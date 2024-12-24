@@ -19,5 +19,5 @@ export const globalStyles = StyleSheet.create({
   },
 });
 
-export const BASE_URL = "http://192.168.0.105:5000";
-export const STRIPE_RETURN_URL = "exp://192.168.0.105:8081";
+export const BASE_URL = "http://10.242.2.24:5000";
+export const STRIPE_RETURN_URL = "exp://10.242.2.24:8081";
