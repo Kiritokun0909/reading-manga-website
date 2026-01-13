@@ -53,9 +53,9 @@ const optionalAccessToken = (req, res, next) => {
 };
 
 const verifyRefreshToken = (req, res, next) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
-    return res.status(400).json({ message: "No refresh token provided." });
+    return res.status(401).json({ message: "No refresh token provided." });
   }
 
   try {

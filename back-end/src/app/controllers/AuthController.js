@@ -26,15 +26,36 @@ class AuthController {
 
       const accessToken = generateToken(result.userId, "access");
       const refreshToken = generateToken(result.userId, "refresh");
+
+      // Set refresh token in HttpOnly cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false, // Set to true in production with HTTPS
+        sameSite: "strict",
+        path: "/", // Available for all paths, or restrict to /auth/refresh
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
       res.status(200).json({
         accessToken: accessToken,
-        refreshToken: refreshToken,
+        refreshToken: refreshToken, // Do not send refresh token in body
         roleId: result.roleId,
       });
     } catch (err) {
       console.log("Failed to login account:", err);
       res.status(500).json({ message: "Login failed." });
     }
+  }
+  //#endregion
+
+  //#region logout
+  logout(req, res) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    res.status(200).json({ message: "Logged out successfully" });
   }
   //#endregion
 
@@ -98,10 +119,16 @@ class AuthController {
 
   //#region refresh-token
   async refreshToken(req, res) {
-    const accessToken = generateToken(req.user.id, "access");
-    res.status(200).json({
-      accessToken: accessToken,
-    });
+    try {
+      const accessToken = generateToken(req.user.id, "access");
+      const roleId = await authService.getUserRole(req.user.id);
+      res.status(200).json({
+        accessToken: accessToken,
+        roleId: roleId,
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Failed to refresh token." });
+    }
   }
   //#endregion
 

@@ -134,11 +134,8 @@ class MangaError extends Error {
 }
 
 export const getChapterDetail = async (chapterId) => {
-  const accessToken = localStorage.getItem('accessToken');
   try {
-    const response = await apiClient.get(`/chapter/${chapterId}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await apiClient.get(`/chapter/${chapterId}`);
     return response.data;
   } catch (error) {
     if (!error?.response) {
