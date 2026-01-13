@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import HandleCode from '../utilities/HandleCode';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Loading } from '../components/Loading';
+import Loading from '../components/Loading.jsx';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isLoggedIn, roleId, loading } = useContext(AuthContext);
