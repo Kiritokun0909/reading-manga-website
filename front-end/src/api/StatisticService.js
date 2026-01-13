@@ -1,72 +1,71 @@
-import axios from "axios";
-import apiClient from "./ApiClient";
+import apiClient from './ApiClient';
 
 export const getTotalActiveUser = async () => {
   try {
-    const response = await axios.get("/statistic/active-user");
+    const response = await apiClient.get('/statistic/active-user');
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const getRevenueFromTo = async (startDate, endDate) => {
   try {
-    const response = await axios.get(
+    const response = await apiClient.get(
       `/statistic/revenue?startDate=${startDate}&endDate=${endDate} + 23:59:59`
     );
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const getTotalManga = async () => {
   try {
-    const response = await axios.get("/statistic/total-manga");
+    const response = await apiClient.get('/statistic/total-manga');
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const getTotalActivePlan = async () => {
   try {
-    const response = await axios.get("/statistic/active-plan");
+    const response = await apiClient.get('/statistic/active-plan');
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 
 export const getTopSalePlans = async (month, year) => {
   try {
-    const response = await axios.get(
+    const response = await apiClient.get(
       `/statistic/top-plan?month=${month}&year=${year}`
     );
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 
@@ -78,10 +77,10 @@ export const getRevenueDetail = async (pageNumber, itemsPerPage, keyword) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
@@ -93,9 +92,9 @@ export const getRevenueFromToByPlan = async (startDate, endDate, planId) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phân hồi.");
+      throw new Error('Hệ thống không phân hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };

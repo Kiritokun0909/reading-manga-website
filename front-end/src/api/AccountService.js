@@ -1,5 +1,6 @@
-import apiClient from "./ApiClient";
-const ACCOUNT_URL = "/account";
+import apiClient from './ApiClient';
+
+const ACCOUNT_URL = '/account';
 
 //#region get-info
 export const getUserInfo = async (userId = 0) => {
@@ -8,14 +9,14 @@ export const getUserInfo = async (userId = 0) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy người dùng");
+      throw new Error('Không tìm thấy người dùng');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -23,18 +24,18 @@ export const getUserInfo = async (userId = 0) => {
 //#region update-info
 export const updateUserInfo = async (username, fileAvatar) => {
   const formData = new FormData();
-  formData.append("username", username);
-  formData.append("avatar", fileAvatar);
+  formData.append('username', username);
+  formData.append('avatar', fileAvatar);
 
   try {
     const response = await apiClient.put(`${ACCOUNT_URL}/`, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -48,14 +49,14 @@ export const updateUserEmail = async (email) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phân hồi.");
+      throw new Error('Hệ thống không phân hồi.');
     }
 
     if (error.response && error.response.status === 409) {
-      throw new Error("Email đã được sử dụng. Vui lòng dùng email khác.");
+      throw new Error('Email đã được sử dụng. Vui lòng dùng email khác.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -70,14 +71,14 @@ export const updateUserPassword = async (oldPassword, newPassword) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phân hồi.");
+      throw new Error('Hệ thống không phân hồi.');
     }
 
     if (error.response && error.response.status === 400) {
-      throw new Error("Mật khẩu cũ không đúng. Vui lòng thử lại.");
+      throw new Error('Mật khẩu cũ không đúng. Vui lòng thử lại.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -89,14 +90,14 @@ export const checkIsLike = async (mangaId) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -108,14 +109,14 @@ export const checkIsFollow = async (mangaId) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -131,14 +132,14 @@ export const likeManga = async (mangaId, isLike = true) => {
     return;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -153,14 +154,14 @@ export const followManga = async (mangaId, isFollow = true) => {
     }
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
@@ -175,14 +176,14 @@ export const getListLike = async (pageNumber, itemsPerPage) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -196,14 +197,14 @@ export const getListFollow = async (pageNumber, itemsPerPage) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
       throw error.response.status;
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -211,18 +212,15 @@ export const getListFollow = async (pageNumber, itemsPerPage) => {
 //#region user-review
 export const addReview = async (mangaId, context) => {
   try {
-    const response = await apiClient.post(
-      `${ACCOUNT_URL}/add-review/${mangaId}`,
-      {
-        context,
-      }
-    );
+    const response = await apiClient.post(`${ACCOUNT_URL}/add-review/${mangaId}`, {
+      context,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -230,15 +228,13 @@ export const addReview = async (mangaId, context) => {
 //#region count-unread-notification
 export const countUnreadNotification = async () => {
   try {
-    const response = await apiClient.get(
-      `${ACCOUNT_URL}/count-unread-notification`
-    );
+    const response = await apiClient.get(`${ACCOUNT_URL}/count-unread-notification`);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -252,9 +248,9 @@ export const getNotifications = async (pageNumber, itemsPerPage) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -269,9 +265,9 @@ export const readNotification = async (notificationId) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -283,16 +279,16 @@ export const buyPlan = async (planId) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 405) {
       throw new Error(
-        "Bạn đã mua và kích hoạt gói này. Hiện tại không thể mua lại cho đến khi gói hết hạn."
+        'Bạn đã mua và kích hoạt gói này. Hiện tại không thể mua lại cho đến khi gói hết hạn.'
       );
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -306,9 +302,9 @@ export const getPurchaseHistory = async (pageNumber, itemsPerPage) => {
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion

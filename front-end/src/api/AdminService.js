@@ -1,107 +1,72 @@
-import axios from "axios";
-import HandleCode from "../utilities/HandleCode";
-// import axiosInstance from "./axiosInstance";
-const GENRE_URL = "/genre";
-const AUTHOR_URL = "/author";
-const MANGA_URL = "/manga";
-const CHAPTER_URL = "/chapter";
-const ADMIN_URL = "/admin";
+import apiClient from './ApiClient';
+import HandleCode from '../utilities/HandleCode';
+
+const GENRE_URL = '/genre';
+const AUTHOR_URL = '/author';
+const MANGA_URL = '/manga';
+const CHAPTER_URL = '/chapter';
+const ADMIN_URL = '/admin';
 
 //#region Genre
 export const addGenre = async (genreName) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.post(
-      `${GENRE_URL}/`,
-      {
-        genreName,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.post(`${GENRE_URL}/`, {
-    //   genreName,
-    // });
+    const response = await apiClient.post(`${GENRE_URL}/`, {
+      genreName,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 409) {
-      throw new Error("Thể loại đã tồn tại. Vui lòng thử tên khác.");
+      throw new Error('Thể loại đã tồn tại. Vui lòng thử tên khác.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const updateGenre = async (genreId, genreName) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.put(
-      `${GENRE_URL}/${genreId}`,
-      {
-        genreName,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${GENRE_URL}/${genreId}`, {
-    //   genreName,
-    // });
+    const response = await apiClient.put(`${GENRE_URL}/${genreId}`, {
+      genreName,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy thể loại. Vui lòng chọn và thử lại.");
+      throw new Error('Không tìm thấy thể loại. Vui lòng chọn và thử lại.');
     }
 
     if (error.response && error.response.status === 409) {
-      throw new Error("Thể loại đã tồn tại. Vui lòng thử tên khác.");
+      throw new Error('Thể loại đã tồn tại. Vui lòng thử tên khác.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const deleteGenre = async (genreIds) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
     const responses = await Promise.all(
-      genreIds.map(
-        (genreId) =>
-          axios.delete(`${GENRE_URL}/${genreId}`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-        // axiosInstance.delete(`${GENRE_URL}/${genreId}`);
-      )
+      genreIds.map((genreId) => apiClient.delete(`${GENRE_URL}/${genreId}`))
     );
 
     return responses.map((response) => response.data);
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phân hồi.");
+      throw new Error('Hệ thống không phân hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy thể loại. Vui lòng chọn và thử lại.");
+      throw new Error('Không tìm thấy thể loại. Vui lòng chọn và thử lại.');
     }
 
-    throw new Error("Yêu cầu thất baị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất baị. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -111,110 +76,77 @@ export const getListAuthor = async (
   pageNumber = 1,
   itemsPerPage = 10,
   filter = HandleCode.FILTER_BY_AUTHOR_UPDATE_DATE_DESC,
-  keyword = ""
+  keyword = ''
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.get(
-      `${AUTHOR_URL}/list?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&filter=${filter}&keyword=${keyword}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.get(AUTHOR_URL);
+    const response = await apiClient.get(
+      `${AUTHOR_URL}/list?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&filter=${filter}&keyword=${keyword}`
+    );
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phân hồi.");
+      throw new Error('Hệ thống không phân hồi.');
     }
 
-    throw new Error("Yêu cầu thất bị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bị. Vui lòng thử lại.');
   }
 };
 
 export const addAuthor = async (fileAvatar, authorName, biography) => {
-  const accessToken = localStorage.getItem("accessToken");
   const formData = new FormData();
-  formData.append("avatar", fileAvatar);
-  formData.append("authorName", authorName);
-  formData.append("biography", biography);
+  formData.append('avatar', fileAvatar);
+  formData.append('authorName', authorName);
+  formData.append('biography', biography);
   try {
-    const response = await axios.post(AUTHOR_URL, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.post(AUTHOR_URL, {
-    //   formData,);
+    const response = await apiClient.post(AUTHOR_URL, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
-export const updateAuthor = async (
-  authorId,
-  fileAvatar,
-  authorName,
-  biography
-) => {
-  const accessToken = localStorage.getItem("accessToken");
+export const updateAuthor = async (authorId, fileAvatar, authorName, biography) => {
   const formData = new FormData();
-  formData.append("avatar", fileAvatar);
-  formData.append("authorName", authorName);
-  formData.append("biography", biography);
+  formData.append('avatar', fileAvatar);
+  formData.append('authorName', authorName);
+  formData.append('biography', biography);
   try {
-    const response = await axios.put(`${AUTHOR_URL}/${authorId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
+    const response = await apiClient.put(`${AUTHOR_URL}/${authorId}`, formData, {}); // use for dev
 
-    // const response = await axiosInstance.put(`${AUTHOR_URL}/${authorId}`, {
+    // const response = await apiClientInstance.put(`${AUTHOR_URL}/${authorId}`, {
     //   formData,);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy tác giả. Vui lòng thử lại.");
+      throw new Error('Không tìm thấy tác giả. Vui lòng thử lại.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const deleteAuthor = async (authorId) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.delete(`${AUTHOR_URL}/${authorId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.delete(`${AUTHOR_URL}/${authorId}`);
+    const response = await apiClient.delete(`${AUTHOR_URL}/${authorId}`, {});
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy tác giả. Vui lòng thử lại.");
+      throw new Error('Không tìm thấy tác giả. Vui lòng thử lại.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -229,35 +161,27 @@ export const addManga = async (
   publishedYear,
   ageLimit,
   description,
-  authorId = ""
+  authorId = ''
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   const formData = new FormData();
-  formData.append("coverImage", fileCoverImage);
-  formData.append("mangaName", mangaName);
-  formData.append("otherName", otherName);
-  formData.append("isManga", isManga ? 1 : 0);
-  formData.append("isFree", isFree ? 1 : 0);
-  formData.append("publishedYear", publishedYear);
-  formData.append("ageLimit", ageLimit);
-  formData.append("description", description);
-  formData.append("authorId", authorId);
+  formData.append('coverImage', fileCoverImage);
+  formData.append('mangaName', mangaName);
+  formData.append('otherName', otherName);
+  formData.append('isManga', isManga ? 1 : 0);
+  formData.append('isFree', isFree ? 1 : 0);
+  formData.append('publishedYear', publishedYear);
+  formData.append('ageLimit', ageLimit);
+  formData.append('description', description);
+  formData.append('authorId', authorId);
   try {
-    const response = await axios.post(MANGA_URL, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.post(MANGA_URL, {
-    //   formData,);
+    const response = await apiClient.post(MANGA_URL, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất baị. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất baị. Vui lòng thử lại.');
   }
 };
 
@@ -271,80 +195,55 @@ export const updateManga = async (
   publishedYear,
   ageLimit,
   description,
-  authorId = ""
+  authorId = ''
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   const formData = new FormData();
-  formData.append("coverImage", fileCoverImage);
-  formData.append("mangaName", mangaName);
-  formData.append("otherName", otherName);
-  formData.append("isManga", isManga ? 1 : 0);
-  formData.append("isFree", isFree ? 1 : 0);
-  formData.append("publishedYear", publishedYear);
-  formData.append("ageLimit", ageLimit);
-  formData.append("description", description);
-  formData.append("authorId", authorId);
+  formData.append('coverImage', fileCoverImage);
+  formData.append('mangaName', mangaName);
+  formData.append('otherName', otherName);
+  formData.append('isManga', isManga ? 1 : 0);
+  formData.append('isFree', isFree ? 1 : 0);
+  formData.append('publishedYear', publishedYear);
+  formData.append('ageLimit', ageLimit);
+  formData.append('description', description);
+  formData.append('authorId', authorId);
   try {
-    const response = await axios.put(`${MANGA_URL}/${mangaId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.put(`${MANGA_URL}/${mangaId}`, {
-    //   formData,);
+    const response = await apiClient.put(`${MANGA_URL}/${mangaId}`, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const updateMangaGenres = async (genreIds, mangaId) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.put(
-      `${MANGA_URL}/update-genres/${mangaId}`,
-      { genreIds },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${MANGA_URL}/update-genres/${mangaId}`, {
-    //   genreIds,);
+    const response = await apiClient.put(`${MANGA_URL}/update-genres/${mangaId}`, {
+      genreIds,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const deleteManga = async (mangaId) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.delete(`${MANGA_URL}/${mangaId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.delete(`${MANGA_URL}/${mangaId}`);
+    const response = await apiClient.delete(`${MANGA_URL}/${mangaId}`);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -359,36 +258,29 @@ export const addChapter = async (
   chapterImages,
   novelContext
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
     const formData = new FormData();
-    formData.append("volumeNumber", volumeNumber);
-    formData.append("chapterNumber", chapterNumber);
-    formData.append("chapterName", chapterName);
+    formData.append('volumeNumber', volumeNumber);
+    formData.append('chapterNumber', chapterNumber);
+    formData.append('chapterName', chapterName);
     if (isManga) {
       chapterImages.forEach((image) => {
         if (!image) {
           return;
         }
-        formData.append("chapterImages", image.file);
+        formData.append('chapterImages', image.file);
       });
     } else {
-      formData.append("novelContext", novelContext);
+      formData.append('novelContext', novelContext);
     }
-    const response = await axios.post(`${CHAPTER_URL}/${mangaId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.post(`${CHAPTER_URL}/`, formData,);
+    const response = await apiClient.post(`${CHAPTER_URL}/${mangaId}`, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
@@ -401,60 +293,46 @@ export const updateChapter = async (
   chapterImages,
   novelContext
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
     const formData = new FormData();
-    formData.append("volumeNumber", volumeNumber);
-    formData.append("chapterNumber", chapterNumber);
-    formData.append("chapterName", chapterName);
+    formData.append('volumeNumber', volumeNumber);
+    formData.append('chapterNumber', chapterNumber);
+    formData.append('chapterName', chapterName);
     if (isManga) {
       chapterImages.forEach((image) => {
         if (!image) {
           return;
         }
-        formData.append("chapterImages", image.file);
+        formData.append('chapterImages', image.file);
       });
     } else {
-      formData.append("novelContext", novelContext);
+      formData.append('novelContext', novelContext);
     }
-    const response = await axios.put(`${CHAPTER_URL}/${chapterId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.post(`${CHAPTER_URL}/`, formData,);
+    const response = await apiClient.put(`${CHAPTER_URL}/${chapterId}`, formData);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const deleteChapter = async (chapterId) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.delete(`${CHAPTER_URL}/${chapterId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.delete(`${CHAPTER_URL}/${chapterId}`);
+    const response = await apiClient.delete(`${CHAPTER_URL}/${chapterId}`);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 404) {
-      throw new Error("Không tìm thấy chương. Vui lòng thử lại.");
+      throw new Error('Không tìm thấy chương. Vui lòng thử lại.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -465,155 +343,96 @@ export const getListUser = async (
   itemsPerPage = 5,
   status = HandleCode.ACTIVE_STATUS,
   role = HandleCode.ROLE_USER,
-  keyword = ""
+  keyword = ''
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.get(
-      `${ADMIN_URL}/users?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&status=${status}&role=${role}&keyword=${keyword}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.get(`${ADMIN_URL}/users?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&status=${status}&role=${role}`); // use for dev
-    return response.data;
-  } catch (error) {
-    if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
-    }
-
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
-  }
-};
-
-export const setUserStatus = async (userId, status = HandleCode.BAN_STATUS) => {
-  const accessToken = localStorage.getItem("accessToken");
-  try {
-    const response = await axios.put(
-      `${ADMIN_URL}/ban/${userId}`,
-      {
-        status: status,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${ADMIN_URL}/users/${userId}`, {
-    //   isBanned,
-    // });
-    return response.data;
-  } catch (error) {
-    if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
-    }
-
-    if (error.response && error.response.status === 400) {
-      throw new Error("Không thể tự khoá tài khoản của bản thân.");
-    }
-
-    if (error.response && error.response.status === 404) {
-      throw new Error("Mã người dung không tìm thấy. Vui lòng thử lại.");
-    }
-
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
-  }
-};
-
-export const registerAdmin = async (email, password) => {
-  const accessToken = localStorage.getItem("accessToken");
-  try {
-    const response = await axios.post(
-      `${ADMIN_URL}/register`,
-      {
-        email: email,
-        password: password,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
+    const response = await apiClient.get(
+      `${ADMIN_URL}/users?pageNumber=${pageNumber}&itemsPerPage=${itemsPerPage}&status=${status}&role=${role}&keyword=${keyword}`
     );
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
+    }
+
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
+  }
+};
+
+export const setUserStatus = async (userId, status = HandleCode.BAN_STATUS) => {
+  try {
+    const response = await apiClient.put(`${ADMIN_URL}/ban/${userId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error('Hệ thống không phản hồi.');
+    }
+
+    if (error.response && error.response.status === 400) {
+      throw new Error('Không thể tự khoá tài khoản của bản thân.');
+    }
+
+    if (error.response && error.response.status === 404) {
+      throw new Error('Mã người dung không tìm thấy. Vui lòng thử lại.');
+    }
+
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
+  }
+};
+
+export const registerAdmin = async (email, password) => {
+  try {
+    const response = await apiClient.post(`${ADMIN_URL}/register`, {
+      email: email,
+      password: password,
+    });
+    return response.data;
+  } catch (error) {
+    if (!error?.response) {
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error && error.response.status === 409) {
-      throw new Error("Email đã được sử dụng. Vui lòng thử email khác.");
+      throw new Error('Email đã được sử dụng. Vui lòng thử email khác.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 //#region Document
 export const updateDocument = async (docType, content) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.put(
-      `${ADMIN_URL}/document/${docType}`,
-      {
-        content: content,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${ADMIN_URL}/document/${docType}`, {
-    //   content: content,
-    // });
+    const response = await apiClient.put(`${ADMIN_URL}/document/${docType}`, {
+      content: content,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 //#endregion
 
 //#region Review
-export const setReviewStatus = async (
-  reviewId,
-  status = HandleCode.REVIEW_IS_HIDE
-) => {
-  const accessToken = localStorage.getItem("accessToken");
+export const setReviewStatus = async (reviewId, status = HandleCode.REVIEW_IS_HIDE) => {
   try {
-    const response = await axios.put(
-      `${ADMIN_URL}/review/${reviewId}`,
-      {
-        status: status,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${ADMIN_URL}/review/${reviewId}`, {
-    //   status: status,
-    // });
+    const response = await apiClient.put(`${ADMIN_URL}/review/${reviewId}`, {
+      status: status,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống khônh phản hồi.");
+      throw new Error('Hệ thống khônh phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
@@ -629,37 +448,24 @@ export const addPlan = async (
   canReadAll,
   mangaIds
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.post(
-      `/plan`,
-      {
-        planName: planName,
-        price: price,
-        duration: duration,
-        description: description,
-        startAt: startAt,
-        endAt: endAt === "" ? null : endAt,
-        canReadAll: canReadAll
-          ? HandleCode.CAN_READ_ALL
-          : HandleCode.CANNOT_READ_ALL,
-        mangaIds: mangaIds,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.post(`${ADMIN_URL}/subscription`, subscription);
+    const response = await apiClient.post(`/plan`, {
+      planName: planName,
+      price: price,
+      duration: duration,
+      description: description,
+      startAt: startAt,
+      endAt: endAt === '' ? null : endAt,
+      canReadAll: canReadAll ? HandleCode.CAN_READ_ALL : HandleCode.CANNOT_READ_ALL,
+      mangaIds: mangaIds,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống khônh phản hồi.");
+      throw new Error('Hệ thống khônh phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
@@ -674,61 +480,41 @@ export const updatePlan = async (
   canReadAll,
   mangaIds
 ) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.put(
-      `/plan/${planId}`,
-      {
-        planName: planName,
-        price: price,
-        duration: duration,
-        description: description,
-        startAt: startAt,
-        endAt: endAt === "" ? null : endAt,
-        canReadAll: canReadAll
-          ? HandleCode.CAN_READ_ALL
-          : HandleCode.CANNOT_READ_ALL,
-        mangaIds: mangaIds,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ); // use for dev
-
-    // const response = await axiosInstance.put(`${ADMIN_URL}/subscription/${subscriptionId}`, subscription);
+    const response = await apiClient.put(`/plan/${planId}`, {
+      planName: planName,
+      price: price,
+      duration: duration,
+      description: description,
+      startAt: startAt,
+      endAt: endAt === '' ? null : endAt,
+      canReadAll: canReadAll ? HandleCode.CAN_READ_ALL : HandleCode.CANNOT_READ_ALL,
+      mangaIds: mangaIds,
+    });
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 
 export const deletePlan = async (planId) => {
-  const accessToken = localStorage.getItem("accessToken");
   try {
-    const response = await axios.delete(`/plan/${planId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }); // use for dev
-
-    // const response = await axiosInstance.delete(`${ADMIN_URL}/subscription/${subscriptionId}`);
+    const response = await apiClient.delete(`/plan/${planId}`);
     return response.data;
   } catch (error) {
     if (!error?.response) {
-      throw new Error("Hệ thống không phản hồi.");
+      throw new Error('Hệ thống không phản hồi.');
     }
 
     if (error.response && error.response.status === 405) {
-      throw new Error("Không thể xoá gói vì đã có người dùng mua nó.");
+      throw new Error('Không thể xoá gói vì đã có người dùng mua nó.');
     }
 
-    throw new Error("Yêu cầu thất bại. Vui lòng thử lại.");
+    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
   }
 };
 //#endregion
