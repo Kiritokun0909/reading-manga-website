@@ -1,5 +1,6 @@
-import axios from "axios";
-const API_BASE_URL = "http://localhost:5000";
+import axios from 'axios';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -42,7 +43,7 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url === "/auth/refresh-token") {
+      if (originalRequest.url === '/auth/refresh-token') {
         if (logoutCallback) logoutCallback();
         return Promise.reject(error);
       }
@@ -50,7 +51,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const response = await apiClient.post("/auth/refresh-token");
+        const response = await apiClient.post('/auth/refresh-token');
         const { accessToken: newAccessToken } = response.data;
         setAccessToken(newAccessToken);
         onRefreshed(newAccessToken);
