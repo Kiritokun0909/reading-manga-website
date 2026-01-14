@@ -1,41 +1,29 @@
-import apiClient from "./ApiClient";
-
-const CREATE_PAYMENT_URL = "http://localhost:8888/order/create_payment_url";
+import apiClient from './ApiClient';
 
 //#region create-payment-url
 export const createPaymentUrl = async (orderId, amount, planName) => {
   try {
-    // Dynamically create a form
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = `${CREATE_PAYMENT_URL}`;
-    form.target = "_blank"; // Open in a new tab
+    const response = await apiClient.post('/payment/create', {
+      orderId,
+      amount,
+      planName,
+      bankCode: 'VNBANK',
+      language: 'vn',
+    });
 
-    // Add form fields
-    const addField = (name, value) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    };
+    const { paymentUrl } = response.data;
 
-    addField("orderId", orderId);
-    addField("amount", amount);
-    addField("bankCode", "VNBANK");
-    addField("language", "vn");
-
-    // Append the form to the document and submit
-    document.body.appendChild(form);
-    form.submit();
-
-    // Remove the form after submission
-    document.body.removeChild(form);
+    if (paymentUrl) {
+      window.open(paymentUrl, '_blank');
+    } else {
+      throw new Error('Không nhận được link thanh toán từ hệ thống.');
+    }
   } catch (error) {
     throw new Error(
-      error?.response
-        ? "Yêu cầu thất bại. Vui lòng thử lại."
-        : "Hệ thống không phản hồi."
+      error?.response?.data?.message ||
+        (error?.response
+          ? 'Yêu cầu thất bại. Vui lòng thử lại.'
+          : 'Hệ thống không phản hồi.')
     );
   }
 };
@@ -50,10 +38,10 @@ export const confirmPayment = async (userPlanId) => {
     };
   } catch (error) {
     if (!error?.response) {
-      return { success: false, message: "Hệ thống không phản hồi." };
+      return { success: false, message: 'Hệ thống không phản hồi.' };
     }
 
-    return { success: false, message: "Yêu cầu thất bại. Vui lòng thử lại." };
+    return { success: false, message: 'Yêu cầu thất bại. Vui lòng thử lại.' };
   }
 };
 //#endregion
